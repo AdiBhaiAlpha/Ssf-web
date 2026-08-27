@@ -2466,7 +2466,7 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
     return { title, description, image, type, currentUrl, schema };
   };
   if (process.env.NODE_ENV === "production") {
-    const distPath = import_path2.default.join(process.cwd(), "dist");
+    const distPath = process.cwd();
     app.use(import_express.default.static(distPath, {
       maxAge: "1d",
       etag: true
