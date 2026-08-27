@@ -30,6 +30,28 @@ var import_multer = __toESM(require("multer"), 1);
 
 // src/server/db-initial.ts
 var getInitialDBState = () => ({
+  questions: [
+    {
+      id: "q_1",
+      title: "বর্তমান শিক্ষানীতিতে বৈজ্ঞানিক ও গণতান্ত্রিক ব্যবস্থার গুরুত্ব কতটুকু?",
+      content: "আমাদের বর্তমান শিক্ষা ব্যবস্থায় বাণিজ্যিকীকরণ বৃদ্ধি পাচ্ছে। এই প্রেক্ষাপটে সর্বজনীন ও গণতান্ত্রিক শিক্ষার দাবিতে ছাত্র সমাজের ভূমিকা কী হওয়া উচিত?",
+      category: "শিক্ষা",
+      tags: ["শিক্ষা", "গণতন্ত্র", "ছাত্র আন্দোলন"],
+      author: "চিত্রণ ভট্টাচার্য",
+      authorEmail: "chitronbhattacharjee@gmail.com",
+      createdAt: "২০২৬-০৮-২৫ ১০:৩০",
+      answerCount: 1,
+      answers: [
+        {
+          id: "a_1",
+          content: "শিক্ষার বাণিজ্যিকীকরণ রোধে সকল ছাত্র সংগঠনকে ঐক্যবদ্ধ হয়ে আন্দোলন গড়ে তুলতে হবে।",
+          author: "তানিজ হোসেন মুনিম",
+          authorEmail: "tanij@gmail.com",
+          createdAt: "২০২৬-০৮-২৫ ১১:১৫"
+        }
+      ]
+    }
+  ],
   news: [
     {
       id: "news_council25",
@@ -905,6 +927,9 @@ function loadDatabase() {
       if (!db.circulars || db.circulars.length === 0) {
         db.circulars = initialState.circulars;
       }
+      if (!db.questions) {
+        db.questions = initialState.questions || [];
+      }
       if (!db.memberLogins) {
         db.memberLogins = initialState.memberLogins || [];
       }
@@ -988,6 +1013,16 @@ async function startServer() {
   const app = (0, import_express.default)();
   const PORT = 3e3;
   app.use(import_express.default.json());
+  app.use((req, res, next) => { console.log("GLOBAL REQ:", req.method, req.url); next(); });
+
+
+
+
+
+
+
+
+
   const uploadsPath = import_path2.default.join(process.cwd(), "public", "uploads");
   app.use("/uploads", import_express.default.static(uploadsPath));
   app.post("/api/upload", upload.single("file"), (req, res) => {
@@ -1107,6 +1142,125 @@ async function startServer() {
     const db = loadDatabase();
     res.json(db);
   });
+
+
+  app.get("/api/questions", (req, res) => {
+    console.log("HIT /api/questions endpoint!");
+    try {
+      const db = loadDatabase();
+      res.json(db.questions || []);
+    } catch (e) {
+      console.error("GET /api/questions error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post("/api/questions", (req, res) => {
+    try {
+      const { question, userEmail } = req.body;
+      if (!userEmail) {
+        return res.status(401).json({ error: "লগইন করা ছাড়া প্রশ্ন করা যাবে না।" });
+      }
+      const db = loadDatabase();
+      const newQ = {
+        id: "q_" + Date.now(),
+        title: question.title,
+        content: question.content,
+        category: question.category || "অন্যান্য",
+        tags: question.tags || [],
+        author: question.author || "সদস্য",
+        authorEmail: userEmail,
+        createdAt: new Date().toLocaleString("bn-BD", { timeZone: "Asia/Dhaka" }),
+        answerCount: 0,
+        answers: []
+      };
+      if (!db.questions) db.questions = [];
+      db.questions.unshift(newQ);
+      saveDatabase(db);
+      res.json(newQ);
+    } catch (e) {
+      console.error("POST /api/questions error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete("/api/questions/:id", (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userEmail } = req.body;
+      const db = loadDatabase();
+      const qIndex = db.questions.findIndex(q => q.id === id);
+      if (qIndex === -1) return res.status(404).json({ error: "প্রশ্ন পাওয়া যায়নি" });
+      const q = db.questions[qIndex];
+      const isSuper = userEmail === "chitronbhattacharjee@gmail.com";
+      if (!isSuper && q.authorEmail !== userEmail) {
+        return res.status(403).json({ error: "অনুমতি নেই" });
+      }
+      db.questions.splice(qIndex, 1);
+      saveDatabase(db);
+      res.json({ success: true });
+    } catch (e) {
+      console.error("DELETE /api/questions error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post("/api/questions/:id/answers", (req, res) => {
+    try {
+      const { id } = req.params;
+      const { answer, userEmail, authorName } = req.body;
+      if (!userEmail) {
+        return res.status(401).json({ error: "লগইন করা ছাড়া উত্তর দেওয়া যাবে না।" });
+      }
+      const db = loadDatabase();
+      const q = db.questions.find(item => item.id === id);
+      if (!q) return res.status(404).json({ error: "প্রশ্ন পাওয়া যায়নি" });
+      const newAns = {
+        id: "a_" + Date.now(),
+        content: answer.content,
+        author: authorName || "সদস্য",
+        authorEmail: userEmail,
+        createdAt: new Date().toLocaleString("bn-BD", { timeZone: "Asia/Dhaka" })
+      };
+      if (!q.answers) q.answers = [];
+      q.answers.push(newAns);
+      q.answerCount = q.answers.length;
+      saveDatabase(db);
+      res.json(newAns);
+    } catch (e) {
+      console.error("POST answers error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete("/api/questions/:id/answers/:answerId", (req, res) => {
+    try {
+      const { id, answerId } = req.params;
+      const { userEmail } = req.body;
+      const db = loadDatabase();
+      const q = db.questions.find(item => item.id === id);
+      if (!q) return res.status(404).json({ error: "প্রশ্ন পাওয়া যায়নি" });
+      const aIndex = q.answers.findIndex(a => a.id === answerId);
+      if (aIndex === -1) return res.status(404).json({ error: "উত্তর পাওয়া যায়নি" });
+      const a = q.answers[aIndex];
+      const isSuper = userEmail === "chitronbhattacharjee@gmail.com";
+      if (!isSuper && a.authorEmail !== userEmail) {
+        return res.status(403).json({ error: "অনুমতি নেই" });
+      }
+      q.answers.splice(aIndex, 1);
+      q.answerCount = q.answers.length;
+      saveDatabase(db);
+      res.json({ success: true });
+    } catch (e) {
+      console.error("DELETE answers error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+
+  
+
+
   app.get("/robots.txt", (req, res) => {
     const proto = req.secure || req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
     const host = req.headers.host;
@@ -2530,7 +2684,9 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
     });
     app.use(vite.middlewares);
   }
-  app.listen(PORT, "0.0.0.0", () => {
+  
+  app.listen(
+PORT, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
   });
 }
