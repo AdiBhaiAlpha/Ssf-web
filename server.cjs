@@ -2621,6 +2621,7 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
   };
   if (process.env.NODE_ENV === "production") {
     const distPath = process.cwd();
+    app.use(import_express.default.static(import_path2.default.join(process.cwd(), "public")));
     app.use(import_express.default.static(distPath, {
       maxAge: "1d",
       etag: true
