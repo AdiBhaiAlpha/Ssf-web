@@ -1,16 +1,11 @@
 const fs = require('fs');
+let content = fs.readFileSync('public/jante-chai.js', 'utf8');
 
-const original = fs.readFileSync('public/jante-chai.js', 'utf8');
-
-// Replace the renderView section
-let updated = original.replace(
-  /let oldRoot = document\.getElementById\('jante-chai-app-root'\);[\s\S]*?if \(!oldRoot\) \{[\s\S]*?\}[\s\S]*?if \(activeTab === 'home'\) \{/,
-  `let oldRoot = document.getElementById('jante-chai-app-root');
-    
-    // Only show preview when we know we're on the home page.
-    // If oldRoot is missing, it means React hasn't rendered the home page, so we do nothing.
-    if (oldRoot && activeTab === 'home') {`
+// Add debug logs to renderView
+content = content.replace(
+  'function renderView() {',
+  `function renderView() {
+    console.log("renderView called", { activeTab, qaRoot: !!document.getElementById('qa-react-root'), homeRoot: !!document.getElementById('jante-chai-app-root') });`
 );
 
-fs.writeFileSync('public/jante-chai.js', updated);
-console.log('Successfully updated jante-chai.js renderView logic');
+fs.writeFileSync('public/jante-chai.js', content);

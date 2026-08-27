@@ -49,6 +49,20 @@
   }
 
     function renderView() {
+    try {
+      _renderViewInternal();
+    } catch (err) {
+      const debug = document.createElement('div');
+      debug.style.color = 'red';
+      debug.style.padding = '20px';
+      debug.style.fontSize = '20px';
+      debug.innerText = 'Error in renderView: ' + err.stack;
+      document.body.prepend(debug);
+    }
+  }
+  function _renderViewInternal() {
+
+    console.log("renderView called", { activeTab, qaRoot: !!document.getElementById('qa-react-root'), homeRoot: !!document.getElementById('jante-chai-app-root') });
     injectStyles();
     
     let reactQaRoot = document.getElementById('qa-react-root');
@@ -211,7 +225,7 @@
               <div class="bg-zinc-50 dark:bg-zinc-800/50 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
                 <div class="flex items-center justify-between mb-3 border-b border-zinc-200 dark:border-zinc-700 pb-3">
                   <div class="flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                    <span>${a.authorName}</span>
+                    <span>${a.author}</span>
                     <span class="w-1 h-1 bg-zinc-300 rounded-full"></span>
                     <span class="text-zinc-500 font-normal">${a.createdAt}</span>
                   </div>
