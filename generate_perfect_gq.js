@@ -1,4 +1,7 @@
-function GQ({ item: n, onClose: e }) {
+const fs = require('fs');
+
+// Let's create an updated upgraded_gq.js with this bulletproof top-to-bottom scroll & viewport layout
+const gqCode = `function GQ({ item: n, onClose: e }) {
   const [selectedTemplate, setSelectedTemplate] = Q.useState(1);
   const [accentColor, setAccentColor] = Q.useState("#B3002D");
   const [bgStyle, setBgStyle] = Q.useState("solid");
@@ -1049,4 +1052,7 @@ function GQ({ item: n, onClose: e }) {
       })
     ]
   });
-}
+}`;
+
+fs.writeFileSync('upgraded_gq.js', gqCode, 'utf8');
+console.log('Successfully written upgraded_gq.js with seamless full top-to-bottom scroll & pinned sticky header!');
