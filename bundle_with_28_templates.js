@@ -4013,7 +4013,7 @@ class VQ {
     // Offsets helper
     const getOff = (key) => {
       const o = (options.offsets && options.offsets[key]) || { x: 0, y: 0 };
-      return { x: Number(o.x || 0), y: Number(o.y || 0) };
+      return { x: (o.x || 0) * scale, y: (o.y || 0) * scale };
     };
 
     const registerCoord = (name, x, y, w, h) => {
@@ -4681,7 +4681,7 @@ function GQ({ item: n, onClose: e }) {
   const [customAuthor, setCustomAuthor] = Q.useState(n.author || "স্টাফ রিপোর্টার");
   const [customSummary, setCustomSummary] = Q.useState("");
   const [customDate, setCustomDate] = Q.useState(n.date || "");
-  const [customCategory, setCustomCategory] = Q.useState(n.category || (n.type ? n.type.toUpperCase() : "সংবাদ"));
+  const [customCategory, setCustomCategory] = Q.useState(n.category || n.type.toUpperCase());
   const [customSlogan, setCustomSlogan] = Q.useState("");
   const [watermarkText, setWatermarkText] = Q.useState("সমাজতান্ত্রিক ছাত্র ফ্রন্ট");
   const [summaryLength, setSummaryLength] = Q.useState("medium");
@@ -4698,99 +4698,83 @@ function GQ({ item: n, onClose: e }) {
   const [showWeb, setShowWeb] = Q.useState(true);
   const [selectedElement, setSelectedElement] = Q.useState("title");
   const [offsets, setOffsets] = Q.useState({});
-  const [stepSize, setStepSize] = Q.useState(1);
-  const [fontSampleText, setFontSampleText] = Q.useState("");
+  const [stepSize, setStepSize] = Q.useState(5);
+  const [fontSampleText, setFontSampleText] = Q.useState("সমাজতান্ত্রিক ছাত্র ফ্রন্ট");
   const [activeTab, setActiveTab] = Q.useState("templates");
   const [exportFormat, setExportFormat] = Q.useState("png");
   const [exportResolution, setExportResolution] = Q.useState("retina");
   const [isExporting, setIsExporting] = Q.useState(false);
-  const [exportSuccess, setExportSuccess] = Q.useState(false);
   const [isRendering, setIsRendering] = Q.useState(false);
-
-  const canvasContainerRef = Q.useRef(null);
-  const canvasMetricsRef = Q.useRef({});
-
-  // Font list
-  const fontList = [
-    { id: "Bornopata Bold", name: "বর্ণপতা বোল্ড", enName: "Bornopata Bold", fontFamily: "'Bornopata Bold', sans-serif", category: "ডিসপ্লে / হেডলাইন", weight: "700", style: "normal" },
-    { id: "Siyam Rupali", name: "সিয়াম রূপালী", enName: "Siyam Rupali", fontFamily: "'Siyam Rupali', sans-serif", category: "ক্ল্যাসিক / বডি", weight: "400", style: "normal" },
-    { id: "Ador Noirrit Bold", name: "আদর নৈঋত বোল্ড", enName: "Ador Noirrit Bold", fontFamily: "'Ador Noirrit Bold', sans-serif", category: "মডার্ন টাইটেল", weight: "700", style: "normal" },
-    { id: "Li Alinur Rohmotullah", name: "রহমতুল্লাহ ইউনিক", enName: "Li Alinur Rohmotullah", fontFamily: "'Li Alinur Rohmotullah', sans-serif", category: "এক্সক্লুসিভ", weight: "700", style: "normal" },
-    { id: "Li Mahfuz Binnur", name: "মাহফুজ বিননূর", enName: "Li Mahfuz Binnur", fontFamily: "'Li Mahfuz Binnur', sans-serif", category: "ব্যানার টাইপো", weight: "700", style: "normal" },
-    { id: "Galib Standard", name: "গালিব স্ট্যান্ডার্ড", enName: "Galib Standard", fontFamily: "'Galib Standard', sans-serif", category: "সংবাদপত্র", weight: "700", style: "normal" },
-    { id: "Alinur Prottoy", name: "প্রত্যয় বোল্ড", enName: "Alinur Prottoy", fontFamily: "'Alinur Prottoy', sans-serif", category: "হেডিং", weight: "700", style: "normal" },
-    { id: "Nikosh", name: "নিকোশ বাংলা", enName: "Nikosh", fontFamily: "'Nikosh', sans-serif", category: "অফিশিয়াল", weight: "400", style: "normal" },
-    { id: "Kalpurush", name: "কালপুরুষ স্ট্যান্ডার্ড", enName: "Kalpurush", fontFamily: "'Kalpurush', sans-serif", category: "স্ট্যান্ডার্ড", weight: "400", style: "normal" },
-    { id: "SolaimanLipi", name: "সোলাইমান লিপি", enName: "SolaimanLipi", fontFamily: "'SolaimanLipi', sans-serif", category: "জনপ্রিয় ক্ল্যাসিক", weight: "400", style: "normal" },
-    { id: "Noto Serif Bengali", name: "নোটো সেরিফ বাংলা", enName: "Noto Serif Bengali", fontFamily: "'Noto Serif Bengali', serif", category: "সেরিফ ও সাহিত্য", weight: "700", style: "normal" },
-    { id: "Noto Sans Bengali", name: "নোটো সান্স বাংলা", enName: "Noto Sans Bengali", fontFamily: "'Noto Sans Bengali', sans-serif", category: "মডার্ন ক্লিন", weight: "700", style: "normal" },
-    { id: "Anek Bangla", name: "অনেক বাংলা", enName: "Anek Bangla", fontFamily: "'Anek Bangla', sans-serif", category: "বোল্ড ও কমপ্যাক্ট", weight: "800", style: "normal" },
-    { id: "Hind Siliguri", name: "হিন্দ শিলিগুড়ি", enName: "Hind Siliguri", fontFamily: "'Hind Siliguri', sans-serif", category: "ডিজিটাল ও ইউআই", weight: "700", style: "normal" },
-    { id: "Mina", name: "মিনা লাইট/রেগুলার", enName: "Mina", fontFamily: "'Mina', sans-serif", category: "মডার্ন মিনিমাল", weight: "700", style: "normal" }
-  ];
-
-  // Template switch handler
+  const [exportSuccess, setExportSuccess] = Q.useState(false);
+  const [renderedBlob, setRenderedBlob] = Q.useState(null);
+  const [renderError, setRenderError] = Q.useState(null);
+  const [qrDataUrl, setQrDataUrl] = Q.useState("");
+  const [containerSize, setContainerSize] = Q.useState({ width: 340, height: 340 });
+  const canvasRef = Q.useRef(null);
+  const previewContainerRef = Q.useRef(null);
+  const canvasMetricsRef = Q.useRef({ objectCoordinates: {}, width: 1080, height: 1080 });
+  const [metricsVersion, setMetricsVersion] = Q.useState(0);
+  Q.useEffect(() => {
+    const raw = (n.excerpt || n.content || "").replace(/[#*`_[\]]/g, "").slice(0, 450);
+    setCustomSummary(raw);
+  }, [n]);
+  Q.useEffect(() => {
+    i1.loadFonts().catch(err => console.error("Font loading error:", err));
+  }, []);
+  Q.useEffect(() => {
+    const updateContainerSize = () => {
+      if (previewContainerRef.current) {
+        const rect = previewContainerRef.current.getBoundingClientRect();
+        const availW = Math.max(160, Math.floor(rect.width) - 20);
+        const isSmallScreen = typeof window !== "undefined" && window.innerWidth < 640;
+        const maxH = isSmallScreen ? Math.min(360, (window.innerHeight || 600) * 0.45) : Math.min(480, (window.innerHeight || 800) * 0.52);
+        setContainerSize({ width: availW, height: Math.max(160, Math.floor(maxH)) });
+      }
+    };
+    updateContainerSize();
+    let ro = null;
+    if (typeof ResizeObserver !== "undefined" && previewContainerRef.current) {
+      ro = new ResizeObserver(updateContainerSize);
+      ro.observe(previewContainerRef.current);
+    }
+    window.addEventListener("resize", updateContainerSize);
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener("resize", updateContainerSize);
+    };
+  }, []);
   Q.useEffect(() => {
     const tpl = zS.find(ot => ot.id === selectedTemplate);
     if (tpl) {
       setBgTheme(tpl.theme);
       setBgStyle(tpl.bg);
       setAccentColor(tpl.color);
-      setFontFamily(tpl.font === "serif" ? "Noto Serif Bengali" : tpl.font === "mono" ? "Galib Standard" : "Bornopata Bold");
+      if (tpl.font === "serif") setFontFamily("serif");
+      else if (tpl.font === "mono") setFontFamily("mono");
+      else setFontFamily("Bornopata Bold");
       setImagePosition(tpl.img);
       setBorderStyle(tpl.border);
       setTextAlignment(tpl.align);
-      if (tpl.slogan !== undefined) setCustomSlogan(tpl.slogan);
-      if (tpl.tag === "BANNER") setAspectRatio("16:9");
-      else if (tpl.tag === "FB_FEED") setAspectRatio("4:5");
-      else if (tpl.tag === "STATEMENT" || tpl.tag === "GOVT_NOTICE") setAspectRatio("A4 Portrait");
+      setCustomSlogan(tpl.slogan || "");
+      if (tpl.tag === "BANNER" || tpl.tag === "EDITORIAL") setAspectRatio("16:9");
+      else if (tpl.tag === "FB_FEED" || tpl.tag === "IG_FEED" || tpl.tag === "LIBRARY") setAspectRatio("4:5");
+      else if (tpl.tag === "AWARENESS" || tpl.tag === "POLITICAL") setAspectRatio("9:16");
       else setAspectRatio("1:1");
     }
   }, [selectedTemplate]);
-
-  // Layer elements central registry
-  const layerElements = [
-    { id: "title", name: "শিরোনাম (Title)", desc: "প্রধান নিউজ হেডলাইন", type: "text", movable: true },
-    { id: "summary", name: "সারসংক্ষেপ (Summary)", desc: "নিবন্ধের বিবরণ / সাব-টাইটেল", type: "text", movable: true },
-    { id: "image", name: "প্রধান ফটো (Image)", desc: "ফিচার্ড ফটো ও ব্যানার", type: "image", movable: true },
-    { id: "header", name: "লোগো ও ব্যানার (Header/Logo)", desc: "সংগঠনের লোগো ও নাম", type: "branding", movable: true },
-    { id: "category", name: "ক্যাটাগরি / স্লোগান (Badge)", desc: "টপিক ও স্লোগান বার", type: "badge", movable: true },
-    { id: "footer", name: "ফুটার বার (Footer)", desc: "তারিখ, শাখা ও ক্রেডিট", type: "footer", movable: true },
-    { id: "watermark", name: "জলছাপ (Watermark)", desc: "পটভূমির প্রতীকি জলছাপ", type: "watermark", movable: true },
-    { id: "background", name: "ব্যাকগ্রাউন্ড (Canvas)", desc: "মূল ক্যানভাস পটভূমি", type: "canvas", locked: true, movable: false }
-  ];
-
-  const selectedElementObj = layerElements.find(l => l.id === selectedElement) || layerElements[0];
-
-  // Move element by exact internal canvas pixels
-  const moveElement = (dx, dy) => {
-    if (selectedElementObj && selectedElementObj.locked) return;
-    setOffsets(prev => {
-      const cur = prev[selectedElement] || { x: 0, y: 0 };
-      return {
-        ...prev,
-        [selectedElement]: {
-          x: (cur.x || 0) + dx,
-          y: (cur.y || 0) + dy
-        }
-      };
-    });
-  };
-
-  const resetElementPosition = () => {
-    if (selectedElementObj && selectedElementObj.locked) return;
-    setOffsets(prev => {
-      const next = { ...prev };
-      delete next[selectedElement];
-      return next;
-    });
-  };
-
-  // Render live preview
+  Q.useEffect(() => {
+    const url = window.location.origin + "/?tab=" + (n.type === "blog" || n.type === "news" ? "news" : n.type === "publication" ? "books" : n.type === "circular" ? "circulars" : n.type === "event" ? "events" : n.type === "media" ? "media" : "home") + "&" + (n.type === "publication" ? "bookId" : n.type === "circular" ? "circularId" : n.type + "Id") + "=" + n.id;
+    F1.toDataURL(url, {
+      margin: 1,
+      width: 256,
+      color: { dark: bgTheme === "dark" ? "#ffffff" : "#000000", light: bgTheme === "dark" ? "#0b0f19" : "#ffffff" }
+    }).then(d => setQrDataUrl(d)).catch(e => console.error(e));
+  }, [n.id, bgTheme, n.type]);
   const renderLivePreview = Q.useCallback(async () => {
-    if (!canvasContainerRef.current) return;
-    setIsRendering(true);
+    const cvs = canvasRef.current;
+    if (!cvs) return;
     try {
+      setIsRendering(true);
       const cardOptions = {
         selectedTemplate,
         accentColor,
@@ -4801,60 +4785,106 @@ function GQ({ item: n, onClose: e }) {
         fontFamily,
         textAlignment,
         borderStyle,
-        aspectRatio,
-        customRatio,
         customTitle,
+        customSummary,
+        customCategory,
         customLocation,
         customAuthor,
-        customSummary,
         customDate,
-        customCategory,
         customSlogan,
-        watermarkText,
         showLogo,
         showQR,
-        showWatermark,
-        showFooter,
-        showLocation,
-        showAuthor,
         showDate,
-        showReadingTime,
+        showAuthor,
+        showLocation,
         showCategory,
+        showFooter,
+        showReadingTime,
+        aspectRatio,
+        showWatermark,
+        watermarkText,
         showWeb,
         showFB,
         summaryLength,
         offsets
       };
       const rendered = await op.renderPhotoCard(n, cardOptions, 1, canvasMetricsRef.current);
-      if (canvasContainerRef.current) {
-        const existing = canvasContainerRef.current.querySelector("canvas");
-        if (existing) canvasContainerRef.current.removeChild(existing);
-        rendered.className = "w-full h-auto object-contain rounded-xl shadow-xl block pointer-events-none select-none";
-        canvasContainerRef.current.prepend(rendered);
+      if (rendered && cvs) {
+        cvs.width = rendered.width;
+        cvs.height = rendered.height;
+        const ctx = cvs.getContext("2d");
+        if (ctx) {
+          ctx.clearRect(0, 0, cvs.width, cvs.height);
+          ctx.drawImage(rendered, 0, 0);
+        }
+        setMetricsVersion(v => v + 1);
+        setRenderError(null);
       }
     } catch (err) {
-      console.error("Live preview render failed:", err);
+      console.error("Live render error:", err);
+      setRenderError({
+        message: err.message || "রেন্ডারিং সমস্যা হয়েছে",
+        stack: err.stack,
+        time: new Date().toLocaleTimeString()
+      });
     } finally {
       setIsRendering(false);
     }
   }, [
     n, selectedTemplate, accentColor, bgStyle, bgTheme, fontSize, imagePosition,
-    fontFamily, textAlignment, borderStyle, aspectRatio, customRatio, customTitle,
-    customLocation, customAuthor, customSummary, customDate, customCategory,
-    customSlogan, watermarkText, showLogo, showQR, showWatermark, showFooter,
-    showLocation, showAuthor, showDate, showReadingTime, showCategory,
-    showWeb, showFB, summaryLength, offsets
+    fontFamily, textAlignment, borderStyle, customTitle, customSummary, customCategory,
+    customLocation, customAuthor, customDate, customSlogan, showLogo, showQR, showDate,
+    showAuthor, showLocation, showCategory, showFooter, showReadingTime, aspectRatio,
+    showWatermark, watermarkText, showWeb, showFB, summaryLength, offsets
   ]);
-
   Q.useEffect(() => {
     renderLivePreview();
   }, [renderLivePreview]);
-
-  // Export and download
+  const moveElement = (dx, dy) => {
+    if (!selectedElement) return;
+    setOffsets(prev => {
+      const cur = prev[selectedElement] || { x: 0, y: 0 };
+      return {
+        ...prev,
+        [selectedElement]: {
+          x: cur.x + dx,
+          y: cur.y + dy
+        }
+      };
+    });
+  };
+  const resetElementPosition = (elemId) => {
+    const id = elemId || selectedElement;
+    setOffsets(prev => {
+      const copy = { ...prev };
+      delete copy[id];
+      return copy;
+    });
+  };
+  const resetAllPositions = () => {
+    setOffsets({});
+  };
+  const handleCanvasClick = (e) => {
+    const cvs = canvasRef.current;
+    if (!cvs) return;
+    const rect = cvs.getBoundingClientRect();
+    const clickX = ((e.clientX - rect.left) / rect.width) * cvs.width;
+    const clickY = ((e.clientY - rect.top) / rect.height) * cvs.height;
+    const coords = canvasMetricsRef.current?.objectCoordinates || {};
+    const priority = ["title", "category", "summary", "header", "image", "footer", "qr", "watermark"];
+    for (const key of priority) {
+      const box = coords[key];
+      if (box && clickX >= box.x && clickX <= box.x + box.w && clickY >= box.y && clickY <= box.y + box.h) {
+        setSelectedElement(key);
+        return;
+      }
+    }
+  };
   const handleDownload = async () => {
-    setIsExporting(true);
-    setExportSuccess(false);
     try {
+      setIsExporting(true);
+      setRenderError(null);
+      setExportSuccess(false);
       const cardOptions = {
         selectedTemplate,
         accentColor,
@@ -4865,25 +4895,24 @@ function GQ({ item: n, onClose: e }) {
         fontFamily,
         textAlignment,
         borderStyle,
-        aspectRatio,
-        customRatio,
         customTitle,
+        customSummary,
+        customCategory,
         customLocation,
         customAuthor,
-        customSummary,
         customDate,
-        customCategory,
         customSlogan,
-        watermarkText,
         showLogo,
         showQR,
-        showWatermark,
-        showFooter,
-        showLocation,
-        showAuthor,
         showDate,
-        showReadingTime,
+        showAuthor,
+        showLocation,
         showCategory,
+        showFooter,
+        showReadingTime,
+        aspectRatio,
+        showWatermark,
+        watermarkText,
         showWeb,
         showFB,
         summaryLength,
@@ -4891,62 +4920,79 @@ function GQ({ item: n, onClose: e }) {
       };
       await op.exportAndDownload(n, cardOptions, exportFormat, exportResolution);
       setExportSuccess(true);
-      setTimeout(() => setExportSuccess(false), 4000);
+      setRenderedBlob(true);
     } catch (err) {
-      alert("এক্সপোর্ট সমস্যা: " + err.message);
+      console.error("Export failure:", err);
+      setRenderError({
+        message: err.message || "কার্ড এক্সপোর্ট করতে ব্যর্থ হয়েছে।",
+        stack: err.stack,
+        time: new Date().toLocaleTimeString()
+      });
     } finally {
       setIsExporting(false);
     }
   };
-
-  // Canvas click handler for component selection
-  const handleCanvasClick = e => {
-    if (!canvasContainerRef.current || !canvasMetricsRef.current) return;
-    const rect = canvasContainerRef.current.getBoundingClientRect();
-    const cvsW = canvasMetricsRef.current?.width || internalWidth;
-    const cvsH = canvasMetricsRef.current?.height || internalHeight;
-    const clickX = ((e.clientX - rect.left) / rect.width) * cvsW;
-    const clickY = ((e.clientY - rect.top) / rect.height) * cvsH;
-
-    const coords = canvasMetricsRef.current.objectCoordinates || {};
-    const priorityOrder = ["category", "title", "summary", "header", "footer", "image", "watermark", "background"];
-    for (const key of priorityOrder) {
-      const box = coords[key];
-      if (box && box.w > 0 && box.h > 0) {
-        if (clickX >= box.x && clickX <= box.x + box.w && clickY >= box.y && clickY <= box.y + box.h) {
-          setSelectedElement(key);
-          return;
-        }
-      }
-    }
-  };
-
-  let internalWidth = 1080, internalHeight = 1080;
+  let internalWidth = 1080;
+  let internalHeight = 1080;
   switch (aspectRatio) {
-    case "4:5": internalHeight = 1350; break;
-    case "9:16": internalHeight = 1920; break;
-    case "16:9": internalHeight = 607; break;
+    case "4:5": internalWidth = 1080; internalHeight = 1350; break;
+    case "9:16": internalWidth = 1080; internalHeight = 1920; break;
+    case "16:9": internalWidth = 1920; internalHeight = 1080; break;
     case "1200x630": internalWidth = 1200; internalHeight = 630; break;
     case "A4 Portrait": internalWidth = 1240; internalHeight = 1754; break;
     case "A4 Landscape": internalWidth = 1754; internalHeight = 1240; break;
-    default: internalWidth = 1080; internalHeight = 1080; break;
+    case "Custom":
+      internalWidth = 1080;
+      internalHeight = Math.round(1080 / (customRatio || 1));
+      break;
+    case "1:1": default:
+      internalWidth = 1080;
+      internalHeight = 1080;
+      break;
   }
-
-  const cvsWidth = canvasMetricsRef.current?.width || internalWidth;
-  const cvsHeight = canvasMetricsRef.current?.height || internalHeight;
+  const currentAspect = internalWidth / internalHeight;
+  const maxFitW = Math.min(containerSize.width || 340, 480);
+  const maxFitH = containerSize.height || 380;
+  let previewBoxWidth = maxFitW;
+  let previewBoxHeight = previewBoxWidth / currentAspect;
+  if (previewBoxHeight > maxFitH) {
+    previewBoxHeight = maxFitH;
+    previewBoxWidth = previewBoxHeight * currentAspect;
+  }
+  previewBoxWidth = Math.max(140, Math.floor(previewBoxWidth));
+  previewBoxHeight = Math.max(140, Math.floor(previewBoxHeight));
+  const fontList = [
+    { id: "Bornopata Bold", name: "বর্ণপাতা বোল্ড", enName: "Bornopata Bold", category: "বোল্ড ও হেভি পোস্টার", fontFamily: "'Bornopata Bold', 'Bornopata', 'Hind Siliguri', sans-serif", weight: "700", style: "normal" },
+    { id: "Bornopata Regular", name: "বর্ণপাতা রেগুলার", enName: "Bornopata Regular", category: "ক্লাসিক ডিসপ্লে ও হেডলাইন", fontFamily: "'Bornopata Regular', 'Bornopata', 'Hind Siliguri', sans-serif", weight: "400", style: "normal" },
+    { id: "Li Alinur Sangbadpatra 2 Unicode", name: "আলী নূর সংবাদপত্র ২", enName: "Li Alinur Sangbadpatra 2", category: "পত্রিকা হেডলাইন ফন্ট", fontFamily: "'Li Alinur Sangbadpatra 2 Unicode', 'Li Alinur Sangbadpatra2 Unicode', 'Hind Siliguri', sans-serif", weight: "700", style: "normal" },
+    { id: "Li Alinur Sangbadpatra 2 Unicode Italic", name: "আলী নূর সংবাদপত্র ২ ইতালিক", enName: "Li Alinur Sangbadpatra 2 Italic", category: "পত্রিকা তির্যক শিরোনাম", fontFamily: "'Li Alinur Sangbadpatra 2 Unicode Italic', 'Li Alinur Sangbadpatra2 Unicode Italic', 'Hind Siliguri', sans-serif", weight: "700", style: "italic" },
+    { id: "sans", name: "নোটো সান্স বেঙ্গলি", enName: "Noto Sans Bengali", category: "আধুনিক ও পরিচ্ছন্ন সান্স", fontFamily: "'Noto Sans Bengali', 'Hind Siliguri', 'Inter', sans-serif", weight: "600", style: "normal" },
+    { id: "serif", name: "কালপুরুষ সেরিফ", enName: "Kalpurush Serif", category: "ঐতিহ্যবাহী মার্জিত সেরিফ", fontFamily: "'Kalpurush', 'SutonnyBanglaOMJ', 'Noto Serif Bengali', 'Georgia', serif", weight: "600", style: "normal" },
+    { id: "mono", name: "জেটব্রেইনস মনো", enName: "JetBrains Mono", category: "প্রযুক্তি ও গবেষণাপত্র", fontFamily: "'JetBrains Mono', monospace", weight: "500", style: "normal" },
+    { id: "inter", name: "ইন্টার ক্লিন সান্স", enName: "Inter Sans", category: "ইন্টারন্যাশনাল মিনিমাল", fontFamily: "'Inter', 'Hind Siliguri', sans-serif", weight: "600", style: "normal" }
+  ];
+  const layerElements = [
+    { id: "title", name: "শিরোনাম (Title)", desc: "প্রধান নিউজ হেডলাইন" },
+    { id: "summary", name: "সারসংক্ষেপ (Summary)", desc: "নিবন্ধের বিষয়বস্তু" },
+    { id: "image", name: "প্রধান চিত্র (Photo)", desc: "ফিচার্ড ফটো ও ব্যানার" },
+    { id: "header", name: "হেডার / লোগো (Header)", desc: "সংগঠনের লোগো ও নাম" },
+    { id: "category", name: "ক্যাটাগরি / স্লোগান (Badge)", desc: "টপিক ও স্লোগান বার" },
+    { id: "footer", name: "ফুটার বার (Footer)", desc: "তারিখ, শাখা ও সোশ্যাল" },
+    { id: "watermark", name: "জলছাপ (Watermark)", desc: "ব্যাকগ্রাউন্ডের জলছাপ" }
+  ];
   const activeOffset = (offsets && offsets[selectedElement]) || { x: 0, y: 0 };
   const activeCoords = canvasMetricsRef.current?.objectCoordinates?.[selectedElement];
-
+  const cvsWidth = canvasMetricsRef.current?.width || internalWidth;
+  const cvsHeight = canvasMetricsRef.current?.height || internalHeight;
   return i.jsxs("div", {
     id: "photocard-builder-modal",
-    className: "fixed inset-0 z-[150] bg-black/85 backdrop-blur-md flex flex-col items-center justify-start sm:justify-center p-0 sm:p-3 md:p-5 overflow-hidden w-full h-[100dvh]",
+    className: "fixed inset-0 bg-black/85 backdrop-blur-md z-[150] flex items-center justify-center p-2 sm:p-4 overflow-y-auto overflow-x-hidden w-full max-w-full",
     children: [
       i.jsxs("div", {
-        className: "bg-white dark:bg-zinc-950 border-0 sm:border border-zinc-200 dark:border-zinc-800 rounded-none sm:rounded-2xl w-full max-w-7xl shadow-2xl flex flex-col h-full sm:h-auto sm:max-h-[96dvh] overflow-hidden",
+        className: "bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-7xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh] animate-in fade-in zoom-in-95 duration-200",
         children: [
-          // STICKY TOP HEADER
           i.jsxs("div", {
-            className: "sticky top-0 z-40 shrink-0 flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md w-full",
+            className: "flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/80 shrink-0 w-full",
             children: [
               i.jsxs("div", {
                 className: "flex items-center space-x-2.5 sm:space-x-3 overflow-hidden",
@@ -4966,44 +5012,37 @@ function GQ({ item: n, onClose: e }) {
               }),
               i.jsx("button", {
                 onClick: e,
-                className: "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 rounded-xl transition cursor-pointer shrink-0 ml-2 shadow-xs",
-                title: "বন্ধ করুন (Close)",
-                children: i.jsx("svg", { className: "w-4 h-4 sm:w-5 sm:h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M18 6L6 18M6 6l12 12" })] })
+                className: "p-2 bg-zinc-200/70 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg cursor-pointer transition shrink-0 ml-2",
+                title: "বন্ধ করুন",
+                children: i.jsx("svg", { className: "w-4 h-4", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M18 6L6 18M6 6l12 12" })] })
               })
             ]
           }),
-
-          // MAIN CONTAINER: scrollable on mobile, 2-column grid on desktop
           i.jsxs("div", {
-            className: "flex-1 min-h-0 overflow-y-auto lg:overflow-hidden lg:grid lg:grid-cols-12 w-full overscroll-contain",
+            className: "grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-hidden w-full max-w-full",
             children: [
-              // LEFT PANEL (Tabs & Editor controls)
               i.jsxs("div", {
-                className: "lg:col-span-5 flex flex-col lg:border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 lg:overflow-hidden min-h-0 w-full overflow-x-hidden",
+                className: "lg:col-span-5 border-r border-zinc-200 dark:border-zinc-800 flex flex-col max-h-[82vh] bg-white dark:bg-zinc-950 w-full max-w-full overflow-x-hidden",
                 children: [
-                  // TABS HEADER
                   i.jsx("div", {
-                    className: "sticky top-0 lg:static z-20 shrink-0 flex border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/90 backdrop-blur-xs text-[11px] font-bold overflow-x-auto no-scrollbar py-1 px-1 gap-1 w-full",
+                    className: "flex border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 text-[11px] font-bold overflow-x-auto no-scrollbar shrink-0 w-full",
                     children: [
-                      { id: "templates", name: "টেমপ্লেট (২৮)" },
+                      { id: "templates", name: "টেমপ্লেট" },
                       { id: "typography", name: "ফন্ট ও টাইপো" },
                       { id: "position", name: "পজিশন ডি-প্যাড" },
                       { id: "style", name: "ডিজাইন ও কালার" },
                       { id: "branding", name: "উপাদান ও লোগো" },
-                      { id: "debug", name: "সিস্টেম মেট্রিক্স" }
-                    ].map(tab => i.jsx("button", {
-                      key: tab.id,
-                      onClick: () => setActiveTab(tab.id),
-                      className: "px-3 py-2 rounded-lg cursor-pointer whitespace-nowrap transition flex items-center shrink-0 " + (activeTab === tab.id ? "bg-rose-600 text-white shadow-xs" : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50"),
-                      children: tab.name
+                      { id: "debug", name: "ডায়াগনস্টিক" }
+                    ].map(t => i.jsx("button", {
+                      key: t.id,
+                      onClick: () => setActiveTab(t.id),
+                      className: "flex-1 min-w-[50px] py-2.5 px-1.5 text-center border-b-2 cursor-pointer transition whitespace-nowrap " + (activeTab === t.id ? "border-rose-600 text-rose-600 bg-white dark:bg-zinc-950 font-black" : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"),
+                      children: t.name
                     }))
                   }),
-
-                  // TAB CONTENT
                   i.jsxs("div", {
-                    className: "p-3 sm:p-4 lg:overflow-y-auto flex-1 space-y-4 text-xs text-left w-full",
+                    className: "p-3 sm:p-4 overflow-y-auto overflow-x-hidden flex-1 space-y-4 text-xs text-left w-full",
                     children: [
-                      // TAB: TEMPLATES
                       activeTab === "templates" && i.jsxs("div", {
                         className: "space-y-3",
                         children: [
@@ -5011,15 +5050,15 @@ function GQ({ item: n, onClose: e }) {
                             className: "flex items-center justify-between",
                             children: [
                               i.jsx("label", { className: "font-black text-zinc-800 dark:text-zinc-200 text-xs", children: "ডিজাইন টেমপ্লেট নির্বাচন (২৮টি প্রি-সেট)" }),
-                              i.jsx("span", { className: "text-[10px] bg-rose-100 dark:bg-rose-950/60 text-rose-600 font-bold px-2 py-0.5 rounded-full", children: "২৮টি সক্রিয় টেমপ্লেট" })
+                              i.jsx("span", { className: "text-[10px] bg-rose-100 dark:bg-rose-950/60 text-rose-600 font-bold px-2 py-0.5 rounded-full", children: "স্বয়ংক্রিয় স্টাইল" })
                             ]
                           }),
                           i.jsx("div", {
-                            className: "grid grid-cols-2 gap-2 max-h-[58vh] lg:max-h-[62vh] overflow-y-auto pr-1",
+                            className: "grid grid-cols-2 gap-2 max-h-[58vh] overflow-y-auto pr-1",
                             children: zS.map(t => i.jsxs("button", {
                               key: t.id,
                               onClick: () => setSelectedTemplate(t.id),
-                              className: "p-2.5 rounded-xl text-left transition cursor-pointer border flex flex-col justify-between " + (selectedTemplate === t.id ? "bg-rose-600 text-white border-rose-600 shadow-md font-black ring-2 ring-rose-600/30" : "bg-zinc-50 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"),
+                              className: "p-2.5 rounded-xl text-left transition cursor-pointer border flex flex-col justify-between " + (selectedTemplate === t.id ? "bg-rose-600 text-white border-rose-600 shadow-md font-black" : "bg-zinc-50 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"),
                               children: [
                                 i.jsx("div", { className: "font-bold truncate text-[11px]", children: t.name }),
                                 i.jsxs("div", { className: "text-[9px] mt-1.5 flex items-center justify-between opacity-80 " + (selectedTemplate === t.id ? "text-rose-100" : "text-zinc-500"), children: [
@@ -5031,8 +5070,6 @@ function GQ({ item: n, onClose: e }) {
                           })
                         ]
                       }),
-
-                      // TAB: TYPOGRAPHY
                       activeTab === "typography" && i.jsxs("div", {
                         className: "space-y-4",
                         children: [
@@ -5043,7 +5080,7 @@ function GQ({ item: n, onClose: e }) {
                               i.jsx("input", {
                                 type: "text",
                                 value: fontSampleText,
-                                onChange: ev => setFontSampleText(ev.target.value),
+                                onChange: e => setFontSampleText(e.target.value),
                                 placeholder: "সমাজতান্ত্রিক ছাত্র ফ্রন্ট",
                                 className: "w-full bg-white dark:bg-zinc-900 border border-rose-300 dark:border-rose-800 p-2 rounded-lg text-xs outline-none text-zinc-900 dark:text-white font-medium shadow-xs"
                               })
@@ -5100,21 +5137,9 @@ function GQ({ item: n, onClose: e }) {
                                   i.jsx("label", { className: "block font-bold text-zinc-700 dark:text-zinc-300 mb-1", children: "হেডলাইন (শিরোনাম)" }),
                                   i.jsx("textarea", {
                                     value: customTitle,
-                                    onChange: ev => setCustomTitle(ev.target.value),
+                                    onChange: e => setCustomTitle(e.target.value),
                                     rows: 2,
                                     className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg outline-none focus:border-rose-500 font-medium"
-                                  })
-                                ]
-                              }),
-                              i.jsxs("div", {
-                                children: [
-                                  i.jsx("label", { className: "block font-bold text-zinc-700 dark:text-zinc-300 mb-1", children: "সারসংক্ষেপ (সাব-টাইটেল)" }),
-                                  i.jsx("textarea", {
-                                    value: customSummary,
-                                    onChange: ev => setCustomSummary(ev.target.value),
-                                    rows: 3,
-                                    placeholder: "সংবাদের বিস্তারিত বিবরণ বা উপ-শিরোনাম...",
-                                    className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg outline-none focus:border-rose-500"
                                   })
                                 ]
                               }),
@@ -5123,16 +5148,15 @@ function GQ({ item: n, onClose: e }) {
                                 children: [
                                   i.jsxs("div", {
                                     children: [
-                                      i.jsx("label", { className: "block font-bold mb-1", children: "টেক্সট অ্যালাইন" }),
+                                      i.jsx("label", { className: "block font-bold mb-1", children: "টেক্সট অ্যালাইনমেন্ট" }),
                                       i.jsxs("select", {
                                         value: textAlignment,
-                                        onChange: ev => setTextAlignment(ev.target.value),
+                                        onChange: e => setTextAlignment(e.target.value),
                                         className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg outline-none",
                                         children: [
                                           i.jsx("option", { value: "left", children: "বামে (Left)" }),
-                                          i.jsx("option", { value: "center", children: "মাঝখানে (Center)" }),
-                                          i.jsx("option", { value: "right", children: "ডানে (Right)" }),
-                                          i.jsx("option", { value: "justified", children: "জাস্টিফাইড (Justified)" })
+                                          i.jsx("option", { value: "center", children: "মাঝে (Center)" }),
+                                          i.jsx("option", { value: "right", children: "ডানে (Right)" })
                                         ]
                                       })
                                     ]
@@ -5142,7 +5166,7 @@ function GQ({ item: n, onClose: e }) {
                                       i.jsx("label", { className: "block font-bold mb-1", children: "ফন্ট সাইজ স্কেল" }),
                                       i.jsxs("select", {
                                         value: fontSize,
-                                        onChange: ev => setFontSize(ev.target.value),
+                                        onChange: e => setFontSize(e.target.value),
                                         className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg outline-none",
                                         children: [
                                           i.jsx("option", { value: "sm", children: "ছোট (Small)" }),
@@ -5159,16 +5183,14 @@ function GQ({ item: n, onClose: e }) {
                           })
                         ]
                       }),
-
-                      // TAB: POSITION
                       activeTab === "position" && i.jsxs("div", {
                         className: "space-y-4",
                         children: [
                           i.jsxs("div", {
                             className: "bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/60 p-3 rounded-xl",
                             children: [
-                              i.jsx("h4", { className: "font-black text-rose-800 dark:text-rose-300 text-xs mb-1", children: "ইন্টারেক্টিভ উপাদান পজিশন কন্ট্রোল (1-Pixel Precision)" }),
-                              i.jsx("p", { className: "text-[11px] text-rose-900/80 dark:text-rose-200/70 leading-relaxed", children: "যেকোনো উপাদানের অবস্থান ১ পিক্সেল নিখুঁতভাবে সরাতে নিচের তালিকা থেকে উপাদান নির্বাচন করুন অথবা প্রিভিউ ক্যানভাসে সরাসরি ক্লিক করুন।" })
+                              i.jsx("h4", { className: "font-black text-rose-800 dark:text-rose-300 text-xs mb-1", children: "ইন্টারেক্টিভ উপাদান পজিশন কন্ট্রোল" }),
+                              i.jsx("p", { className: "text-[11px] text-rose-900/80 dark:text-rose-200/70 leading-relaxed", children: "যেকোনো উপাদানের অবস্থান নড়চড় করতে নিচের উপাদান নির্বাচন করুন এবং অ্যারো কি দিয়ে নিখুঁতভাবে পজিশনিং করুন।" })
                             ]
                           }),
                           i.jsxs("div", {
@@ -5205,12 +5227,12 @@ function GQ({ item: n, onClose: e }) {
                               i.jsxs("div", {
                                 className: "w-full flex items-center justify-between mb-3 text-[11px]",
                                 children: [
-                                  i.jsxs("span", { className: "font-bold text-zinc-700 dark:text-zinc-300", children: ["সক্রিয়: ", i.jsx("strong", { className: "text-rose-600", children: selectedElementObj?.name || selectedElement })] }),
+                                  i.jsxs("span", { className: "font-bold text-zinc-700 dark:text-zinc-300", children: ["সক্রিয়: ", i.jsx("strong", { className: "text-rose-600", children: layerElements.find(l => l.id === selectedElement)?.name || selectedElement })] }),
                                   i.jsxs("div", {
                                     className: "flex items-center space-x-1.5",
                                     children: [
                                       i.jsx("span", { className: "text-[10px] text-zinc-500", children: "ধাপ:" }),
-                                      [1, 5, 10, 20].map(sz => i.jsx("button", {
+                                      [2, 5, 10, 20].map(sz => i.jsx("button", {
                                         key: sz,
                                         onClick: () => setStepSize(sz),
                                         className: "px-1.5 py-0.5 rounded text-[10px] font-mono cursor-pointer transition " + (stepSize === sz ? "bg-rose-600 text-white font-bold" : "bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300"),
@@ -5220,47 +5242,53 @@ function GQ({ item: n, onClose: e }) {
                                   })
                                 ]
                               }),
-                              // D-pad in Tab
                               i.jsxs("div", {
                                 className: "relative w-36 h-36 flex items-center justify-center select-none",
                                 children: [
                                   i.jsx("button", {
                                     onClick: () => moveElement(0, -stepSize),
-                                    disabled: selectedElementObj?.locked,
-                                    className: "absolute top-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-90 disabled:opacity-40 text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
+                                    className: "absolute top-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-90 text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
                                     title: "উপরে সরান",
                                     children: i.jsx("svg", { className: "w-5 h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M12 19V5M5 12l7-7 7 7" })] })
                                   }),
                                   i.jsx("button", {
                                     onClick: () => moveElement(-stepSize, 0),
-                                    disabled: selectedElementObj?.locked,
-                                    className: "absolute left-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-90 disabled:opacity-40 text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
+                                    className: "absolute left-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-90 text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
                                     title: "বামে সরান",
                                     children: i.jsx("svg", { className: "w-5 h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M19 12H5M12 19l-7-7 7-7" })] })
                                   }),
-                                  i.jsxs("button", {
+                                  i.jsx("button", {
                                     onClick: () => resetElementPosition(),
-                                    disabled: selectedElementObj?.locked,
-                                    className: "w-10 h-10 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 active:scale-90 disabled:opacity-40 text-zinc-700 dark:text-zinc-200 rounded-xl shadow-inner flex flex-col items-center justify-center transition cursor-pointer",
+                                    className: "w-10 h-10 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-200 rounded-xl shadow-inner flex items-center justify-center transition cursor-pointer font-black text-[10px]",
                                     title: "পজিশন রিসেট করুন",
-                                    children: [
-                                      i.jsx("svg", { className: "w-4 h-4", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8" }), i.jsx("path", { d: "M3 3v5h5" })] }),
-                                      i.jsx("span", { className: "text-[7px] font-mono mt-0.5", children: "0,0" })
-                                    ]
+                                    children: i.jsx("svg", { className: "w-4 h-4", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8" }), i.jsx("path", { d: "M3 3v5h5" })] })
                                   }),
                                   i.jsx("button", {
                                     onClick: () => moveElement(stepSize, 0),
-                                    disabled: selectedElementObj?.locked,
-                                    className: "absolute right-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-90 disabled:opacity-40 text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
+                                    className: "absolute right-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-90 text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
                                     title: "ডানে সরান",
                                     children: i.jsx("svg", { className: "w-5 h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M5 12h14M12 5l7 7-7 7" })] })
                                   }),
                                   i.jsx("button", {
                                     onClick: () => moveElement(0, stepSize),
-                                    disabled: selectedElementObj?.locked,
-                                    className: "absolute bottom-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-90 disabled:opacity-40 text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
+                                    className: "absolute bottom-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-90 text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
                                     title: "নিচে সরান",
                                     children: i.jsx("svg", { className: "w-5 h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M12 5v14M5 12l7 7 7-7" })] })
+                                  })
+                                ]
+                              }),
+                              i.jsxs("div", {
+                                className: "flex space-x-2 mt-3 w-full",
+                                children: [
+                                  i.jsx("button", {
+                                    onClick: () => resetElementPosition(),
+                                    className: "flex-1 py-1.5 bg-white dark:bg-zinc-800 hover:bg-zinc-200 border border-zinc-200 dark:border-zinc-700 rounded-lg font-bold text-[10px] text-zinc-700 dark:text-zinc-300 transition cursor-pointer",
+                                    children: "বর্তমান উপাদান রিসেট"
+                                  }),
+                                  i.jsx("button", {
+                                    onClick: resetAllPositions,
+                                    className: "flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900 rounded-lg font-bold text-[10px] transition cursor-pointer",
+                                    children: "সব পজিশন রিসেট"
                                   })
                                 ]
                               })
@@ -5268,22 +5296,37 @@ function GQ({ item: n, onClose: e }) {
                           })
                         ]
                       }),
-
-                      // TAB: STYLE
                       activeTab === "style" && i.jsxs("div", {
-                        className: "space-y-3.5",
+                        className: "space-y-4",
                         children: [
                           i.jsxs("div", {
                             children: [
-                              i.jsx("label", { className: "block font-bold mb-1", children: "থিম কালার (Accent Color)" }),
+                              i.jsx("label", { className: "block font-black text-zinc-800 dark:text-zinc-200 mb-1.5", children: "অ্যাকসেন্ট কালার (Accent Color)" }),
+                              i.jsxs("div", {
+                                className: "flex items-center space-x-2 mb-2",
+                                children: [
+                                  i.jsx("input", {
+                                    type: "color",
+                                    value: accentColor.startsWith("#") ? accentColor : "#B3002D",
+                                    onChange: e => setAccentColor(e.target.value),
+                                    className: "w-9 h-9 rounded-lg cursor-pointer border border-zinc-300 dark:border-zinc-700 p-0.5 bg-transparent"
+                                  }),
+                                  i.jsx("input", {
+                                    type: "text",
+                                    value: accentColor,
+                                    onChange: e => setAccentColor(e.target.value),
+                                    className: "flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-lg text-xs font-mono font-bold uppercase outline-none"
+                                  })
+                                ]
+                              }),
                               i.jsx("div", {
-                                className: "grid grid-cols-6 gap-1.5 mb-2",
-                                children: ["#B3002D", "#b91c1c", "#580c1f", "#18181b", "#ffffff", "#f4f4f5", "#0f172a", "#064e3b", "#ea580c", "#1d4ed8", "#7c3aed", "#059669"].map(c => i.jsx("button", {
+                                className: "flex flex-wrap gap-1.5",
+                                children: ["#B3002D", "#dc2626", "#580c1f", "#16a34a", "#1d4ed8", "#ea580c", "#0f766e", "#e11d48", "#111827", "#ffffff"].map(c => i.jsx("button", {
                                   key: c,
                                   onClick: () => setAccentColor(c),
                                   style: { backgroundColor: c },
-                                  className: "h-7 rounded-lg border border-zinc-300 dark:border-zinc-700 cursor-pointer flex items-center justify-center " + (accentColor === c ? "ring-2 ring-rose-500 ring-offset-2" : ""),
-                                  children: accentColor === c && i.jsx("span", { className: "text-[10px] " + (c === "#ffffff" || c === "#f4f4f5" ? "text-zinc-900 font-black" : "text-white"), children: "✓" })
+                                  className: "w-6 h-6 rounded-full border border-zinc-300 dark:border-zinc-700 flex items-center justify-center transition hover:scale-110 cursor-pointer " + (accentColor === c ? "ring-2 ring-rose-500 ring-offset-2" : ""),
+                                  children: accentColor === c && i.jsx("span", { className: "text-[10px] " + (c === "#ffffff" ? "text-zinc-900 font-black" : "text-white"), children: "✓" })
                                 }))
                               })
                             ]
@@ -5311,7 +5354,7 @@ function GQ({ item: n, onClose: e }) {
                               i.jsx("label", { className: "block font-bold mb-1", children: "পটভূমির প্যাটার্ন" }),
                               i.jsxs("select", {
                                 value: bgStyle,
-                                onChange: ev => setBgStyle(ev.target.value),
+                                onChange: e => setBgStyle(e.target.value),
                                 className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg outline-none",
                                 children: [
                                   i.jsx("option", { value: "solid", children: "সলিড রঙ (Solid Color)" }),
@@ -5332,7 +5375,7 @@ function GQ({ item: n, onClose: e }) {
                                   i.jsx("label", { className: "block font-bold mb-1", children: "অ্যাসপেক্ট রেশিও" }),
                                   i.jsxs("select", {
                                     value: aspectRatio,
-                                    onChange: ev => setAspectRatio(ev.target.value),
+                                    onChange: e => setAspectRatio(e.target.value),
                                     className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg text-[11px] outline-none",
                                     children: [
                                       i.jsx("option", { value: "1:1", children: "Square (1:1)" }),
@@ -5352,7 +5395,7 @@ function GQ({ item: n, onClose: e }) {
                                   i.jsx("label", { className: "block font-bold mb-1", children: "সীমানা স্টাইল" }),
                                   i.jsxs("select", {
                                     value: borderStyle,
-                                    onChange: ev => setBorderStyle(ev.target.value),
+                                    onChange: e => setBorderStyle(e.target.value),
                                     className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg text-[11px] outline-none",
                                     children: [
                                       i.jsx("option", { value: "none", children: "কোনো সীমানা নেই" }),
@@ -5370,13 +5413,11 @@ function GQ({ item: n, onClose: e }) {
                             className: "bg-zinc-100 dark:bg-zinc-900 p-2.5 rounded-lg",
                             children: [
                               i.jsxs("div", { className: "flex justify-between text-[10px] mb-1 font-bold", children: [i.jsx("span", { children: "কাস্টম রেশিও" }), i.jsxs("span", { children: [customRatio, "x"] })] }),
-                              i.jsx("input", { type: "range", min: "0.5", max: "2.0", step: "0.05", value: customRatio, onChange: ev => setCustomRatio(parseFloat(ev.target.value)), className: "w-full accent-rose-600 cursor-pointer" })
+                              i.jsx("input", { type: "range", min: "0.5", max: "2.0", step: "0.05", value: customRatio, onChange: e => setCustomRatio(parseFloat(e.target.value)), className: "w-full accent-rose-600 cursor-pointer" })
                             ]
                           })
                         ]
                       }),
-
-                      // TAB: BRANDING
                       activeTab === "branding" && i.jsxs("div", {
                         className: "space-y-3.5",
                         children: [
@@ -5384,79 +5425,120 @@ function GQ({ item: n, onClose: e }) {
                             className: "grid grid-cols-2 gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3",
                             children: [
                               i.jsxs("label", { className: "flex items-center space-x-2 cursor-pointer", children: [
-                                i.jsx("input", { type: "checkbox", checked: showLogo, onChange: ev => setShowLogo(ev.target.checked), className: "rounded text-rose-600" }),
+                                i.jsx("input", { type: "checkbox", checked: showLogo, onChange: e => setShowLogo(e.target.checked), className: "rounded text-rose-600" }),
                                 i.jsx("span", { className: "font-medium", children: "লোগো প্রদর্শন" })
                               ]}),
                               i.jsxs("label", { className: "flex items-center space-x-2 cursor-pointer", children: [
-                                i.jsx("input", { type: "checkbox", checked: showQR, onChange: ev => setShowQR(ev.target.checked), className: "rounded text-rose-600" }),
-                                i.jsx("span", { className: "font-medium", children: "কিউআর কোড" })
+                                i.jsx("input", { type: "checkbox", checked: showQR, onChange: e => setShowQR(e.target.checked), className: "rounded text-rose-600" }),
+                                i.jsx("span", { className: "font-medium", children: "QR কোড প্রদর্শন" })
                               ]}),
                               i.jsxs("label", { className: "flex items-center space-x-2 cursor-pointer", children: [
-                                i.jsx("input", { type: "checkbox", checked: showWatermark, onChange: ev => setShowWatermark(ev.target.checked), className: "rounded text-rose-600" }),
-                                i.jsx("span", { className: "font-medium", children: "জলছাপ ব্যাকগ্রাউন্ড" })
+                                i.jsx("input", { type: "checkbox", checked: showWatermark, onChange: e => setShowWatermark(e.target.checked), className: "rounded text-rose-600" }),
+                                i.jsx("span", { className: "font-medium", children: "জলছাপ প্রদর্শন" })
                               ]}),
                               i.jsxs("label", { className: "flex items-center space-x-2 cursor-pointer", children: [
-                                i.jsx("input", { type: "checkbox", checked: showFooter, onChange: ev => setShowFooter(ev.target.checked), className: "rounded text-rose-600" }),
-                                i.jsx("span", { className: "font-medium", children: "ফুটার বার" })
-                              ]}),
-                              i.jsxs("label", { className: "flex items-center space-x-2 cursor-pointer", children: [
-                                i.jsx("input", { type: "checkbox", checked: showCategory, onChange: ev => setShowCategory(ev.target.checked), className: "rounded text-rose-600" }),
-                                i.jsx("span", { className: "font-medium", children: "ক্যাটাগরি ট্যাগ" })
-                              ]}),
-                              i.jsxs("label", { className: "flex items-center space-x-2 cursor-pointer", children: [
-                                i.jsx("input", { type: "checkbox", checked: showDate, onChange: ev => setShowDate(ev.target.checked), className: "rounded text-rose-600" }),
-                                i.jsx("span", { className: "font-medium", children: "প্রকাশের তারিখ" })
+                                i.jsx("input", { type: "checkbox", checked: showFooter, onChange: e => setShowFooter(e.target.checked), className: "rounded text-rose-600" }),
+                                i.jsx("span", { className: "font-medium", children: "ফুটার স্ট্রিপ" })
                               ]})
                             ]
                           }),
                           i.jsxs("div", {
-                            className: "space-y-2",
+                            children: [
+                              i.jsx("label", { className: "block font-bold mb-1", children: "ফিচার্ড ফটো পজিশন" }),
+                              i.jsxs("select", {
+                                value: imagePosition,
+                                onChange: e => setImagePosition(e.target.value),
+                                className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg text-xs outline-none",
+                                children: [
+                                  i.jsx("option", { value: "top", children: "উপরে (Top Photo)" }),
+                                  i.jsx("option", { value: "left", children: "বামে (Left Photo)" }),
+                                  i.jsx("option", { value: "right", children: "ডানে (Right Photo)" }),
+                                  i.jsx("option", { value: "background", children: "পটভূমিতে (Background Vignette)" }),
+                                  i.jsx("option", { value: "hidden", children: "লুকান (Text-only Mode)" })
+                                ]
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            children: [
+                              i.jsx("label", { className: "block font-bold mb-1.5", children: "মেটাডাটা উপাদানসমূহ" }),
+                              i.jsxs("div", {
+                                className: "grid grid-cols-2 gap-2 bg-zinc-50 dark:bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800",
+                                children: [
+                                  i.jsxs("label", { className: "flex items-center space-x-1.5 cursor-pointer text-[11px]", children: [
+                                    i.jsx("input", { type: "checkbox", checked: showLocation, onChange: e => setShowLocation(e.target.checked), className: "rounded text-rose-600" }),
+                                    i.jsx("span", { children: "লোকেশন" })
+                                  ]}),
+                                  i.jsxs("label", { className: "flex items-center space-x-1.5 cursor-pointer text-[11px]", children: [
+                                    i.jsx("input", { type: "checkbox", checked: showAuthor, onChange: e => setShowAuthor(e.target.checked), className: "rounded text-rose-600" }),
+                                    i.jsx("span", { children: "প্রতিবেদক" })
+                                  ]}),
+                                  i.jsxs("label", { className: "flex items-center space-x-1.5 cursor-pointer text-[11px]", children: [
+                                    i.jsx("input", { type: "checkbox", checked: showDate, onChange: e => setShowDate(e.target.checked), className: "rounded text-rose-600" }),
+                                    i.jsx("span", { children: "তারিখ" })
+                                  ]}),
+                                  i.jsxs("label", { className: "flex items-center space-x-1.5 cursor-pointer text-[11px]", children: [
+                                    i.jsx("input", { type: "checkbox", checked: showCategory, onChange: e => setShowCategory(e.target.checked), className: "rounded text-rose-600" }),
+                                    i.jsx("span", { children: "ক্যাটাগরি ব্যাজ" })
+                                  ]})
+                                ]
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            className: "grid grid-cols-2 gap-2",
                             children: [
                               i.jsxs("div", {
                                 children: [
-                                  i.jsx("label", { className: "block font-bold text-zinc-700 dark:text-zinc-300 mb-1", children: "ক্যাটাগরি / টপিক" }),
-                                  i.jsx("input", { type: "text", value: customCategory, onChange: ev => setCustomCategory(ev.target.value), className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg outline-none" })
-                                ]
-                              }),
-                              i.jsxs("div", {
-                                children: [
-                                  i.jsx("label", { className: "block font-bold text-zinc-700 dark:text-zinc-300 mb-1", children: "স্লোগান / ট্যাগলাইন" }),
-                                  i.jsx("input", { type: "text", value: customSlogan, onChange: ev => setCustomSlogan(ev.target.value), placeholder: "বিপ্লবী শুভেচ্ছা ও লাল সালাম", className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg outline-none" })
-                                ]
-                              }),
-                              i.jsxs("div", {
-                                children: [
-                                  i.jsx("label", { className: "block font-bold text-zinc-700 dark:text-zinc-300 mb-1", children: "ফটো অবস্থান (Image Mode)" }),
-                                  i.jsxs("select", {
-                                    value: imagePosition,
-                                    onChange: ev => setImagePosition(ev.target.value),
-                                    className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-lg outline-none",
-                                    children: [
-                                      i.jsx("option", { value: "top", children: "শীর্ষে (Top Half)" }),
-                                      i.jsx("option", { value: "background", children: "ব্যাকগ্রাউন্ডে (Full Background)" }),
-                                      i.jsx("option", { value: "left", children: "বামে (Left Side)" }),
-                                      i.jsx("option", { value: "hidden", children: "লুকানো (Hidden)" })
-                                    ]
+                                  i.jsx("label", { className: "block font-bold mb-1", children: "স্থান (Location)" }),
+                                  i.jsx("input", {
+                                    type: "text",
+                                    value: customLocation,
+                                    onChange: e => setCustomLocation(e.target.value),
+                                    className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-lg outline-none"
                                   })
                                 ]
+                              }),
+                              i.jsxs("div", {
+                                children: [
+                                  i.jsx("label", { className: "block font-bold mb-1", children: "প্রতিবেদক (Reporter)" }),
+                                  i.jsx("input", {
+                                    type: "text",
+                                    value: customAuthor,
+                                    onChange: e => setCustomAuthor(e.target.value),
+                                    className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-lg outline-none"
+                                  })
+                                ]
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            children: [
+                              i.jsx("label", { className: "block font-bold mb-1", children: "স্লোগান / টপিক ব্যানার" }),
+                              i.jsx("input", {
+                                type: "text",
+                                value: customSlogan,
+                                onChange: e => setCustomSlogan(e.target.value),
+                                className: "w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-lg outline-none",
+                                placeholder: "উদাঃ বিপ্লবী লাল সালাম"
                               })
                             ]
                           })
                         ]
                       }),
-
-                      // TAB: DEBUG / SYSTEM METRICS
                       activeTab === "debug" && i.jsxs("div", {
-                        className: "space-y-3 font-mono text-[11px]",
+                        className: "space-y-3",
                         children: [
                           i.jsxs("div", {
-                            className: "p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1.5",
+                            className: "bg-zinc-100 dark:bg-zinc-900 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 text-[11px] space-y-1.5 font-mono",
                             children: [
-                              i.jsx("div", { className: "font-bold text-zinc-800 dark:text-zinc-200", children: "সিস্টেম মেট্রিক্স ও অবজেক্ট স্থানাঙ্ক" }),
-                              i.jsxs("div", { children: ["ক্যানভাস রেজোলিউশন: ", cvsWidth, " × ", cvsHeight] }),
-                              i.jsxs("div", { children: ["অবজেক্ট গণনা: ", canvasMetricsRef.current?.objectCount || 0] }),
-                              i.jsxs("div", { children: ["লেয়ার অর্ডার: ", (canvasMetricsRef.current?.layerOrder || []).join(" ➔ ")] }),
-                              i.jsxs("div", { children: ["অফসেট তালিকা: ", JSON.stringify(offsets)] })
+                              i.jsx("h4", { className: "font-black text-zinc-500 uppercase tracking-widest text-[10px] mb-2 border-b pb-1 font-sans", children: "ক্যানভাস ও রেন্ডারিং ডায়াগনস্টিকস" }),
+                              i.jsxs("div", { className: "flex justify-between", children: [i.jsx("span", { className: "text-zinc-500", children: "ক্যানভাস ডাইমেনশন:" }), i.jsx("span", { className: "font-bold", children: cvsWidth + "px × " + cvsHeight + "px" })] }),
+                              i.jsxs("div", { className: "flex justify-between", children: [i.jsx("span", { className: "text-zinc-500", children: "অ্যাসপেক্ট রেশিও:" }), i.jsx("span", { className: "font-bold", children: aspectRatio })] }),
+                              i.jsxs("div", { className: "flex justify-between", children: [i.jsx("span", { className: "text-zinc-500", children: "প্রিভিউ স্কেল সাইজ:" }), i.jsx("span", { className: "font-bold text-blue-600", children: previewBoxWidth + "px × " + previewBoxHeight + "px" })] }),
+                              i.jsxs("div", { className: "flex justify-between", children: [i.jsx("span", { className: "text-zinc-500", children: "সক্রিয় ফন্ট:" }), i.jsx("span", { className: "font-bold text-rose-600", children: fontFamily })] }),
+                              i.jsxs("div", { className: "flex justify-between", children: [i.jsx("span", { className: "text-zinc-500", children: "সিলেক্টেড উপাদান:" }), i.jsx("span", { className: "font-bold text-green-600", children: selectedElement })] }),
+                              i.jsxs("div", { className: "flex justify-between", children: [i.jsx("span", { className: "text-zinc-500", children: "মুভমেন্ট অফসেটস:" }), i.jsx("span", { className: "font-bold", children: JSON.stringify(offsets) })] })
                             ]
                           })
                         ]
@@ -5465,161 +5547,100 @@ function GQ({ item: n, onClose: e }) {
                   })
                 ]
               }),
-
-              // RIGHT PANEL (Canvas Preview, D-pad below Canvas, and Export Bar)
               i.jsxs("div", {
-                className: "lg:col-span-7 p-3 sm:p-5 flex flex-col items-center justify-start bg-zinc-100/90 dark:bg-zinc-900/60 lg:overflow-y-auto space-y-3 min-h-0 w-full",
+                className: "lg:col-span-7 bg-zinc-100 dark:bg-zinc-900/60 p-3 sm:p-5 flex flex-col justify-between items-center relative overflow-y-auto overflow-x-hidden max-h-[82vh] w-full max-w-full",
                 children: [
-                  // CANVAS PREVIEW CONTAINER
                   i.jsxs("div", {
-                    ref: canvasContainerRef,
-                    onClick: handleCanvasClick,
-                    className: "relative w-full max-w-lg mx-auto flex items-center justify-center select-none cursor-crosshair group rounded-xl overflow-hidden shadow-2xl bg-zinc-900",
+                    className: "w-full flex items-center justify-between mb-2 shrink-0 px-1",
                     children: [
-                      // SELECTION BOUNDING BOX
-                      activeCoords && activeCoords.w > 0 && i.jsxs("div", {
-                        style: {
-                          left: ((activeCoords.x / cvsWidth) * 100) + "%",
-                          top: ((activeCoords.y / cvsHeight) * 100) + "%",
-                          width: ((activeCoords.w / cvsWidth) * 100) + "%",
-                          height: ((activeCoords.h / cvsHeight) * 100) + "%"
-                        },
-                        className: "absolute border-2 border-dashed border-cyan-400 bg-cyan-400/10 pointer-events-none z-20 animate-in fade-in duration-150 transition-all select-none",
+                      i.jsxs("div", {
+                        className: "flex items-center space-x-2 truncate",
                         children: [
-                          i.jsx("div", { className: "absolute -top-1.5 -left-1.5 w-3 h-3 bg-cyan-400 border border-white rounded-full shadow-xs" }),
-                          i.jsx("div", { className: "absolute -top-1.5 -right-1.5 w-3 h-3 bg-cyan-400 border border-white rounded-full shadow-xs" }),
-                          i.jsx("div", { className: "absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-cyan-400 border border-white rounded-full shadow-xs" }),
-                          i.jsx("div", { className: "absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-cyan-400 border border-white rounded-full shadow-xs" }),
-                          i.jsxs("div", {
-                            className: "absolute -top-6 left-0 bg-cyan-500 text-black font-extrabold text-[9px] px-1.5 py-0.5 rounded shadow whitespace-nowrap flex items-center space-x-1",
-                            children: [
-                              i.jsx("span", { children: (selectedElementObj?.name || selectedElement) }),
-                              activeOffset && (activeOffset.x !== 0 || activeOffset.y !== 0) && i.jsx("span", { className: "opacity-80 font-mono", children: "(" + (activeOffset.x > 0 ? "+" + activeOffset.x : activeOffset.x) + "px, " + (activeOffset.y > 0 ? "+" + activeOffset.y : activeOffset.y) + "px)" })
-                            ]
-                          })
+                          i.jsx("span", { className: "w-2 h-2 rounded-full bg-green-500 shrink-0" }),
+                          i.jsx("span", { className: "text-[10px] sm:text-[11px] font-black text-zinc-600 dark:text-zinc-300 uppercase font-mono tracking-wider truncate", children: "লকড ক্যানভাস প্রিভিউ (Fixed Canvas)" })
                         ]
+                      }),
+                      i.jsx("span", {
+                        className: "text-[9px] sm:text-[10px] bg-white dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 shrink-0 ml-1",
+                        children: "উপাদান নির্বাচন করতে ক্লিক করুন"
                       })
                     ]
                   }),
-
-                  // 1-PIXEL D-PAD POSITION CONTROLS (PLACED DIRECTLY BELOW PREVIEW WINDOW)
-                  i.jsxs("div", {
-                    className: "w-full max-w-lg mx-auto bg-white dark:bg-zinc-950 p-3 sm:p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-md flex flex-col items-center space-y-2.5",
+                  renderError && i.jsxs("div", {
+                    className: "w-full bg-rose-50 dark:bg-rose-950/40 border border-rose-500 text-rose-800 dark:text-rose-200 p-2.5 rounded-xl text-xs mb-2",
                     children: [
-                      // Header with selected element name and step selector
-                      i.jsxs("div", {
-                        className: "w-full flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-900 text-xs",
-                        children: [
-                          i.jsxs("div", {
-                            className: "flex items-center space-x-1.5 truncate mr-2",
-                            children: [
-                              i.jsx("span", { className: "font-black text-zinc-800 dark:text-zinc-200 text-xs truncate", children: "পজিশন ডি-প্যাড:" }),
-                              i.jsx("span", { className: "font-bold text-rose-600 dark:text-rose-400 text-xs truncate", children: selectedElementObj?.name || selectedElement }),
-                              selectedElementObj?.locked && i.jsx("span", { className: "text-[9px] bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-1.5 py-0.5 rounded", children: "লকড" })
-                            ]
-                          }),
-                          i.jsxs("div", {
-                            className: "flex items-center space-x-1 shrink-0",
-                            children: [
-                              i.jsx("span", { className: "text-[10px] text-zinc-500 font-medium", children: "ধাপ:" }),
-                              [1, 5, 10, 20].map(sz => i.jsx("button", {
-                                key: sz,
-                                onClick: () => setStepSize(sz),
-                                className: "px-2 py-0.5 rounded text-[10px] font-mono cursor-pointer transition " + (stepSize === sz ? "bg-rose-600 text-white font-bold shadow-xs" : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300"),
-                                children: sz + "px"
-                              }))
-                            ]
-                          })
-                        ]
-                      }),
-
-                      // Layer selection chips for instant 1-click selection
-                      i.jsx("div", {
-                        className: "w-full flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5",
-                        children: layerElements.map(elem => {
-                          const isSelected = selectedElement === elem.id;
-                          const off = offsets[elem.id];
-                          const isMoved = off && (off.x !== 0 || off.y !== 0);
-                          return i.jsxs("button", {
-                            key: elem.id,
-                            onClick: () => setSelectedElement(elem.id),
-                            className: "px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 transition cursor-pointer flex items-center space-x-1 " + (isSelected ? "bg-rose-600 text-white shadow-sm" : isMoved ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800" : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300"),
-                            children: [
-                              i.jsx("span", { children: elem.name }),
-                              isMoved && i.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-amber-400" }),
-                              elem.locked && i.jsx("span", { className: "text-[9px] opacity-70", children: "🔒" })
-                            ]
-                          });
+                      i.jsx("strong", { children: "ত্রুটি: " }),
+                      renderError.message
+                    ]
+                  }),
+                  i.jsx("div", {
+                    ref: previewContainerRef,
+                    id: "photocard-preview-viewport",
+                    style: { touchAction: "pan-y" },
+                    className: "w-full max-w-full overflow-hidden flex-1 flex items-center justify-center p-2 min-h-[220px] select-none",
+                    children: i.jsxs("div", {
+                      id: "locked-canvas-stage",
+                      style: {
+                        width: previewBoxWidth + "px",
+                        height: previewBoxHeight + "px",
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        aspectRatio: internalWidth + " / " + internalHeight,
+                        touchAction: "none",
+                        userSelect: "none",
+                        WebkitUserSelect: "none",
+                        WebkitUserDrag: "none"
+                      },
+                      draggable: false,
+                      onDragStart: ev => ev.preventDefault(),
+                      onClick: handleCanvasClick,
+                      className: "relative shrink-0 shadow-2xl rounded-xl overflow-hidden border border-zinc-300 dark:border-zinc-700 bg-zinc-950 flex items-center justify-center cursor-pointer select-none",
+                      children: [
+                        i.jsx("canvas", {
+                          ref: canvasRef,
+                          draggable: false,
+                          onDragStart: ev => ev.preventDefault(),
+                          style: {
+                            width: "100%",
+                            height: "100%",
+                            pointerEvents: "none",
+                            userSelect: "none",
+                            WebkitUserDrag: "none",
+                            display: "block"
+                          },
+                          className: "w-full h-full object-contain pointer-events-none select-none block"
+                        }),
+                        isRendering && i.jsx("div", {
+                          className: "absolute inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-30 pointer-events-none",
+                          children: i.jsx("div", { className: "w-8 h-8 border-3 border-rose-500 border-t-transparent rounded-full animate-spin" })
+                        }),
+                        activeCoords && activeCoords.w > 0 && i.jsxs("div", {
+                          style: {
+                            left: ((activeCoords.x / cvsWidth) * 100) + "%",
+                            top: ((activeCoords.y / cvsHeight) * 100) + "%",
+                            width: ((activeCoords.w / cvsWidth) * 100) + "%",
+                            height: ((activeCoords.h / cvsHeight) * 100) + "%"
+                          },
+                          className: "absolute border-2 border-dashed border-cyan-400 bg-cyan-400/10 pointer-events-none z-20 animate-in fade-in duration-150 transition-all select-none",
+                          children: [
+                            i.jsx("div", { className: "absolute -top-1.5 -left-1.5 w-3 h-3 bg-cyan-400 border border-white rounded-full shadow-xs" }),
+                            i.jsx("div", { className: "absolute -top-1.5 -right-1.5 w-3 h-3 bg-cyan-400 border border-white rounded-full shadow-xs" }),
+                            i.jsx("div", { className: "absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-cyan-400 border border-white rounded-full shadow-xs" }),
+                            i.jsx("div", { className: "absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-cyan-400 border border-white rounded-full shadow-xs" }),
+                            i.jsxs("div", {
+                              className: "absolute -top-6 left-0 bg-cyan-500 text-black font-extrabold text-[9px] px-1.5 py-0.5 rounded shadow whitespace-nowrap flex items-center space-x-1",
+                              children: [
+                                i.jsx("span", { children: (layerElements.find(l => l.id === selectedElement)?.name || selectedElement) }),
+                                activeOffset && (activeOffset.x !== 0 || activeOffset.y !== 0) && i.jsx("span", { className: "opacity-80", children: "(" + activeOffset.x + "," + activeOffset.y + ")" })
+                              ]
+                            })
+                          ]
                         })
-                      }),
-
-                      // Coordinates readout
-                      i.jsxs("div", {
-                        className: "w-full flex items-center justify-between text-[11px] px-0.5",
-                        children: [
-                          i.jsx("span", { className: "text-zinc-500", children: "ক্যানভাসে ক্লিক করে বা বোতাম চেপে অবস্থান সরান:" }),
-                          i.jsxs("div", {
-                            className: "font-mono font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-900 px-2 py-0.5 rounded-md",
-                            children: ["X: ", (activeOffset.x > 0 ? "+" + activeOffset.x : activeOffset.x), "px | Y: ", (activeOffset.y > 0 ? "+" + activeOffset.y : activeOffset.y), "px"]
-                          })
-                        ]
-                      }),
-
-                      // The 4-Arrow D-Pad
-                      i.jsxs("div", {
-                        className: "relative w-36 h-36 flex items-center justify-center select-none my-1",
-                        children: [
-                          // UP
-                          i.jsx("button", {
-                            onClick: () => moveElement(0, -stepSize),
-                            disabled: selectedElementObj?.locked,
-                            className: "absolute top-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-95 disabled:opacity-40 disabled:pointer-events-none text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
-                            title: "উপরে " + stepSize + " পিক্সেল সরান",
-                            children: i.jsx("svg", { className: "w-5 h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M12 19V5M5 12l7-7 7 7" })] })
-                          }),
-                          // LEFT
-                          i.jsx("button", {
-                            onClick: () => moveElement(-stepSize, 0),
-                            disabled: selectedElementObj?.locked,
-                            className: "absolute left-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-95 disabled:opacity-40 disabled:pointer-events-none text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
-                            title: "বামে " + stepSize + " পিক্সেল সরান",
-                            children: i.jsx("svg", { className: "w-5 h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M19 12H5M12 19l-7-7 7-7" })] })
-                          }),
-                          // CENTER RESET
-                          i.jsxs("button", {
-                            onClick: () => resetElementPosition(),
-                            disabled: selectedElementObj?.locked,
-                            className: "w-10 h-10 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-95 disabled:opacity-40 disabled:pointer-events-none text-zinc-700 dark:text-zinc-200 rounded-xl shadow-inner flex flex-col items-center justify-center transition cursor-pointer",
-                            title: "পজিশন রিসেট করুন",
-                            children: [
-                              i.jsx("svg", { className: "w-4 h-4", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8" }), i.jsx("path", { d: "M3 3v5h5" })] }),
-                              i.jsx("span", { className: "text-[7px] font-mono mt-0.5", children: "0,0" })
-                            ]
-                          }),
-                          // RIGHT
-                          i.jsx("button", {
-                            onClick: () => moveElement(stepSize, 0),
-                            disabled: selectedElementObj?.locked,
-                            className: "absolute right-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-95 disabled:opacity-40 disabled:pointer-events-none text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
-                            title: "ডানে " + stepSize + " পিক্সেল সরান",
-                            children: i.jsx("svg", { className: "w-5 h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M5 12h14M12 5l7 7-7 7" })] })
-                          }),
-                          // DOWN
-                          i.jsx("button", {
-                            onClick: () => moveElement(0, stepSize),
-                            disabled: selectedElementObj?.locked,
-                            className: "absolute bottom-0 w-11 h-11 bg-white hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-95 disabled:opacity-40 disabled:pointer-events-none text-zinc-800 dark:text-white rounded-xl shadow-md border border-zinc-200 dark:border-zinc-700 flex items-center justify-center transition cursor-pointer",
-                            title: "নিচে " + stepSize + " পিক্সেল সরান",
-                            children: i.jsx("svg", { className: "w-5 h-5", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2.5", children: [i.jsx("path", { d: "M12 5v14M5 12l7 7 7-7" })] })
-                          })
-                        ]
-                      })
-                    ]
+                      ]
+                    })
                   }),
-
-                  // EXPORT AND DOWNLOAD CONTROLS
                   i.jsxs("div", {
-                    className: "w-full max-w-lg mx-auto bg-white dark:bg-zinc-950 p-3 sm:p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-lg shrink-0 space-y-3",
+                    className: "w-full bg-white dark:bg-zinc-950 p-3 sm:p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-lg mt-3 shrink-0 space-y-3",
                     children: [
                       i.jsxs("div", {
                         className: "grid grid-cols-1 sm:grid-cols-2 gap-3 items-center",
@@ -5664,7 +5685,7 @@ function GQ({ item: n, onClose: e }) {
                           i.jsxs("button", {
                             onClick: renderLivePreview,
                             disabled: isRendering,
-                            className: "p-2.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center shrink-0 shadow-xs",
+                            className: "p-2.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 rounded-xl font-bold text-xs transition cursor-pointer flex items-center justify-center shrink-0",
                             title: "ক্যানভাস রিফ্রেশ করুন",
                             children: [
                               i.jsx("svg", { className: "w-4 h-4 " + (isRendering ? "animate-spin" : ""), viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", children: [i.jsx("path", { d: "M23 4v6h-6M1 20v-6h6" }), i.jsx("path", { d: "M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" })] })
@@ -5706,7 +5727,6 @@ function GQ({ item: n, onClose: e }) {
     ]
   });
 }
-
 function WQ({item:n,db:e,onClose:t,onRefresh:s,userEmail:r,onSelectItem:a,isVerifiedMember:l=!1}){const[d,u]=Q.useState(!1),[h,p]=Q.useState(!1),[m,x]=Q.useState(!1),[b,N]=Q.useState(""),[A,E]=Q.useState(""),[j,F]=Q.useState(""),[P,L]=Q.useState(!1),[Y,X]=Q.useState(!1),S=(()=>{var ae,W,V,$,te,ue,pe,be,Re,Le,$e,ct;if(!e)return null;switch(n.type){case"news":return((ae=e.news)==null?void 0:ae.find(dt=>dt.id===n.id))||null;case"blog":case"blogs":return((W=e.blogs)==null?void 0:W.find(dt=>dt.id===n.id))||null;case"event":case"events":return((V=e.events)==null?void 0:V.find(dt=>dt.id===n.id))||null;case"publication":case"books":case"book":return(($=e.books)==null?void 0:$.find(dt=>dt.id===n.id))||null;case"circular":case"circulars":return((te=e.circulars)==null?void 0:te.find(dt=>dt.id===n.id))||null;case"media":case"gallery":return((ue=e.gallery)==null?void 0:ue.find(dt=>dt.id===n.id))||null;default:return((pe=e.news)==null?void 0:pe.find(dt=>dt.id===n.id))||((be=e.blogs)==null?void 0:be.find(dt=>dt.id===n.id))||((Re=e.events)==null?void 0:Re.find(dt=>dt.id===n.id))||((Le=e.books)==null?void 0:Le.find(dt=>dt.id===n.id))||(($e=e.circulars)==null?void 0:$e.find(dt=>dt.id===n.id))||((ct=e.gallery)==null?void 0:ct.find(dt=>dt.id===n.id))||null}})();Q.useEffect(()=>{window.scrollTo({top:0,left:0,behavior:"instant"})},[n.id,n.type]),Q.useEffect(()=>{const ae=JSON.parse(localStorage.getItem("ssf_bookmarks")||"[]");p(ae.some(W=>W.id===n.id&&W.type===n.type))},[n.id,n.type]);const I=(()=>{var V,$,te,ue,pe,be;if(!S)return null;const ae="https://i.ibb.co.com/F4MKM3R2/20260527-055637.png",W=n.type;return W==="news"?{id:S.id,type:"news",title:S.title,content:S.content,excerpt:S.excerpt||((V=S.content)==null?void 0:V.slice(0,150))+"...",image:S.image||ae,date:S.date,author:S.author||"সমাজতান্ত্রিক ছাত্র ফ্রন্ট",category:(($=S.category)==null?void 0:$.replace("-"," "))||"সংবাদপত্রক",tags:S.tags||[],views:S.views||0,pdfUrl:S.pdfUrl,location:"ময়মনসিংহ"}:W==="blog"||W==="blogs"?{id:S.id,type:"blog",title:S.title,content:S.content,excerpt:S.excerpt||((te=S.content)==null?void 0:te.slice(0,150))+"...",image:S.image||ae,date:S.date,author:S.author||"কমরেড",category:S.category||"রাজনৈতিক নিবন্ধ",tags:S.tags||[],views:S.views||0,pdfUrl:S.pdfUrl,location:"ময়মনসিংহ"}:W==="event"||W==="events"?{id:S.id,type:"event",title:S.title,content:S.description||"",excerpt:((ue=S.description)==null?void 0:ue.slice(0,150))+"...",image:S.image||ae,date:S.date,time:S.time||"বিকালে",venue:S.venue||"জেলা কার্যালয়, ময়মনসিংহ",author:"ময়মনসিংহ জেলা শাখা",category:"কর্মসূচী ও প্রতিবাদী সমাবেশ",tags:["আন্দোলন","কর্মী সভা","ময়মনসিংহ"],views:S.views||0,pdfUrl:null,location:S.venue||"ময়মনসিংহ"}:W==="publication"||W==="books"||W==="book"?{id:S.id,type:"publication",title:S.title,content:S.description||"",excerpt:((pe=S.description)==null?void 0:pe.slice(0,150))+"...",image:S.coverImage||S.coverUrl||ae,date:S.date||"২০২৬",author:S.author||"সমাজতান্ত্রিক ছাত্র ফ্রন্ট প্রকাশনা",category:S.type||"বই ও ই-পুস্তক",tags:["তাত্ত্বিক শিক্ষা","মার্ক্সবাদ","প্রকাশনা"],views:S.views||0,pdfUrl:S.pdfUrl,location:"ময়মনসিংহ",downloadCount:S.downloadCount||0}:W==="circular"||W==="circulars"?{id:S.id,type:"circular",title:S.title,content:S.content||"",excerpt:((be=S.content)==null?void 0:be.slice(0,150))+"...",image:S.image||ae,date:S.date,author:"ময়মনসিংহ জেলা সংসদ",category:S.category||"অফিসিয়াল নোটিশ",tags:["গুরুত্বপূর্ণ নোটিশ","রেজোলিউশন"],views:S.views||0,pdfUrl:S.pdfUrl,location:"ময়মনসিংহ"}:W==="media"||W==="gallery"?{id:S.id,type:"media",title:S.title,content:S.title||"",excerpt:S.title,image:S.type==="photo"||S.type==="poster"?S.url:ae,date:S.date,author:"মিডিয়া সেল",category:S.type||"ফটোগ্রাফি",tags:["গ্যালারি","ছবি ও পোস্টার"],views:S.views||0,pdfUrl:null,mediaType:S.type,mediaUrl:S.url,location:"ময়মনসিংহ"}:null})();if(Q.useEffect(()=>{var te;if(!I)return;(async()=>{try{const ue=n.type==="blogs"?"blogs":n.type==="books"?"books":n.type==="circulars"?"circulars":n.type==="gallery"?"gallery":n.type==="events"?"events":n.type,pe=Number(S.views||0),be={...S,views:pe+1};await yn(ue,n.id,be),s&&s()}catch(ue){console.warn("View count auto increment sync skipped:",ue)}})();const W=`${I.title} | সমাজতান্ত্রিক ছাত্র ফ্রন্ট`,V=I.excerpt||((te=I.content)==null?void 0:te.slice(0,150)),$=`${window.location.origin}/${I.type}/${I.id}`;window.history.replaceState(null,"",`/${I.type}/${I.id}`),gd({title:W,description:V,image:I.image,type:"article",url:$})},[n.id,n.type]),!S||!I)return i.jsxs("div",{className:"max-w-xl mx-auto my-20 p-8 border border-amber-200 bg-amber-50 text-amber-800 text-center rounded space-y-4 font-sans",children:[i.jsx("p",{className:"font-bold text-lg",children:"আইটেমটি খুঁজে পাওয়া যায়নি!"}),i.jsx("p",{className:"text-xs text-amber-700",children:"অনুরোধকৃত কন্টেন্ট অথবা আইডি ডাটাবেজে অনুপস্থিত রয়েছে।"}),i.jsx("button",{onClick:t,className:"px-4 py-2 bg-zinc-900 text-white rounded text-xs transition hover:bg-zinc-800",children:"আগের পাতায় ফিরে যান"})]});const C=()=>{const ae=JSON.parse(localStorage.getItem("ssf_bookmarks")||"[]");if(h){const W=ae.filter(V=>!(V.id===n.id&&V.type===n.type));localStorage.setItem("ssf_bookmarks",JSON.stringify(W)),p(!1)}else ae.push({id:n.id,type:n.type,title:I.title,date:I.date}),localStorage.setItem("ssf_bookmarks",JSON.stringify(ae)),p(!0)},T=()=>{const ae=`${window.location.origin}/${I.type}/${I.id}`;navigator.clipboard.writeText(ae),u(!0),setTimeout(()=>u(!1),2e3)},B=()=>{window.print()},K=async ae=>{if(ae.preventDefault(),!(!b||!j)){L(!0);try{const W={id:"comm_"+Math.random().toString(36).substr(2,9),name:b,email:A||"anonymous@ssf.org",text:j,date:new Date().toISOString().split("T")[0],approved:!1},V=S.comments||[],$={...S,comments:[...V,W]},te=n.type==="blogs"?"blogs":n.type==="books"?"books":n.type==="circulars"?"circulars":n.type==="gallery"?"gallery":n.type==="events"?"events":n.type;await yn(te,n.id,$),X(!0),F(""),s&&s()}catch(W){console.error("Comment save failed:",W)}finally{L(!1)}}},he=I.content?I.content.split(/\s+/).length:0,ee=Math.max(1,Math.ceil(he/150)),ie=(()=>{if(!e)return[];let ae=[];return I.type==="news"?ae=e.news||[]:I.type==="blog"?ae=e.blogs||[]:I.type==="event"?ae=e.events||[]:I.type==="publication"?ae=e.books||[]:I.type==="circular"?ae=e.circulars||[]:I.type==="media"&&(ae=e.gallery||[]),ae.filter(W=>W.id!==I.id).slice(0,3)})(),ge=ae=>{if(!ae)return null;const W=/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/,V=ae.match(W);return V&&V[2].length===11?V[2]:null};return i.jsxs("div",{className:"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-sans",children:[i.jsxs("nav",{className:"flex items-center space-x-2 text-xs text-zinc-500 dark:text-zinc-400 mb-6 border-b border-zinc-150/50 dark:border-zinc-800/50 pb-3 select-none",children:[i.jsx("button",{onClick:t,className:"hover:text-rose-600 font-bold transition",children:"হোম"}),i.jsx("span",{children:"/"}),i.jsx("span",{className:"capitalize",children:I.type==="news"?"বার্তা ও খবর":I.type==="blog"?"নিবন্ধ ও কলাম":I.type==="event"?"কর্মসূচী ও প্রতিবাদ":I.type==="publication"?"প্রকাশনা সেল":I.type==="circular"?"সার্কুলার ও নোটিশ":"মিডিয়া সেন্টার"}),i.jsx("span",{children:"/"}),i.jsx("span",{className:"text-zinc-800 dark:text-zinc-200 truncate font-semibold max-w-[280px]",children:I.title})]}),i.jsxs("div",{className:"flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8",children:[i.jsxs("button",{onClick:t,className:"inline-flex items-center space-x-1.5 text-zinc-650 hover:text-rose-600 transition font-semibold text-xs border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-sm bg-white dark:bg-zinc-950 shadow-xs cursor-pointer",children:[i.jsx(D5,{className:"w-4 h-4"}),i.jsx("span",{children:"তালিকায় ফিরে যান"})]}),i.jsxs("div",{className:"flex flex-wrap items-center gap-2",children:[i.jsxs("button",{onClick:B,className:"p-1.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded text-zinc-600 dark:text-zinc-350 hover:text-rose-600 transition shadow-xs text-xs flex items-center gap-1.5 cursor-pointer",title:"পৃষ্ঠাটি প্রিন্ট করুন",children:[i.jsx(ER,{className:"w-4 h-4"}),i.jsx("span",{className:"hidden sm:inline",children:"প্রিন্ট"})]}),i.jsxs("button",{onClick:C,className:`p-1.5 border rounded text-xs flex items-center gap-1.5 transition shadow-xs cursor-pointer ${h?"bg-rose-50 border-rose-200 text-rose-600 dark:bg-rose-950/20 dark:border-rose-900/40":"bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-650 dark:text-zinc-300 hover:text-rose-600"}`,title:h?"বুকমার্ক থেকে মুছুন":"বুকমার্ক করুন",children:[i.jsx(lE,{className:`w-4 h-4 ${h?"fill-current":""}`}),i.jsx("span",{children:h?"বুকমার্কড":"বুকমার্ক"})]}),i.jsxs("button",{onClick:()=>x(!0),className:"p-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs font-bold flex items-center gap-1.5 transition shadow cursor-pointer uppercase tracking-wider",children:[i.jsx(nh,{className:"w-4 h-4"}),i.jsx("span",{children:"ফটো কার্ড তৈরি করুন"})]})]})]}),i.jsxs("div",{className:"grid grid-cols-1 lg:grid-cols-12 gap-8 items-start",children:[i.jsxs("div",{className:"lg:col-span-8 bg-white dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-900 rounded p-5 sm:p-9 shadow-xs",children:[i.jsxs("div",{className:"flex items-center gap-2.5 mb-4",children:[i.jsx("span",{className:"text-xs font-bold tracking-widest text-rose-600 bg-rose-50 dark:bg-rose-950/40 dark:text-rose-400 px-2.5 py-1 rounded",children:I.category}),ee>0&&i.jsxs("span",{className:"text-[11px] text-zinc-400 font-mono",children:[ee," মিনিট পড়ার সময় (",he," শব্দ)"]})]}),i.jsx("h1",{className:"text-2xl sm:text-4xl font-extrabold text-zinc-950 dark:text-white leading-tight mb-5",children:I.title}),i.jsxs("div",{className:"flex flex-wrap items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400 border-b border-zinc-150 dark:border-zinc-900 pb-5 mb-6 font-sans",children:[i.jsxs("span",{className:"flex items-center space-x-1",children:[i.jsx(Ml,{className:"w-3.5 h-3.5 text-rose-500"}),i.jsxs("span",{children:["লেখক/প্রতিবেদক: ",i.jsx("strong",{className:"text-zinc-850 dark:text-zinc-250 font-bold",children:I.author})]})]}),i.jsx("span",{children:"•"}),i.jsxs("span",{className:"flex items-center space-x-1",children:[i.jsx(dd,{className:"w-3.5 h-3.5 text-rose-500"}),i.jsxs("span",{children:["তারিখ: ",I.date]})]}),i.jsx("span",{children:"•"}),i.jsxs("span",{className:"flex items-center space-x-1",children:[i.jsx(d1,{className:"w-3.5 h-3.5 text-rose-500"}),i.jsxs("span",{className:"font-mono",children:["পঠিত: ",Number(I.views)*7+3," বার"]})]}),I.downloadCount!==void 0&&i.jsxs(i.Fragment,{children:[i.jsx("span",{children:"•"}),i.jsxs("span",{className:"flex items-center space-x-1",children:[i.jsx(yu,{className:"w-3.5 h-3.5 text-rose-500"}),i.jsxs("span",{className:"font-mono",children:["ডাউনলোড: ",I.downloadCount," বার"]})]})]})]}),I.type==="media"&&(I.mediaType==="video"||I.mediaType==="audio")&&i.jsx("div",{className:"w-full mb-8 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-black shadow-lg",children:I.mediaType==="video"?ge(I.mediaUrl||"")?i.jsx("div",{className:"aspect-video w-full",children:i.jsx("iframe",{src:`https://www.youtube.com/embed/${ge(I.mediaUrl||"")}`,title:I.title,frameBorder:"0",allow:"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",allowFullScreen:!0,className:"w-full h-full"})}):i.jsx("video",{src:I.mediaUrl,controls:!0,className:"w-full max-h-[480px]"}):i.jsxs("div",{className:"p-6 bg-zinc-950 text-white flex flex-col items-center justify-center",children:[i.jsx("div",{className:"w-20 h-20 rounded-full border border-zinc-800 bg-zinc-900 flex items-center justify-center mb-4",children:i.jsx(F5,{className:"w-8 h-8 text-rose-500 animate-pulse"})}),i.jsx("audio",{src:I.mediaUrl,controls:!0,className:"w-full max-w-md mx-auto"})]})}),I.image&&I.mediaType!=="video"&&I.mediaType!=="audio"&&i.jsx("div",{className:"relative aspect-[16/9] mb-8 rounded overflow-hidden border border-zinc-150 dark:border-zinc-850 bg-zinc-50 dark:bg-zinc-900 group",children:i.jsx("img",{src:I.image,alt:I.title,referrerPolicy:"no-referrer",className:"w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.01]"})}),i.jsx("article",{className:"prose dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 leading-relaxed text-sm sm:text-base space-y-4 whitespace-pre-line text-left",children:I.content}),I.pdfUrl&&I.pdfUrl!=="#"&&i.jsxs("div",{className:"mt-8 p-5 bg-rose-50/25 dark:bg-zinc-900/40 border border-rose-100 dark:border-zinc-800/80 rounded flex flex-col sm:flex-row items-center justify-between gap-4",children:[i.jsxs("div",{className:"flex items-center gap-3 text-left",children:[i.jsx("div",{className:"p-3 bg-rose-600 rounded text-white text-xs font-bold uppercase tracking-wider",children:"PDF"}),i.jsxs("div",{children:[i.jsx("h4",{className:"text-xs font-bold text-zinc-900 dark:text-zinc-100",children:"অফিসিয়াল নথিপত্র এবং পিডিএফ ফাইল"}),i.jsx("p",{className:"text-[10px] text-zinc-500 mt-0.5",children:"সহজে অফলাইনে পড়তে অথবা সংগ্রহে রাখতে ডাউলোড করুন।"})]})]}),i.jsxs("div",{className:"flex items-center gap-2 w-full sm:w-auto",children:[i.jsx("a",{href:I.pdfUrl,target:"_blank",rel:"noopener noreferrer",className:"flex-1 text-center sm:flex-none px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded shadow transition text-nowrap select-none",children:"পিডিএফ দেখুন"}),i.jsx("a",{href:I.pdfUrl,download:!0,className:"flex-1 text-center sm:flex-none px-4 py-2 bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 text-white text-xs font-bold rounded border border-zinc-700 shadow transition text-nowrap",children:"ডাউনলোড"})]})]}),I.type==="event"&&i.jsxs("div",{className:"mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4",children:[i.jsxs("div",{className:"p-4 border border-zinc-150 dark:border-zinc-900 bg-zinc-50/30 dark:bg-zinc-950/20 rounded flex items-start gap-3 text-left",children:[i.jsx(dh,{className:"w-5 h-5 text-rose-600 shrink-0 mt-0.5"}),i.jsxs("div",{children:[i.jsx("h4",{className:"text-xs font-bold text-zinc-850 dark:text-white",children:"ভেন্যু এবং এলাকা"}),i.jsx("p",{className:"text-xs text-zinc-500 mt-0.5",children:I.venue})]})]}),i.jsxs("div",{className:"p-4 border border-zinc-150 dark:border-zinc-900 bg-zinc-50/30 dark:bg-zinc-950/20 rounded flex items-start gap-3 text-left",children:[i.jsx(Oo,{className:"w-5 h-5 text-rose-600 shrink-0 mt-0.5"}),i.jsxs("div",{children:[i.jsx("h4",{className:"text-xs font-bold text-zinc-850 dark:text-white",children:"তারিখ ও সময়সূচী"}),i.jsxs("p",{className:"text-xs text-zinc-500 mt-0.5",children:[I.date," (",I.time,")"]})]})]})]}),I.tags&&I.tags.length>0&&i.jsx("div",{className:"mt-8 pt-6 border-t border-zinc-150 dark:border-zinc-900 flex flex-wrap gap-2",children:I.tags.map((ae,W)=>i.jsxs("span",{className:"inline-flex items-center space-x-1 text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900 px-2.5 py-1 rounded",children:[i.jsx(DS,{className:"w-3 h-3 text-rose-600"}),i.jsx("span",{children:ae})]},W))}),i.jsxs("div",{className:"mt-12 border-t border-zinc-150 dark:border-zinc-900 pt-8",children:[i.jsxs("h3",{className:"text-lg font-bold text-zinc-950 dark:text-white mb-6 flex items-center space-x-2 text-left",children:[i.jsx(mR,{className:"w-5 h-5 text-rose-600"}),i.jsxs("span",{children:["মন্তব্য এবং প্রতিক্রিয়া (",S.comments?S.comments.filter(ae=>ae.approved||r).length:0,")"]})]}),i.jsx("div",{className:"space-y-4 mb-8",children:S.comments&&S.comments.length>0?S.comments.filter(ae=>ae.approved||r).map((ae,W)=>i.jsxs("div",{className:`p-4 rounded border text-left ${ae.approved?"bg-zinc-50/50 border-zinc-150 dark:bg-zinc-900/30 dark:border-zinc-850":"bg-amber-50/40 border-amber-200 dark:bg-amber-950/10 dark:border-amber-900/30"}`,children:[i.jsxs("div",{className:"flex items-center justify-between mb-2",children:[i.jsx("span",{className:"text-xs font-bold text-zinc-800 dark:text-zinc-100",children:ae.name}),i.jsxs("div",{className:"flex items-center space-x-2 text-[10px] text-zinc-400 font-mono",children:[i.jsx("span",{children:ae.date}),!ae.approved&&i.jsx("span",{className:"text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-1 rounded",children:"মডারেশনাধীন"})]})]}),i.jsx("p",{className:"text-xs leading-relaxed text-zinc-750 dark:text-zinc-300 whitespace-pre-line",children:ae.text})]},ae.id||W)):i.jsx("p",{className:"text-xs text-zinc-400 dark:text-zinc-500 text-center py-6",children:"এখনো কোনো প্রতিক্রিয়া বা তত্ত্বীয় মন্তব্য প্রদান করা হয়নি। প্রথম মন্তব্যটি আপনার হোক!"})}),i.jsxs("div",{className:"bg-zinc-50/30 dark:bg-zinc-900/20 border border-zinc-150 dark:border-zinc-900 p-5 rounded",children:[i.jsx("h4",{className:"text-xs font-bold text-zinc-900 dark:text-white mb-4 text-left",children:"মন্তব্য প্রদান করুন"}),Y?i.jsx("div",{className:"p-4 bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 text-rose-700 dark:text-rose-400 rounded text-center text-xs",children:"আপনার মন্তব্য সফলভাবে প্রেরণ করা হয়েছে। অ্যাডমিন মডারেশনের পর এটি প্রকাশ করা হবে। ধন্যবাদ!"}):i.jsxs("form",{onSubmit:K,className:"space-y-4 text-left",children:[i.jsxs("div",{className:"grid grid-cols-1 sm:grid-cols-2 gap-4",children:[i.jsxs("div",{children:[i.jsx("label",{className:"block text-[10px] font-bold text-zinc-500 mb-1",children:"আপনার নাম *"}),i.jsx("input",{type:"text",required:!0,value:b,onChange:ae=>N(ae.target.value),className:"w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-1.5 text-xs outline-none",placeholder:"উদাঃ কমরেড জয়"})]}),i.jsxs("div",{children:[i.jsx("label",{className:"block text-[10px] font-bold text-zinc-500 mb-1",children:"ইমেইল (গোপন থাকবে)"}),i.jsx("input",{type:"email",value:A,onChange:ae=>E(ae.target.value),className:"w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-1.5 text-xs outline-none",placeholder:"ssfmym@gmail.com"})]})]}),i.jsxs("div",{children:[i.jsx("label",{className:"block text-[10px] font-bold text-zinc-500 mb-1",children:"মন্তব্য *"}),i.jsx("textarea",{required:!0,rows:4,value:j,onChange:ae=>F(ae.target.value),className:"w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-1.5 text-xs outline-none",placeholder:"আপনার গঠনমূলক রাজনৈতিক ও সাংগঠনিক পর্যালোচনা বা সংহতি জানান..."})]}),i.jsxs("button",{type:"submit",disabled:P,className:"px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs font-bold transition shadow-xs flex items-center space-x-1.5 cursor-pointer disabled:opacity-50",children:[i.jsx(u1,{className:"w-3.5 h-3.5"}),i.jsx("span",{children:"প্রেরণ করুন"})]})]})]})]})]}),i.jsxs("div",{className:"lg:col-span-4 space-y-6",children:[i.jsxs("div",{className:"bg-white dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-900 rounded p-5 shadow-xs text-left",children:[i.jsx("h3",{className:"text-xs font-bold text-zinc-900 dark:text-white mb-3 tracking-widest uppercase",children:"শেয়ার এবং প্রচার"}),i.jsxs("div",{className:"grid grid-cols-2 gap-2 text-xs",children:[i.jsxs("a",{href:`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window<"u"?`${window.location.origin}/${I.type}/${I.id}`:"")}`,target:"_blank",rel:"noopener noreferrer",className:"inline-flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#1877F2] hover:bg-[#166FE5] text-white rounded font-bold transition-all shadow-xs",children:[i.jsx(_0,{className:"w-4 h-4"}),i.jsx("span",{children:"Facebook"})]}),i.jsxs("a",{href:`https://twitter.com/intent/tweet?text=${encodeURIComponent(I.title)}&url=${encodeURIComponent(typeof window<"u"?`${window.location.origin}/${I.type}/${I.id}`:"")}`,target:"_blank",rel:"noopener noreferrer",className:"inline-flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#1DA1F2] hover:bg-[#1a91da] text-white rounded font-bold transition-all shadow-xs",children:[i.jsx(S0,{className:"w-4 h-4"}),i.jsx("span",{children:"Twitter / X"})]}),i.jsxs("a",{href:`https://api.whatsapp.com/send?text=${encodeURIComponent(I.title+" "+(typeof window<"u"?`${window.location.origin}/${I.type}/${I.id}`:""))}`,target:"_blank",rel:"noopener noreferrer",className:"inline-flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded font-bold transition-all shadow-xs col-span-2",children:[i.jsx(ru,{className:"w-4 h-4"}),i.jsx("span",{children:"WhatsApp এ শেয়ার করুন"})]}),i.jsxs("button",{onClick:T,className:"inline-flex items-center justify-center space-x-1.5 px-3 py-2 bg-zinc-150 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-850 text-zinc-800 dark:text-zinc-200 rounded font-bold transition-all cursor-pointer col-span-2 mt-1",children:[d?i.jsx(Lo,{className:"w-4 h-4 text-emerald-600"}):i.jsx(th,{className:"w-4 h-4"}),i.jsx("span",{children:d?"লিঙ্ক কপি হয়েছে!":"শেয়ার লিঙ্ক কপি করুন"})]})]})]}),i.jsxs("div",{className:"bg-gradient-to-br from-rose-900/10 to-amber-950/10 dark:from-rose-950/40 dark:to-zinc-950 border border-rose-200/50 dark:border-rose-900/30 rounded p-5 shadow-sm text-left relative overflow-hidden group",children:[i.jsx("div",{className:"absolute right-[-15px] bottom-[-15px] text-rose-500/10 group-hover:scale-110 transition-transform duration-500",children:i.jsx(nh,{className:"w-28 h-28"})}),i.jsxs("h3",{className:"text-sm font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5",children:[i.jsx(nh,{className:"w-4.5 h-4.5 animate-spin duration-3000"}),i.jsx("span",{children:"বিপ্লবী গ্রাফিক ফটো কার্ড"})]}),i.jsx("p",{className:"text-[11px] text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed",children:"এই প্রতিবেদনের একটি দৃষ্টিনন্দন ও তথ্যবহুল সোশাল মিডিয়া গ্রাফিক ইমেজ স্বয়ংক্রিয়ভাবে জেনারেট করুন। ফেসবুক কিংবা হোয়াটস্যাপে দ্রুত প্রচারে ব্যবহার্য।"}),i.jsxs("button",{onClick:()=>x(!0),className:"mt-4 w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 shadow",children:[i.jsx(nh,{className:"w-3.5 h-3.5"}),i.jsx("span",{children:"কার্ড মেকার শুরু করুন"})]})]}),ie.length>0&&i.jsxs("div",{className:"bg-white dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-900 rounded p-5 shadow-xs text-left",children:[i.jsx("h3",{className:"text-xs font-bold text-zinc-900 dark:text-white mb-4 tracking-widest uppercase border-b pb-2 border-zinc-100 dark:border-zinc-900",children:"সংশ্লিষ্ট অন্যান্য পোস্ট"}),i.jsx("div",{className:"space-y-4",children:ie.map(ae=>i.jsxs("div",{onClick:()=>a(n.type,ae.id),className:"group flex gap-3 cursor-pointer items-start",children:[i.jsx("div",{className:"h-12 w-20 bg-zinc-100 dark:bg-zinc-900 rounded overflow-hidden shrink-0 border border-zinc-150 dark:border-zinc-900",children:i.jsx("img",{src:ae.image||ae.coverImage||ae.coverUrl||"https://i.ibb.co.com/F4MKM3R2/20260527-055637.png",alt:ae.title,referrerPolicy:"no-referrer",className:"w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"})}),i.jsxs("div",{className:"flex-grow min-w-0",children:[i.jsx("h4",{className:"text-xs font-bold text-zinc-900 dark:text-white line-clamp-2 leading-tight group-hover:text-rose-600 transition",children:ae.title}),i.jsx("span",{className:"text-[10px] text-zinc-450 mt-1 block font-mono",children:ae.date})]})]},ae.id))})]})]})]}),i.jsx(Na,{children:m&&i.jsx(GQ,{item:I,onClose:()=>x(!1)})})]})}function YQ({isOpen:n,setIsOpen:e}){var Et;const[t,s]=Q.useState(!1),[r,a]=Q.useState("bottom"),[l,d]=Q.useState("logs"),[u,h]=Q.useState([]),[p,m]=Q.useState([]),[x,b]=Q.useState([]),[N,A]=Q.useState(null),[E,j]=Q.useState([]),[F,P]=Q.useState(!1),[L,Y]=Q.useState(!0),[X,U]=Q.useState(""),[S,R]=Q.useState("ALL"),[I,C]=Q.useState("ALL"),[T,B]=Q.useState(null),[K,he]=Q.useState(null),[ee,ne]=Q.useState("MemberCardRenderer.ts"),[ie,ge]=Q.useState(1),[ae,W]=Q.useState({x:100,y:100}),[V,$]=Q.useState({width:800,height:450}),te=Q.useRef(!1);Q.useRef(!1);const ue=Q.useRef({x:0,y:0}),pe=Q.useRef({x:0,y:0});Q.useRef({width:0,height:0});const be=Q.useRef(null),Re=Q.useRef(null);Q.useEffect(()=>{},[]),Q.useEffect(()=>{h($i.getLogs()),m($i.getNetworkRequests()),b($i.getImages()),A($i.getCanvasInfo()),j($i.getMemoryHistory());const Me=$i.subscribeLogs(()=>{F||h([...$i.getLogs()])}),tt=$i.subscribeNetwork(()=>{F||m([...$i.getNetworkRequests()])}),Gt=$i.subscribeImages(()=>{F||b([...$i.getImages()])}),ve=$i.subscribeCanvas(()=>{A($i.getCanvasInfo())}),ke=$i.subscribeMemory(()=>{const we=$i.getMemoryHistory();j([...we])});return()=>{Me(),tt(),Gt(),ve(),ke()}},[F]),Q.useEffect(()=>{L&&be.current&&be.current.scrollIntoView({behavior:"smooth"})},[u,L,l]),Q.useEffect(()=>{if(l!=="memory"||!Re.current||E.length===0)return;const Me=Re.current,tt=Me.getContext("2d");if(!tt)return;const Gt=document.documentElement.classList.contains("dark");tt.fillStyle=Gt?"#09090b":"#f4f4f5",tt.fillRect(0,0,Me.width,Me.height),tt.strokeStyle=Gt?"#18181b":"#e4e4e7",tt.lineWidth=1;for(let ke=1;ke<4;ke++){const we=Me.height/4*ke;tt.beginPath(),tt.moveTo(0,we),tt.lineTo(Me.width,we),tt.stroke()}Math.min(Me.width,E.length);const ve=Me.width/120;tt.strokeStyle="#10b981",tt.lineWidth=2,tt.beginPath(),E.forEach((ke,we)=>{const _e=we*ve,Ye=ke.usedJSHeapSize?ke.usedJSHeapSize/(ke.jsHeapSizeLimit||1e8):.2,rt=Me.height-Ye*Me.height*.8-10;we===0?tt.moveTo(_e,rt):tt.lineTo(_e,rt)}),tt.stroke(),tt.strokeStyle="#f43f5e",tt.lineWidth=1.5,tt.beginPath(),E.forEach((ke,we)=>{const _e=we*ve,Ye=(ke.fps||60)/60,rt=Me.height-Ye*Me.height*.7-15;we===0?tt.moveTo(_e,rt):tt.lineTo(_e,rt)}),tt.stroke(),tt.fillStyle=Gt?"#a1a1aa":"#71717a",tt.font="10px monospace",tt.fillText("FPS / JS Heap allocation History (120s Ticks)",10,20),tt.fillStyle="#10b981",tt.fillText("■ JS Heap Memory usage",10,35),tt.fillStyle="#f43f5e",tt.fillText("■ FPS Frame rate (60 Hz)",150,35)},[E,l]);const Le=Array.from(new Set(u.map(Me=>Me.module))),$e=u.filter(Me=>{const tt=Me.message.toLowerCase().includes(X.toLowerCase())||Me.module.toLowerCase().includes(X.toLowerCase())||Me.file&&Me.file.toLowerCase().includes(X.toLowerCase()),Gt=S==="ALL"||Me.level===S,ve=I==="ALL"||Me.module===I;return tt&&Gt&&ve}),ct=Me=>{switch(Me){case"TRACE":return"text-zinc-400 bg-zinc-950 border-zinc-900";case"DEBUG":return"text-sky-400 bg-sky-950/20 border-sky-900/40";case"INFO":return"text-blue-400 bg-blue-950/20 border-blue-900/40";case"SUCCESS":return"text-emerald-400 bg-emerald-950/20 border-emerald-900/40";case"WARNING":return"text-amber-400 bg-amber-950/20 border-amber-900/40";case"ERROR":return"text-orange-400 bg-orange-950/20 border-orange-900/40";case"CRITICAL":return"text-rose-400 bg-rose-950/20 border-rose-900/40 font-semibold";case"FATAL":return"text-red-100 bg-red-950 border-red-800 font-bold animate-pulse"}},dt=Me=>({System:"text-purple-400 bg-purple-950/25 border-purple-900/30","API Client":"text-pink-400 bg-pink-950/25 border-pink-900/30","Canvas Renderer":"text-teal-400 bg-teal-950/25 border-teal-900/30","Image Cache":"text-indigo-400 bg-indigo-950/25 border-indigo-900/30","Font Loader":"text-emerald-400 bg-emerald-950/25 border-emerald-900/30","MemberCard Renderer":"text-orange-400 bg-orange-950/25 border-orange-900/30",Authentication:"text-amber-400 bg-amber-950/25 border-amber-900/30",Exporter:"text-cyan-400 bg-cyan-950/25 border-cyan-900/30"})[Me]||"text-zinc-300 bg-zinc-900 border-zinc-800",St=()=>{$i.clearLogs(),h([]),m([]),b([]),A(null),B(null),he(null)},nt=()=>{const Me=u.map(tt=>`[${tt.timestamp.toISOString()}] [${tt.level}] [${tt.module}] ${tt.message}`).join(`
 `);navigator.clipboard.writeText(Me),alert("Logs copied to clipboard!")},ce=Me=>{const tt={browser:navigator.userAgent,viewport:`${window.innerWidth}x${window.innerHeight}`,os:navigator.platform,url:window.location.href,exportedAt:new Date().toISOString()};let Gt="",ve="text/plain",ke=`debug_report_${Date.now()}`;if(Me==="json")Gt=JSON.stringify({system:tt,logs:u,network:p,assets:x,canvas:N},null,2),ve="application/json",ke+=".json";else if(Me==="csv"){const rt=["ID","Timestamp","Level","Module","Message","File","Line"],pt=u.map(Nt=>[Nt.id,Nt.timestamp.toISOString(),Nt.level,Nt.module,Nt.message,Nt.file||"",Nt.line||""]);Gt=[rt.join(","),...pt.map(Nt=>Nt.map(Zt=>`"${String(Zt).replace(/"/g,'""')}"`).join(","))].join(`
 `),ve="text/csv",ke+=".csv"}else Gt=`=========================================
