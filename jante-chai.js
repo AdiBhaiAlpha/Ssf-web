@@ -12,6 +12,102 @@
   const categories = ['সব', 'রাজনীতি', 'শিক্ষা', 'সমাজ', 'অর্থনীতি', 'সংগঠন', 'আন্দোলন', 'ইতিহাস', 'আন্তর্জাতিক', 'অন্যান্য'];
 
   // ==========================================
+  // PROFESSIONAL THEME-AWARE SVG ICONS (Lucide/Heroicons Style)
+  // ==========================================
+  const JC_ICONS = {
+    plus: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14"/><path d="M12 5v14"/>
+      </svg>
+    `,
+    search: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+    `,
+    user: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+    `,
+    calendar: (cls = 'w-3.5 h-3.5') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>
+      </svg>
+    `,
+    messageSquare: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    `,
+    arrowUp: (cls = 'w-3.5 h-3.5') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m18 15-6-6-6 6"/>
+      </svg>
+    `,
+    flame: (cls = 'w-3.5 h-3.5') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+      </svg>
+    `,
+    logIn: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/>
+      </svg>
+    `,
+    lock: (cls = 'w-6 h-6') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    `,
+    trash: (cls = 'w-3.5 h-3.5') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>
+      </svg>
+    `,
+    penLine: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/><path d="m15 5 3 3"/>
+      </svg>
+    `,
+    inbox: (cls = 'w-6 h-6') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+      </svg>
+    `,
+    close: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+      </svg>
+    `,
+    arrowLeft: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+      </svg>
+    `,
+    arrowRight: (cls = 'w-3.5 h-3.5') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+      </svg>
+    `,
+    send: (cls = 'w-3.5 h-3.5') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+      </svg>
+    `,
+    helpCircle: (cls = 'w-4 h-4') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    `,
+    tag: (cls = 'w-3 h-3') => `
+      <svg xmlns="http://www.w3.org/2000/svg" class="${cls} shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/>
+      </svg>
+    `
+  };
+
+  // ==========================================
   // UNIFIED AUTHENTICATION HELPER
   // ==========================================
   function getCurrentUser() {
@@ -294,8 +390,8 @@
           
           <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
             <div>
-              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40 text-xs font-bold mb-2.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-rose-600 dark:bg-rose-400 animate-pulse"></span>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40 text-xs font-bold mb-2.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-600 dark:text-rose-400 animate-pulse"></span>
                 <span>গণতান্ত্রিক জিজ্ঞাসা ও মতবিনিময়</span>
               </div>
               <h2 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">জানতে চাই</h2>
@@ -304,20 +400,25 @@
 
             <div class="flex items-center gap-3 shrink-0">
               <button onclick="window.JC_openAskModal()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer">
-                <span>➕</span> প্রশ্ন করুন
+                ${JC_ICONS.plus('w-4 h-4')}
+                <span>প্রশ্ন করুন</span>
               </button>
               <button onclick="window.JC_navigateToQaTab()" class="px-4 py-2.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1.5">
                 <span>সব প্রশ্ন (${questionsData.length})</span>
-                <span>→</span>
+                ${JC_ICONS.arrowRight('w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500')}
               </button>
             </div>
           </div>
 
           ${recentQs.length === 0 ? `
             <div class="text-center py-10 bg-white dark:bg-zinc-900/80 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800">
+              <div class="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 mx-auto flex items-center justify-center mb-2">
+                ${JC_ICONS.inbox('w-5 h-5')}
+              </div>
               <p class="text-sm text-zinc-500 dark:text-zinc-400">এখনও কোনো প্রশ্ন করা হয়নি। আপনিই প্রথম প্রশ্নটি করুন!</p>
-              <button onclick="window.JC_openAskModal()" class="mt-3 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition cursor-pointer">
-                ➕ প্রশ্ন করুন
+              <button onclick="window.JC_openAskModal()" class="mt-3 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition cursor-pointer inline-flex items-center gap-1.5">
+                ${JC_ICONS.plus('w-3.5 h-3.5')}
+                <span>প্রশ্ন করুন</span>
               </button>
             </div>
           ` : `
@@ -333,20 +434,30 @@
                     <div>
                       <div class="flex items-center justify-between mb-2.5">
                         <div class="flex items-center gap-1.5">
-                          <span class="px-2.5 py-0.5 text-[11px] font-bold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-100/60 dark:border-rose-900/40 rounded-md">${escapeHtml(q.category || 'অন্যান্য')}</span>
+                          <span class="px-2.5 py-0.5 text-[11px] font-bold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-100/60 dark:border-rose-900/40 rounded-md inline-flex items-center gap-1">
+                            ${JC_ICONS.tag('w-2.5 h-2.5 opacity-75')}
+                            <span>${escapeHtml(q.category || 'অন্যান্য')}</span>
+                          </span>
                           ${isPopular ? `
-                            <span class="px-2 py-0.5 text-[10px] font-extrabold bg-amber-100/80 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 rounded-md inline-flex items-center gap-0.5">
-                              <span>🔥</span> <span>জনপ্রিয়</span>
+                            <span class="px-2 py-0.5 text-[10px] font-extrabold bg-amber-100/80 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 rounded-md inline-flex items-center gap-1">
+                              ${JC_ICONS.flame('w-3 h-3 text-amber-600 dark:text-amber-400')}
+                              <span>জনপ্রিয়</span>
                             </span>
                           ` : ''}
                         </div>
-                        <span class="text-[11px] text-zinc-400">${escapeHtml(q.createdAt || '')}</span>
+                        <span class="inline-flex items-center gap-1 text-[11px] text-zinc-400 dark:text-zinc-500">
+                          ${JC_ICONS.calendar('w-3 h-3')}
+                          <span>${escapeHtml(q.createdAt || '')}</span>
+                        </span>
                       </div>
                       <h3 class="font-bold text-sm md:text-base text-zinc-900 dark:text-zinc-100 mb-2 line-clamp-2 hover:text-rose-600 transition">${escapeHtml(q.title)}</h3>
                       <p class="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed mb-4">${escapeHtml(q.content)}</p>
                     </div>
                     <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500">
-                      <span class="font-medium text-zinc-700 dark:text-zinc-300 text-[11px]">👤 ${escapeHtml(q.author || 'সদস্য')}</span>
+                      <span class="inline-flex items-center gap-1.5 font-medium text-zinc-700 dark:text-zinc-300 text-[11px]">
+                        <span class="text-zinc-400 dark:text-zinc-500">${JC_ICONS.user('w-3 h-3')}</span>
+                        <span>${escapeHtml(q.author || 'সদস্য')}</span>
+                      </span>
                       <div class="flex items-center gap-1.5">
                         <!-- Upvote Button -->
                         <button 
@@ -354,11 +465,14 @@
                           class="jc-upvote-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${isUpvoted ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 shadow-2xs' : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700'}"
                           title="${isUpvoted ? 'আপভোট প্রত্যাহার করুন' : 'আপভোট দিন'}"
                         >
-                          <span class="${isUpvoted ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-zinc-500'}">▲</span>
+                          <span class="${isUpvoted ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-400 dark:text-zinc-500'}">
+                            ${JC_ICONS.arrowUp('w-3 h-3')}
+                          </span>
                           <span>${upvotes}</span>
                         </button>
                         <span class="inline-flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg text-[11px] font-semibold text-zinc-600 dark:text-zinc-300">
-                          💬 ${count}
+                          <span class="text-zinc-400 dark:text-zinc-500">${JC_ICONS.messageSquare('w-3 h-3')}</span>
+                          <span>${count}</span>
                         </span>
                       </div>
                     </div>
@@ -410,12 +524,14 @@
                 </div>
               ` : `
                 <button onclick="window.JC_promptLogin()" class="px-4 py-2.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 text-xs font-bold rounded-2xl shadow-2xs transition flex items-center justify-center gap-2 cursor-pointer">
-                  <span>🔑</span> লগইন করুন
+                  ${JC_ICONS.logIn('w-4 h-4 text-zinc-600 dark:text-zinc-300')}
+                  <span>লগইন করুন</span>
                 </button>
               `}
 
               <button onclick="window.JC_openAskModal()" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl shadow-sm hover:shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer">
-                <span>➕</span> আপনার প্রশ্ন করুন
+                ${JC_ICONS.plus('w-4 h-4')}
+                <span>আপনার প্রশ্ন করুন</span>
               </button>
             </div>
           </div>
@@ -425,15 +541,17 @@
         <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between bg-white dark:bg-zinc-900 p-3.5 md:p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs">
           <div class="w-full md:w-80 relative">
             <input type="text" id="jc-search-input" value="${escapeHtml(searchQuery)}" oninput="window.JC_setSearch(this.value)" placeholder="কী বিষয়ে জানতে চান? অনুসন্ধান করুন..." class="w-full pl-9 pr-4 py-2.5 text-xs md:text-sm bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-rose-600 focus:bg-white transition">
-            <span class="absolute left-3 top-2.5 text-zinc-400 text-sm">🔍</span>
+            <span class="absolute left-3 top-3 text-zinc-400 dark:text-zinc-500 pointer-events-none">
+              ${JC_ICONS.search('w-4 h-4')}
+            </span>
           </div>
 
           <div class="flex items-center gap-2 justify-between md:justify-end overflow-x-auto">
             <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 whitespace-nowrap">ক্রমবিন্যাস:</span>
             <select id="jc-sort-select" onchange="window.JC_setSort(this.value)" class="px-3 py-2 text-xs bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-800 dark:text-zinc-200 font-medium focus:outline-none focus:border-rose-600 cursor-pointer">
               <option value="latest" ${currentSort === 'latest' ? 'selected' : ''}>সর্বশেষ প্রশ্ন</option>
-              <option value="popular" ${currentSort === 'popular' ? 'selected' : ''}>🔥 সর্বাধিক আপভোট (জনপ্রিয়)</option>
-              <option value="discussed" ${currentSort === 'discussed' ? 'selected' : ''}>💬 সর্বাধিক আলোচিত</option>
+              <option value="popular" ${currentSort === 'popular' ? 'selected' : ''}>সর্বাধিক আপভোট (জনপ্রিয়)</option>
+              <option value="discussed" ${currentSort === 'discussed' ? 'selected' : ''}>সর্বাধিক আলোচিত</option>
             </select>
           </div>
         </div>
@@ -443,8 +561,9 @@
           ${categories.map(cat => {
             const isActive = currentFilter === cat;
             return `
-              <button onclick="window.JC_setFilter('${cat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${isActive ? 'bg-rose-600 text-white shadow-xs' : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-zinc-700'}">
-                ${cat}
+              <button onclick="window.JC_setFilter('${cat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer inline-flex items-center gap-1.5 ${isActive ? 'bg-rose-600 text-white shadow-xs' : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-zinc-700'}">
+                ${cat !== 'সব' ? JC_ICONS.tag('w-3 h-3 opacity-70') : ''}
+                <span>${cat}</span>
               </button>
             `;
           }).join('')}
@@ -454,13 +573,14 @@
         <div class="space-y-3.5">
           ${filtered.length === 0 ? `
             <div class="text-center py-16 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs p-6">
-              <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center text-2xl mb-3">
-                📭
+              <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center mb-3">
+                ${JC_ICONS.inbox('w-6 h-6')}
               </div>
               <h3 class="text-base font-bold text-zinc-800 dark:text-zinc-200">কোনো প্রশ্ন খুঁজে পাওয়া যায়নি</h3>
               <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">আপনার কাঙ্ক্ষিত বিষয়ে নতুন প্রশ্ন করে আলোচনা শুরু করুন।</p>
-              <button onclick="window.JC_openAskModal()" class="mt-4 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-xs cursor-pointer">
-                ➕ প্রশ্ন করুন
+              <button onclick="window.JC_openAskModal()" class="mt-4 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-xs cursor-pointer inline-flex items-center gap-2">
+                ${JC_ICONS.plus('w-4 h-4')}
+                <span>প্রশ্ন করুন</span>
               </button>
             </div>
           ` : filtered.map(q => {
@@ -473,16 +593,24 @@
               <div onclick="window.JC_openDetail('${q.id}')" class="jc-card ${isPopular ? 'bg-gradient-to-r from-amber-50/30 via-white to-white dark:from-amber-950/15 dark:via-zinc-900 dark:to-zinc-900 border-amber-200/90 dark:border-amber-900/40' : 'bg-white dark:bg-zinc-900 border-zinc-200/80 dark:border-zinc-800/90'} p-5 md:p-6 rounded-2xl border shadow-xs hover:border-rose-300 dark:hover:border-zinc-700 cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div class="space-y-2 flex-1">
                   <div class="flex items-center gap-2.5 flex-wrap">
-                    <span class="px-2.5 py-0.5 text-[11px] font-bold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-100/60 dark:border-rose-900/40 rounded-md">
-                      ${escapeHtml(q.category || 'অন্যান্য')}
+                    <span class="px-2.5 py-0.5 text-[11px] font-bold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-100/60 dark:border-rose-900/40 rounded-md inline-flex items-center gap-1">
+                      ${JC_ICONS.tag('w-2.5 h-2.5 opacity-75')}
+                      <span>${escapeHtml(q.category || 'অন্যান্য')}</span>
                     </span>
                     ${isPopular ? `
                       <span class="px-2.5 py-0.5 text-[11px] font-extrabold bg-amber-100/80 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 rounded-md inline-flex items-center gap-1 shadow-2xs">
-                        <span>🔥</span> <span>জনপ্রিয় প্রশ্ন</span>
+                        ${JC_ICONS.flame('w-3.5 h-3.5 text-amber-600 dark:text-amber-400')}
+                        <span>জনপ্রিয় প্রশ্ন</span>
                       </span>
                     ` : ''}
-                    <span class="text-xs text-zinc-400">📅 ${escapeHtml(q.createdAt || '')}</span>
-                    <span class="text-xs text-zinc-500 font-medium">👤 ${escapeHtml(q.author || 'সদস্য')}</span>
+                    <span class="inline-flex items-center gap-1 text-xs text-zinc-400 dark:text-zinc-500">
+                      ${JC_ICONS.calendar('w-3.5 h-3.5')}
+                      <span>${escapeHtml(q.createdAt || '')}</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs text-zinc-600 dark:text-zinc-400 font-medium">
+                      <span class="text-zinc-400 dark:text-zinc-500">${JC_ICONS.user('w-3.5 h-3.5')}</span>
+                      <span>${escapeHtml(q.author || 'সদস্য')}</span>
+                    </span>
                   </div>
 
                   <h2 class="text-base md:text-lg font-bold text-zinc-900 dark:text-zinc-100 hover:text-rose-600 transition leading-snug">
@@ -507,18 +635,21 @@
                     class="jc-upvote-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${isUpvoted ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 shadow-2xs' : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700'}"
                     title="${isUpvoted ? 'আপভোট প্রত্যাহার করুন' : 'প্রশ্নটিতে আপভোট দিন'}"
                   >
-                    <span class="text-sm leading-none ${isUpvoted ? 'text-rose-600 dark:text-rose-400 font-extrabold' : 'text-zinc-500'}">▲</span>
+                    <span class="${isUpvoted ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-500 dark:text-zinc-400'}">
+                      ${JC_ICONS.arrowUp('w-3.5 h-3.5')}
+                    </span>
                     <span>${upvotes}</span>
                     <span class="hidden sm:inline text-[11px] font-medium ${isUpvoted ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-500 dark:text-zinc-400'}">${isUpvoted ? 'সমর্থিত' : 'আপভোট'}</span>
                   </button>
 
                   <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    <span>💬</span>
+                    <span class="text-zinc-400 dark:text-zinc-500">${JC_ICONS.messageSquare('w-3.5 h-3.5')}</span>
                     <span>${count}টি উত্তর</span>
                   </span>
 
-                  <span class="text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1 hover:underline ml-1">
-                    আলোচনা →
+                  <span class="text-xs font-bold text-rose-600 dark:text-rose-400 inline-flex items-center gap-1 hover:underline ml-1">
+                    <span>আলোচনা</span>
+                    ${JC_ICONS.arrowRight('w-3.5 h-3.5')}
                   </span>
                 </div>
               </div>
@@ -537,9 +668,13 @@
     if (!q) {
       return `
         <div class="p-8 text-center max-w-md mx-auto my-12 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+          <div class="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 mx-auto flex items-center justify-center mb-3">
+            ${JC_ICONS.helpCircle('w-6 h-6')}
+          </div>
           <p class="text-zinc-600 dark:text-zinc-400 font-medium">প্রশ্নটি খুঁজে পাওয়া যায়নি বা মুছে ফেলা হয়েছে।</p>
-          <button onclick="window.JC_setTab('qa-list')" class="mt-4 px-5 py-2.5 bg-rose-600 text-white rounded-xl text-xs font-bold cursor-pointer">
-            ← প্রশ্নসমূহের তালিকায় ফিরে যান
+          <button onclick="window.JC_setTab('qa-list')" class="mt-4 px-5 py-2.5 bg-rose-600 text-white rounded-xl text-xs font-bold cursor-pointer inline-flex items-center gap-2">
+            ${JC_ICONS.arrowLeft('w-4 h-4')}
+            <span>প্রশ্নসমূহের তালিকায় ফিরে যান</span>
           </button>
         </div>
       `;
@@ -561,7 +696,8 @@
         <!-- Navigation & Actions -->
         <div class="flex items-center justify-between">
           <button onclick="window.JC_setTab('qa-list')" class="px-4 py-2 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-2 shadow-2xs">
-            <span>←</span> সব প্রশ্নে ফিরে যান
+            ${JC_ICONS.arrowLeft('w-4 h-4')}
+            <span>সব প্রশ্নে ফিরে যান</span>
           </button>
 
           <div class="flex items-center gap-2">
@@ -571,14 +707,17 @@
               class="jc-upvote-btn inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${isUpvoted ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 shadow-2xs' : 'bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 shadow-2xs'}"
               title="${isUpvoted ? 'আপভোট প্রত্যাহার করুন' : 'প্রশ্নটিতে আপভোট দিন'}"
             >
-              <span class="text-sm ${isUpvoted ? 'text-rose-600 dark:text-rose-400 font-extrabold' : 'text-zinc-500'}">▲</span>
+              <span class="${isUpvoted ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-500 dark:text-zinc-400'}">
+                ${JC_ICONS.arrowUp('w-4 h-4')}
+              </span>
               <span>${upvotes} আপভোট</span>
               ${isUpvoted ? '<span class="text-[10px] bg-rose-200/60 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 px-1.5 py-0.5 rounded font-bold">সমর্থিত</span>' : ''}
             </button>
 
             ${canDeleteQ ? `
               <button onclick="window.JC_deleteQuestion('${q.id}')" class="px-3.5 py-2 text-xs text-rose-600 hover:text-rose-700 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer">
-                <span>🗑️</span> মুছুন
+                ${JC_ICONS.trash('w-3.5 h-3.5')}
+                <span>মুছুন</span>
               </button>
             ` : ''}
           </div>
@@ -589,16 +728,21 @@
           
           <div class="flex items-center justify-between flex-wrap gap-2">
             <div class="flex items-center gap-2">
-              <span class="px-3 py-1 text-xs font-bold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40 rounded-lg">
-                ${escapeHtml(q.category || 'অন্যান্য')}
+              <span class="px-3 py-1 text-xs font-bold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40 rounded-lg inline-flex items-center gap-1">
+                ${JC_ICONS.tag('w-3 h-3 opacity-75')}
+                <span>${escapeHtml(q.category || 'অন্যান্য')}</span>
               </span>
               ${isPopular ? `
                 <span class="px-2.5 py-1 text-xs font-extrabold bg-amber-100/80 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 rounded-lg inline-flex items-center gap-1">
-                  <span>🔥</span> <span>জনপ্রিয় প্রশ্ন</span>
+                  ${JC_ICONS.flame('w-3.5 h-3.5 text-amber-600 dark:text-amber-400')}
+                  <span>জনপ্রিয় প্রশ্ন</span>
                 </span>
               ` : ''}
             </div>
-            <span class="text-xs text-zinc-400">📅 ${escapeHtml(q.createdAt || '')}</span>
+            <span class="inline-flex items-center gap-1 text-xs text-zinc-400 dark:text-zinc-500">
+              ${JC_ICONS.calendar('w-3.5 h-3.5')}
+              <span>${escapeHtml(q.createdAt || '')}</span>
+            </span>
           </div>
 
           <h1 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-white leading-tight tracking-tight">
@@ -606,11 +750,11 @@
           </h1>
 
           <div class="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-300 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-            <span class="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-[11px] text-zinc-700 dark:text-zinc-300">
-              👤
+            <span class="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
+              ${JC_ICONS.user('w-3.5 h-3.5')}
             </span>
             <span class="font-bold text-zinc-900 dark:text-white">${escapeHtml(q.author || 'সদস্য')}</span>
-            ${q.authorEmail ? `<span class="text-zinc-400 text-[11px]">(${escapeHtml(q.authorEmail)})</span>` : ''}
+            ${q.authorEmail ? `<span class="text-zinc-400 dark:text-zinc-500 text-[11px]">(${escapeHtml(q.authorEmail)})</span>` : ''}
           </div>
 
           <div class="text-sm md:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap pt-2">
@@ -628,13 +772,16 @@
         <div class="space-y-4 pt-2">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-              <span>💬</span>
+              <span class="text-rose-600 dark:text-rose-400">${JC_ICONS.messageSquare('w-5 h-5')}</span>
               <span>উত্তর ও আলোচনা (${answers.length}টি)</span>
             </h3>
           </div>
 
           ${answers.length === 0 ? `
             <div class="p-8 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800">
+              <div class="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 mx-auto flex items-center justify-center mb-2">
+                ${JC_ICONS.messageSquare('w-5 h-5')}
+              </div>
               <p class="text-sm text-zinc-500 dark:text-zinc-400">এই প্রশ্নে এখনও কোনো উত্তর যুক্ত করা হয়নি। নিচে আপনার গঠনমূলক উত্তর দিন।</p>
             </div>
           ` : `
@@ -645,14 +792,20 @@
                   <div class="bg-white dark:bg-zinc-900 p-5 md:p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-3">
                     <div class="flex items-center justify-between pb-2.5 border-b border-zinc-100 dark:border-zinc-800">
                       <div class="flex items-center gap-2 text-xs font-bold text-zinc-900 dark:text-white">
-                        <span class="w-5 h-5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-[10px]">👤</span>
+                        <span class="w-5 h-5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+                          ${JC_ICONS.user('w-3 h-3')}
+                        </span>
                         <span>${escapeHtml(a.author || 'সদস্য')}</span>
                         <span class="w-1 h-1 bg-zinc-300 dark:bg-zinc-700 rounded-full"></span>
-                        <span class="text-zinc-400 font-normal text-[11px]">${escapeHtml(a.createdAt || '')}</span>
+                        <span class="inline-flex items-center gap-1 text-zinc-400 dark:text-zinc-500 font-normal text-[11px]">
+                          ${JC_ICONS.calendar('w-3 h-3')}
+                          <span>${escapeHtml(a.createdAt || '')}</span>
+                        </span>
                       </div>
                       ${canDeleteA ? `
-                        <button onclick="window.JC_deleteAnswer('${q.id}', '${a.id}')" class="text-xs text-rose-600 hover:text-rose-700 font-bold hover:underline cursor-pointer">
-                          মুছুন
+                        <button onclick="window.JC_deleteAnswer('${q.id}', '${a.id}')" class="text-xs text-rose-600 hover:text-rose-700 font-bold hover:underline cursor-pointer inline-flex items-center gap-1">
+                          ${JC_ICONS.trash('w-3 h-3')}
+                          <span>মুছুন</span>
                         </button>
                       ` : ''}
                     </div>
@@ -669,7 +822,7 @@
         <!-- Submit Answer Form -->
         <div class="bg-white dark:bg-zinc-900 p-6 md:p-7 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs">
           <h3 class="font-bold text-base text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
-            <span>✍️</span>
+            <span class="text-rose-600 dark:text-rose-400">${JC_ICONS.penLine('w-5 h-5')}</span>
             <span>আপনার উত্তর লিখুন</span>
           </h3>
 
@@ -683,6 +836,7 @@
               <textarea id="jc-answer-content" rows="4" placeholder="আপনার তথ্যবহুল ও গঠনমূলক উত্তর লিখুন..." class="w-full p-4 text-sm bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-2xl text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-rose-600 focus:bg-white transition" required></textarea>
               <div class="flex justify-end">
                 <button type="submit" id="jc-ans-submit-btn" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer flex items-center gap-2">
+                  ${JC_ICONS.send('w-3.5 h-3.5')}
                   <span>উত্তর প্রকাশ করুন</span>
                 </button>
               </div>
@@ -690,8 +844,9 @@
           ` : `
             <div class="p-6 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 text-center space-y-3">
               <p class="text-sm text-zinc-600 dark:text-zinc-400 font-medium">আলোচনায় অংশ নিতে ও উত্তর দিতে অনুগ্রহ করে লগইন করুন।</p>
-              <button type="button" onclick="window.JC_promptLogin()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer">
-                🔑 গুগল দিয়ে লগইন করুন
+              <button type="button" onclick="window.JC_promptLogin()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer inline-flex items-center gap-2">
+                ${JC_ICONS.logIn('w-4 h-4')}
+                <span>গুগল দিয়ে লগইন করুন</span>
               </button>
             </div>
           `}
@@ -728,8 +883,8 @@
             <h3 class="text-xl font-extrabold text-zinc-900 dark:text-white tracking-tight">নতুন প্রশ্ন করুন</h3>
             <p class="text-xs text-zinc-500 mt-0.5">গঠনমূলক ও স্পষ্ট প্রশ্ন উপস্থাপন করুন</p>
           </div>
-          <button onclick="document.getElementById('jc-ask-modal').remove()" class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center justify-center font-bold text-sm cursor-pointer transition">
-            ✕
+          <button onclick="document.getElementById('jc-ask-modal').remove()" class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center justify-center cursor-pointer transition" title="বন্ধ করুন">
+            ${JC_ICONS.close('w-4 h-4')}
           </button>
         </div>
 
@@ -766,6 +921,7 @@
               বাতিল
             </button>
             <button type="submit" id="jc-q-submit-btn" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer flex items-center gap-2">
+              ${JC_ICONS.send('w-3.5 h-3.5')}
               <span>প্রশ্ন প্রকাশ করুন</span>
             </button>
           </div>
@@ -785,8 +941,8 @@
     modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4';
     modal.innerHTML = `
       <div class="jc-modal-animate bg-white dark:bg-zinc-900 w-full max-w-sm rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-6 text-center space-y-4">
-        <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center text-2xl">
-          🔒
+        <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center">
+          ${JC_ICONS.lock('w-6 h-6')}
         </div>
         <div>
           <h3 class="text-lg font-bold text-zinc-900 dark:text-white">লগইন প্রয়োজন</h3>
@@ -795,8 +951,9 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 pt-2">
-          <button onclick="document.getElementById('jc-login-modal').remove(); window.JC_promptLogin();" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer">
-            গুগল দিয়ে লগইন করুন
+          <button onclick="document.getElementById('jc-login-modal').remove(); window.JC_promptLogin();" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-2">
+            ${JC_ICONS.logIn('w-4 h-4')}
+            <span>গুগল দিয়ে লগইন করুন</span>
           </button>
           <button onclick="document.getElementById('jc-login-modal').remove()" class="w-full py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-bold rounded-xl hover:bg-zinc-200 transition cursor-pointer">
             বাতিল
