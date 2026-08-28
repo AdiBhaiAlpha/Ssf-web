@@ -10,7 +10,8 @@ console.log('Original backup bundle size:', origBundle.length);
 const vqStart = origBundle.indexOf('class VQ{');
 const p5Start = origBundle.indexOf('class P5{', vqStart);
 const opStart = origBundle.indexOf('class op{', vqStart);
-const vqEnd = (p5Start !== -1 && p5Start > vqStart) ? p5Start : opStart;
+const zcStart = origBundle.indexOf('class zC{', vqStart);
+const vqEnd = (p5Start !== -1 && p5Start > vqStart) ? p5Start : (zcStart !== -1 ? zcStart : opStart);
 
 console.log('VQ range:', vqStart, 'to', vqEnd);
 

@@ -10,7 +10,8 @@ console.log('Original bundle size:', bundle.length);
 const vqStart = bundle.indexOf('class VQ{');
 const p5Start = bundle.indexOf('class P5{', vqStart);
 const opStart = bundle.indexOf('class op{', vqStart);
-const vqEnd = (p5Start !== -1 && p5Start > vqStart) ? p5Start : opStart;
+const zcStart = bundle.indexOf('class zC{', vqStart);
+const vqEnd = (p5Start !== -1 && p5Start > vqStart) ? p5Start : (zcStart !== -1 ? zcStart : opStart);
 
 console.log('VQ range:', vqStart, 'to', vqEnd);
 

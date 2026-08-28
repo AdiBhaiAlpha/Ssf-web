@@ -10,15 +10,15 @@ console.log('Base bundle length:', baseBundle.length);
 
 // 1. Locate VQ range
 const vqStart = baseBundle.indexOf('class VQ{');
-const opStart = baseBundle.indexOf('class op{', vqStart);
+const zcStart = baseBundle.indexOf('class zC{', vqStart);
 
-if (vqStart === -1 || opStart === -1) {
-  console.error('Could not find VQ or op in base bundle!');
+if (vqStart === -1 || zcStart === -1) {
+  console.error('Could not find VQ or zC in base bundle!');
   process.exit(1);
 }
 
-console.log('Replacing VQ from', vqStart, 'to', opStart);
-let step1 = baseBundle.slice(0, vqStart) + vqReplacement + '\n' + baseBundle.slice(opStart);
+console.log('Replacing VQ from', vqStart, 'to', zcStart);
+let step1 = baseBundle.slice(0, vqStart) + vqReplacement + '\n' + baseBundle.slice(zcStart);
 
 // 2. Locate GQ range in step1
 const gqStart = step1.indexOf('function GQ({item:n,onClose:e}){');
