@@ -396,10 +396,12 @@
             </div>
 
             <div class="flex items-center gap-3 shrink-0">
+              ${(currentUser && (currentUser.isSuperAdmin || currentUser.role === 'admin')) ? `
               <button onclick="window.JC_openPressReleaseEditor()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer">
                 ${JC_ICONS.penLine('w-4 h-4')}
                 <span>প্রেস রিলিজ</span>
               </button>
+              ` : ``}
               <button onclick="window.JC_openAskModal()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer">
                 ${JC_ICONS.plus('w-4 h-4')}
                 <span>প্রশ্ন করুন</span>
@@ -868,17 +870,34 @@
     modal.id = 'jc-press-release-modal';
     modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4';
     modal.innerHTML = `
-      <div class="jc-modal-animate bg-white dark:bg-zinc-900 w-full max-w-xl rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-6 md:p-8 space-y-5">
+      <div class="jc-modal-animate bg-white dark:bg-zinc-900 w-full max-w-xl rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-6 md:p-8 space-y-5 overflow-y-auto max-h-[90vh]">
         <h3 class="text-xl font-extrabold text-zinc-900 dark:text-white tracking-tight">প্রেস রিলিজ তৈরি করুন</h3>
-        <p class="text-xs text-zinc-500">এখানে প্রেস রিলিজের তথ্য প্রদান করুন</p>
         
-        <div class="space-y-4">
-          <input type="text" id="pr-title" placeholder="শিরোনাম" class="w-full p-2 border rounded">
-          <textarea id="pr-body" placeholder="বিস্তারিত বক্তব্য" class="w-full p-2 border rounded" rows="5"></textarea>
-          <!-- ... more fields ... -->
+        <div class="space-y-3">
+          <select id="pr-type" class="w-full p-2 border rounded text-sm">
+            <option value="classic">Classic Press Release</option>
+            <option value="statement">Official Statement</option>
+            <option value="urgent">জরুরি বিবৃতি</option>
+            <option value="program">কর্মসূচি ঘোষণা</option>
+            <option value="protest">প্রতিবাদ/নিন্দা বিবৃতি</option>
+          </select>
+          <input type="text" id="pr-title" placeholder="শিরোনাম" class="w-full p-2 border rounded text-sm">
+          <input type="text" id="pr-subtitle" placeholder="উপশিরোনাম (ঐচ্ছিক)" class="w-full p-2 border rounded text-sm">
+          <div class="grid grid-cols-2 gap-3">
+            <input type="date" id="pr-date" class="w-full p-2 border rounded text-sm">
+            <input type="text" id="pr-location" placeholder="স্থান" class="w-full p-2 border rounded text-sm">
+          </div>
+          <textarea id="pr-body" placeholder="মূল প্রেস রিলিজ / বিস্তারিত বক্তব্য" class="w-full p-2 border rounded text-sm" rows="5"></textarea>
+          <input type="text" id="pr-sig-name" placeholder="স্বাক্ষরকারীর নাম" class="w-full p-2 border rounded text-sm">
+          <input type="text" id="pr-sig-title" placeholder="পদবি" class="w-full p-2 border rounded text-sm">
+          <div class="space-y-1">
+             <label class="text-xs text-zinc-500">ছবি / QR Code (optional)</label>
+             <input type="file" id="pr-image" class="w-full p-2 border rounded text-sm">
+          </div>
+          <canvas id="pr-canvas" width="800" height="1000" class="w-full border rounded hidden"></canvas>
         </div>
 
-        <div class="flex justify-end gap-3">
+        <div class="flex justify-end gap-3 pt-3 border-t">
           <button onclick="document.getElementById('jc-press-release-modal').remove()" class="px-4 py-2 bg-zinc-200 rounded text-xs">বন্ধ করুন</button>
           <button onclick="window.JC_renderPressRelease()" class="px-4 py-2 bg-indigo-600 text-white rounded text-xs">রেন্ডার করুন</button>
         </div>
@@ -888,7 +907,17 @@
   };
 
   window.JC_renderPressRelease = function() {
-    alert('রেন্ডারিং শুরু হচ্ছে... (এটি পরে বাস্তবায়ন করা হবে)');
+    const title = document.getElementById('pr-title').value;
+    const subtitle = document.getElementById('pr-subtitle').value;
+    const body = document.getElementById('pr-body').value;
+    const type = document.getElementById('pr-type').value;
+    const date = document.getElementById('pr-date').value;
+    const location = document.getElementById('pr-location').value;
+    const sigName = document.getElementById('pr-sig-name').value;
+    const sigTitle = document.getElementById('pr-sig-title').value;
+    const canvas = document.getElementById('pr-canvas');
+    canvas.classList.remove('hidden');
+    window.PressReleaseRenderer.render(canvas, { title, subtitle, body, type, date, location, sigName, sigTitle });
   };
 
   // ==========================================
