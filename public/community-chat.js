@@ -6,14 +6,14 @@
   const CSS = `
     .ssf-chat-launcher {
       position: fixed;
-      bottom: 130px;
+      bottom: calc(90px + env(safe-area-inset-bottom, 0px));
       right: 20px;
       z-index: 9998;
       background: #e11d48;
       color: white;
       border: none;
-      width: 50px;
-      height: 50px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -41,12 +41,12 @@
     }
     .ssf-chat-popup {
       position: fixed;
-      bottom: 190px;
+      bottom: calc(150px + env(safe-area-inset-bottom, 0px));
       right: 20px;
       width: 380px;
-      max-width: calc(100vw - 40px);
+      max-width: calc(100vw - 32px);
       height: 540px;
-      max-height: calc(100vh - 160px);
+      max-height: calc(100vh - 180px);
       background: #ffffff;
       border-radius: 16px;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
@@ -81,6 +81,7 @@
         height: 100vh;
         max-height: 100dvh;
         border-radius: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
       }
       .ssf-chat-popup.expanded {
         inset: 0;
@@ -89,7 +90,7 @@
         border-radius: 0;
       }
       .ssf-chat-launcher {
-        bottom: 70px;
+        bottom: calc(75px + env(safe-area-inset-bottom, 0px));
         right: 16px;
       }
     }
