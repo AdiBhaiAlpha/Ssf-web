@@ -310,25 +310,52 @@ var import_firestore = require("firebase/firestore");
 var firestoreDb = null;
 try {
   firestoreDb = (0, import_firestore.getFirestore)(firebaseApp, firebase_applet_config_default.firestoreDatabaseId || undefined);
+  console.log("Firestore initialized successfully as singleton instance for project:", firebase_applet_config_default.projectId);
 } catch (e) {
   console.warn("Firestore initialization warning:", e.message);
 }
+
 async function syncQuestionToFirestore(question) {
   if (!firestoreDb) return;
+  const opName = "syncQuestionToFirestore (setDoc)";
+  const startTime = Date.now();
+  const docPath = `questions/${question.id}`;
   try {
     const docRef = (0, import_firestore.doc)(firestoreDb, "questions", question.id);
     await (0, import_firestore.setDoc)(docRef, question, { merge: true });
+    const duration = Date.now() - startTime;
+    console.log(`[Firestore Write Diagnostic] Operation: ${opName} | Path: ${docPath} | Status: COMPLETED | Duration: ${duration}ms`);
   } catch (err) {
-    // Non-blocking firestore sync
+    const duration = Date.now() - startTime;
+    const errMessage = err?.message || String(err);
+    const isAbort = errMessage.toLowerCase().includes("aborted") || errMessage.toLowerCase().includes("signal");
+    if (isAbort) {
+      console.warn(`[Firestore Write Diagnostic] Operation: ${opName} | Path: ${docPath} | Status: TRANSIENT_ABORT | Duration: ${duration}ms | Reason: ${errMessage}`);
+    } else {
+      console.error(`[Firestore Write Diagnostic] Operation: ${opName} | Path: ${docPath} | Status: FAILED | Duration: ${duration}ms | Error: ${errMessage}`);
+    }
   }
 }
+
 async function deleteQuestionFromFirestore(id) {
   if (!firestoreDb) return;
+  const opName = "deleteQuestionFromFirestore (deleteDoc)";
+  const startTime = Date.now();
+  const docPath = `questions/${id}`;
   try {
     const docRef = (0, import_firestore.doc)(firestoreDb, "questions", id);
     await (0, import_firestore.deleteDoc)(docRef);
+    const duration = Date.now() - startTime;
+    console.log(`[Firestore Write Diagnostic] Operation: ${opName} | Path: ${docPath} | Status: COMPLETED | Duration: ${duration}ms`);
   } catch (err) {
-    // Non-blocking firestore sync
+    const duration = Date.now() - startTime;
+    const errMessage = err?.message || String(err);
+    const isAbort = errMessage.toLowerCase().includes("aborted") || errMessage.toLowerCase().includes("signal");
+    if (isAbort) {
+      console.warn(`[Firestore Write Diagnostic] Operation: ${opName} | Path: ${docPath} | Status: TRANSIENT_ABORT | Duration: ${duration}ms | Reason: ${errMessage}`);
+    } else {
+      console.error(`[Firestore Write Diagnostic] Operation: ${opName} | Path: ${docPath} | Status: FAILED | Duration: ${duration}ms | Error: ${errMessage}`);
+    }
   }
 }
 async function getFontData() {
