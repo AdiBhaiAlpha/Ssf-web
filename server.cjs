@@ -982,6 +982,9 @@ function loadDatabase() {
       if (!db.questions) {
         db.questions = initialState.questions || [];
       }
+      if (!db.communityMessages) {
+        db.communityMessages = [];
+      }
       if (!db.memberLogins) {
         db.memberLogins = initialState.memberLogins || [];
       }
@@ -1255,6 +1258,120 @@ async function startServer() {
       res.json({ success: true });
     } catch (e) {
       console.error("DELETE /api/questions error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.get("/api/chat/messages", (req, res) => {
+    try {
+      const db = loadDatabase();
+      if (!db.communityMessages) db.communityMessages = [];
+      res.json(db.communityMessages);
+    } catch (e) {
+      console.error("GET /api/chat/messages error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post("/api/chat/messages", (req, res) => {
+    try {
+      const { text, userEmail, userName, userAvatar, replyTo, attachment } = req.body;
+      if (!userEmail) {
+        return res.status(401).json({ error: "চ্যাট করতে হলে লগইন করতে হবে।" });
+      }
+      if (!text || !text.trim()) {
+        return res.status(400).json({ error: "মেসেজ খালি থাকতে পারে না।" });
+      }
+      if (text.length > 1000) {
+        return res.status(400).json({ error: "মেসেজ ১০০০ অক্ষরের বেশি হতে পারবে না।" });
+      }
+      const db = loadDatabase();
+      if (!db.communityMessages) db.communityMessages = [];
+
+      const newMsg = {
+        id: "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+        userEmail: userEmail,
+        userName: userName || userEmail.split("@")[0],
+        userAvatar: userAvatar || "",
+        text: text.trim(),
+        createdAt: new Date().toISOString(),
+        editedAt: null,
+        replyTo: replyTo || null,
+        attachment: attachment || null,
+        isModerated: false,
+        reportsCount: 0,
+        reportedBy: []
+      };
+
+      db.communityMessages.push(newMsg);
+      if (db.communityMessages.length > 500) {
+        db.communityMessages = db.communityMessages.slice(-500);
+      }
+      saveDatabase(db);
+      res.json(newMsg);
+    } catch (e) {
+      console.error("POST /api/chat/messages error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.put("/api/chat/messages/:id", (req, res) => {
+    try {
+      const { id } = req.params;
+      const { action, text, userEmail } = req.body;
+      if (!userEmail) return res.status(401).json({ error: "লগইন করা প্রয়োজন।" });
+
+      const db = loadDatabase();
+      if (!db.communityMessages) db.communityMessages = [];
+      const msgIndex = db.communityMessages.findIndex(m => m.id === id);
+      if (msgIndex === -1) return res.status(404).json({ error: "মেসেজ পাওয়া যায়নি।" });
+
+      const msg = db.communityMessages[msgIndex];
+      const isSuper = userEmail === "chitronbhattacharjee@gmail.com" || userEmail === "tanij@gmail.com";
+      const isOwner = msg.userEmail === userEmail;
+
+      if (action === "edit") {
+        if (!isOwner) return res.status(403).json({ error: "শুধু নিজের মেসেজ এডিট করা যায়।" });
+        if (!text || !text.trim()) return res.status(400).json({ error: "মেসেজ খালি হতে পারে না।" });
+        msg.text = text.trim();
+        msg.editedAt = new Date().toISOString();
+      } else if (action === "delete") {
+        if (!isOwner && !isSuper) return res.status(403).json({ error: "ডিলিট করার অনুমতি নেই।" });
+        db.communityMessages.splice(msgIndex, 1);
+      } else if (action === "report") {
+        if (!msg.reportedBy) msg.reportedBy = [];
+        if (!msg.reportedBy.includes(userEmail)) {
+          msg.reportedBy.push(userEmail);
+          msg.reportsCount = (msg.reportsCount || 0) + 1;
+        }
+      } else if (action === "moderateHide") {
+        if (!isSuper) return res.status(403).json({ error: "মডারেটর অধিকার প্রয়োজন।" });
+        msg.isModerated = true;
+        msg.text = "[এই মেসেজটি মডারেটর কর্তৃক লুকানো হয়েছে]";
+      }
+
+      saveDatabase(db);
+      res.json({ success: true, message: msg });
+    } catch (e) {
+      console.error("PUT /api/chat/messages/:id error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post("/api/chat/upload", uploadProfile.single("file"), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "কোনো ফাইল আপলোড করা হয়নি।" });
+      }
+      const fileUrl = `/uploads/${req.file.filename}`;
+      res.json({
+        url: fileUrl,
+        name: req.file.originalname,
+        size: req.file.size,
+        type: req.file.mimetype.startsWith("image/") ? "image" : "file"
+      });
+    } catch (e) {
+      console.error("POST /api/chat/upload error:", e);
       res.status(500).json({ error: e.message });
     }
   });
