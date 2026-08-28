@@ -4,11 +4,45 @@
   window.SSFCommunityChatInitialized = true;
 
   const CSS = `
-    .ssf-chat-launcher {
+    .ssf-floating-action-stack {
       position: fixed;
-      bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-      right: 20px;
+      right: 16px;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
       z-index: 9998;
+    }
+    .ssf-scroll-to-top-button {
+      background: #18181b;
+      color: white;
+      border: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s, opacity 0.2s, visibility 0.2s, transform 0.2s;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(0.9);
+      pointer-events: none;
+    }
+    .ssf-scroll-to-top-button.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .ssf-scroll-to-top-button:hover {
+      transform: scale(1.08);
+      background: #27272a;
+    }
+    .ssf-chat-launcher {
       background: #e11d48;
       color: white;
       border: none;
@@ -41,12 +75,12 @@
     }
     .ssf-chat-popup {
       position: fixed;
-      bottom: calc(150px + env(safe-area-inset-bottom, 0px));
-      right: 20px;
+      bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+      right: 16px;
       width: 380px;
       max-width: calc(100vw - 32px);
       height: 540px;
-      max-height: calc(100vh - 180px);
+      max-height: calc(100vh - 140px);
       background: #ffffff;
       border-radius: 16px;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
@@ -88,10 +122,6 @@
         max-width: 100%;
         max-height: 100dvh;
         border-radius: 0;
-      }
-      .ssf-chat-launcher {
-        bottom: calc(75px + env(safe-area-inset-bottom, 0px));
-        right: 16px;
       }
     }
     .ssf-chat-header {
@@ -237,14 +267,63 @@
   fetchMessages();
 
   function getCurrentUser() {
-    userEmail = localStorage.getItem("userEmail") || "";
-    userName = localStorage.getItem("userName") || localStorage.getItem("authorName") || userEmail.split("@")[0] || "সদস্য";
-    userAvatar = localStorage.getItem("userAvatar") || "";
+    let email = '';
+    if (window.ssf_current_user_email && typeof window.ssf_current_user_email === 'string') {
+      email = window.ssf_current_user_email.trim();
+    }
+    if (!email) {
+      email = localStorage.getItem('admin-email') || 
+              localStorage.getItem('ssf_user_email') || 
+              localStorage.getItem('userEmail') || 
+              sessionStorage.getItem('admin-email') || '';
+      email = email ? email.trim() : '';
+    }
+    if (!email) {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('firebase:authUser:')) {
+            const parsed = JSON.parse(localStorage.getItem(key));
+            if (parsed && parsed.email) {
+              email = parsed.email.trim();
+              break;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    userEmail = email;
+    let name = localStorage.getItem('userName') || localStorage.getItem('authorName') || localStorage.getItem('ssf_user_name') || '';
+    if (!name && userEmail) {
+      name = userEmail.split('@')[0];
+    }
+    if (userEmail.toLowerCase() === 'chitronbhattacharjee@gmail.com') {
+      name = 'চিত্রণ ভট্টাচার্য';
+    } else {
+      try {
+        const cacheStr = localStorage.getItem('scf_database_cache');
+        if (cacheStr) {
+          const cache = JSON.parse(cacheStr);
+          if (cache && Array.isArray(cache.memberships)) {
+            const member = cache.memberships.find(m => m.email && m.email.toLowerCase() === userEmail.toLowerCase());
+            if (member && member.name) {
+              name = member.name;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+    userName = name || "সদস্য";
+    userAvatar = localStorage.getItem('userAvatar') || localStorage.getItem('ssf_user_avatar') || "";
+
+    console.log("[CHAT AUTH] resolved user:", { userEmail, userName });
     return { userEmail, userName, userAvatar };
   }
 
   async function sendMessage() {
     const { userEmail, userName, userAvatar } = getCurrentUser();
+    console.log("[CHAT SEND] auth check:", { hasUser: !!userEmail, userEmail, userName });
     if (!userEmail) {
       alert("চ্যাট করতে হলে প্রথমে ওয়েবসাইট বা প্রোফাইলে লগইন করুন।");
       if (window.JC_openLoginModal) window.JC_openLoginModal();
@@ -380,14 +459,22 @@
   function render() {
     const { userEmail } = getCurrentUser();
     const isSuper = userEmail === "chitronbhattacharjee@gmail.com" || userEmail === "tanij@gmail.com";
+    const showScrollTop = window.scrollY > 300;
 
     container.innerHTML = `
-      <button class="ssf-chat-launcher" id="ssf-launcher-btn" title="কমিউনিটি চ্যাট">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-        </svg>
-        ${unreadCount > 0 ? `<span class="ssf-chat-badge">${unreadCount}</span>` : ""}
-      </button>
+      <div class="ssf-floating-action-stack">
+        <button class="ssf-scroll-to-top-button ${showScrollTop ? 'visible' : ''}" id="ssf-scroll-top-btn" title="উপরে যান">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19V5M5 12l7-7 7 7"/>
+          </svg>
+        </button>
+        <button class="ssf-chat-launcher" id="ssf-launcher-btn" title="কমিউনিটি চ্যাট">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          ${unreadCount > 0 ? `<span class="ssf-chat-badge">${unreadCount}</span>` : ""}
+        </button>
+      </div>
 
       ${isOpen ? `
         <div class="ssf-chat-popup ${isMinimized ? "minimized" : ""} ${isExpanded ? "expanded" : ""}">
@@ -632,6 +719,24 @@
   window.SSF_deleteMsg = (id) => deleteMessage(id);
   window.SSF_reportMsg = (id) => reportMessage(id);
   window.SSF_modHide = (id) => moderateHide(id);
+
+  window.addEventListener('scroll', () => {
+    const scrollBtn = document.getElementById('ssf-scroll-top-btn');
+    if (scrollBtn) {
+      if (window.scrollY > 300) {
+        scrollBtn.classList.add('visible');
+      } else {
+        scrollBtn.classList.remove('visible');
+      }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('#ssf-scroll-top-btn');
+    if (btn) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
 
   render();
 })();

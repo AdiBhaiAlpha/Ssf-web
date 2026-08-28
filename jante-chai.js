@@ -272,9 +272,6 @@
       event.preventDefault();
     }
 
-    const user = getCurrentUser();
-    const userEmail = user ? user.email : '';
-
     // Find question locally for optimistic update
     const qIndex = questionsData.findIndex(q => q.id === qId);
     if (qIndex !== -1) {
@@ -399,6 +396,10 @@
             </div>
 
             <div class="flex items-center gap-3 shrink-0">
+              <button onclick="window.JC_openPressReleaseEditor()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer">
+                ${JC_ICONS.penLine('w-4 h-4')}
+                <span>প্রেস রিলিজ</span>
+              </button>
               <button onclick="window.JC_openAskModal()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer">
                 ${JC_ICONS.plus('w-4 h-4')}
                 <span>প্রশ্ন করুন</span>
@@ -855,6 +856,40 @@
       </div>
     `;
   }
+
+  // ==========================================
+  // PRESS RELEASE EDITOR
+  // ==========================================
+  window.JC_openPressReleaseEditor = function() {
+    const existing = document.getElementById('jc-press-release-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'jc-press-release-modal';
+    modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4';
+    modal.innerHTML = `
+      <div class="jc-modal-animate bg-white dark:bg-zinc-900 w-full max-w-xl rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-6 md:p-8 space-y-5">
+        <h3 class="text-xl font-extrabold text-zinc-900 dark:text-white tracking-tight">প্রেস রিলিজ তৈরি করুন</h3>
+        <p class="text-xs text-zinc-500">এখানে প্রেস রিলিজের তথ্য প্রদান করুন</p>
+        
+        <div class="space-y-4">
+          <input type="text" id="pr-title" placeholder="শিরোনাম" class="w-full p-2 border rounded">
+          <textarea id="pr-body" placeholder="বিস্তারিত বক্তব্য" class="w-full p-2 border rounded" rows="5"></textarea>
+          <!-- ... more fields ... -->
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button onclick="document.getElementById('jc-press-release-modal').remove()" class="px-4 py-2 bg-zinc-200 rounded text-xs">বন্ধ করুন</button>
+          <button onclick="window.JC_renderPressRelease()" class="px-4 py-2 bg-indigo-600 text-white rounded text-xs">রেন্ডার করুন</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  };
+
+  window.JC_renderPressRelease = function() {
+    alert('রেন্ডারিং শুরু হচ্ছে... (এটি পরে বাস্তবায়ন করা হবে)');
+  };
 
   // ==========================================
   // MODAL / ACTIONS
