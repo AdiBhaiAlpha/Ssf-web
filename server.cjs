@@ -306,6 +306,31 @@ var firebase_applet_config_default = {
 var import_jsx_runtime = require("react/jsx-runtime");
 var firebaseApp = (0, import_app.getApps)().length === 0 ? (0, import_app.initializeApp)(firebase_applet_config_default) : (0, import_app.getApp)();
 var storage = (0, import_storage.getStorage)(firebaseApp);
+var import_firestore = require("firebase/firestore");
+var firestoreDb = null;
+try {
+  firestoreDb = (0, import_firestore.getFirestore)(firebaseApp, firebase_applet_config_default.firestoreDatabaseId || undefined);
+} catch (e) {
+  console.warn("Firestore initialization warning:", e.message);
+}
+async function syncQuestionToFirestore(question) {
+  if (!firestoreDb) return;
+  try {
+    const docRef = (0, import_firestore.doc)(firestoreDb, "questions", question.id);
+    await (0, import_firestore.setDoc)(docRef, question, { merge: true });
+  } catch (err) {
+    // Non-blocking firestore sync
+  }
+}
+async function deleteQuestionFromFirestore(id) {
+  if (!firestoreDb) return;
+  try {
+    const docRef = (0, import_firestore.doc)(firestoreDb, "questions", id);
+    await (0, import_firestore.deleteDoc)(docRef);
+  } catch (err) {
+    // Non-blocking firestore sync
+  }
+}
 async function getFontData() {
   const fontDir = import_path.default.join(process.cwd(), "public", "fonts");
   if (!import_fs.default.existsSync(fontDir)) {
@@ -1168,10 +1193,12 @@ async function startServer() {
         content: question.content,
         category: question.category || "অন্যান্য",
         tags: question.tags || [],
-        author: question.author || "সদস্য",
+        author: (question.author && question.author !== "সদস্য") ? question.author : (userEmail === "chitronbhattacharjee@gmail.com" ? "চিত্রণ ভট্টাচার্য" : ((db.memberships && db.memberships.find(m => m.email && m.email.toLowerCase() === userEmail.toLowerCase()) || {}).name || userEmail.split("@")[0])),
         authorEmail: userEmail,
         createdAt: new Date().toLocaleString("bn-BD", { timeZone: "Asia/Dhaka" }),
         answerCount: 0,
+        upvotes: 0,
+        upvotedBy: [],
         answers: []
       };
       if (!db.questions) db.questions = [];
@@ -1218,7 +1245,7 @@ async function startServer() {
       const newAns = {
         id: "a_" + Date.now(),
         content: answer.content,
-        author: authorName || "সদস্য",
+        author: (authorName && authorName !== "সদস্য") ? authorName : (userEmail === "chitronbhattacharjee@gmail.com" ? "চিত্রণ ভট্টাচার্য" : ((db.memberships && db.memberships.find(m => m.email && m.email.toLowerCase() === userEmail.toLowerCase()) || {}).name || userEmail.split("@")[0])),
         authorEmail: userEmail,
         createdAt: new Date().toLocaleString("bn-BD", { timeZone: "Asia/Dhaka" })
       };
@@ -1253,6 +1280,55 @@ async function startServer() {
       res.json({ success: true });
     } catch (e) {
       console.error("DELETE answers error:", e);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post("/api/questions/:id/upvote", (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userEmail } = req.body || {};
+      const db = loadDatabase();
+      const q = db.questions.find(item => item.id === id);
+      if (!q) return res.status(404).json({ error: "প্রশ্নটি পাওয়া যায়নি" });
+      
+      if (typeof q.upvotes !== "number") q.upvotes = 0;
+      if (!Array.isArray(q.upvotedBy)) q.upvotedBy = [];
+      
+      let isUpvoted = false;
+      if (userEmail && typeof userEmail === "string") {
+        const normalizedEmail = userEmail.trim().toLowerCase();
+        const index = q.upvotedBy.findIndex(em => em.toLowerCase() === normalizedEmail);
+        if (index !== -1) {
+          // Toggle off
+          q.upvotedBy.splice(index, 1);
+          q.upvotes = Math.max(0, q.upvotes - 1);
+          isUpvoted = false;
+        } else {
+          // Toggle on
+          q.upvotedBy.push(normalizedEmail);
+          q.upvotes += 1;
+          isUpvoted = true;
+        }
+      } else {
+        q.upvotes += 1;
+        isUpvoted = true;
+      }
+      
+      saveDatabase(db);
+      if (typeof syncQuestionToFirestore === "function") {
+        syncQuestionToFirestore(q).catch(() => {});
+      }
+      
+      res.json({
+        success: true,
+        id: q.id,
+        upvotes: q.upvotes,
+        upvoted: isUpvoted,
+        upvotedBy: q.upvotedBy
+      });
+    } catch (e) {
+      console.error("POST /api/questions/:id/upvote error:", e);
       res.status(500).json({ error: e.message });
     }
   });

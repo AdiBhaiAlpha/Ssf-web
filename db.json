@@ -77,7 +77,2528 @@
       "details": "সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখা অনলাইন পোর্টালের ডাটাবেজ সফলভাবে স্থাপন করা হয়েছে।"
     }
   ],
-  "visits": [],
+  "visits": [
+    {
+      "id": "v_seed_2026-08-28_Home_desktop",
+      "date": "2026-08-28",
+      "page": "Home",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-28_Home_mobile",
+      "date": "2026-08-28",
+      "page": "Home",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-28_Home_tablet",
+      "date": "2026-08-28",
+      "page": "Home",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-28_News_desktop",
+      "date": "2026-08-28",
+      "page": "News",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-28_News_mobile",
+      "date": "2026-08-28",
+      "page": "News",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-28_News_tablet",
+      "date": "2026-08-28",
+      "page": "News",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-28_Publications_desktop",
+      "date": "2026-08-28",
+      "page": "Publications",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-28_Publications_mobile",
+      "date": "2026-08-28",
+      "page": "Publications",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-28_Publications_tablet",
+      "date": "2026-08-28",
+      "page": "Publications",
+      "views": 8,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-28_Memberships_desktop",
+      "date": "2026-08-28",
+      "page": "Memberships",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-28_Memberships_mobile",
+      "date": "2026-08-28",
+      "page": "Memberships",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-28_Memberships_tablet",
+      "date": "2026-08-28",
+      "page": "Memberships",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-28_Circulars_desktop",
+      "date": "2026-08-28",
+      "page": "Circulars",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-28_Circulars_mobile",
+      "date": "2026-08-28",
+      "page": "Circulars",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-28_Circulars_tablet",
+      "date": "2026-08-28",
+      "page": "Circulars",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-28_About_desktop",
+      "date": "2026-08-28",
+      "page": "About",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-28_About_mobile",
+      "date": "2026-08-28",
+      "page": "About",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-28_About_tablet",
+      "date": "2026-08-28",
+      "page": "About",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-27_Home_desktop",
+      "date": "2026-08-27",
+      "page": "Home",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-27_Home_mobile",
+      "date": "2026-08-27",
+      "page": "Home",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-27_Home_tablet",
+      "date": "2026-08-27",
+      "page": "Home",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-27_News_desktop",
+      "date": "2026-08-27",
+      "page": "News",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-27_News_mobile",
+      "date": "2026-08-27",
+      "page": "News",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-27_News_tablet",
+      "date": "2026-08-27",
+      "page": "News",
+      "views": 8,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-27_Publications_desktop",
+      "date": "2026-08-27",
+      "page": "Publications",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-27_Publications_mobile",
+      "date": "2026-08-27",
+      "page": "Publications",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-27_Publications_tablet",
+      "date": "2026-08-27",
+      "page": "Publications",
+      "views": 8,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-27_Memberships_desktop",
+      "date": "2026-08-27",
+      "page": "Memberships",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-27_Memberships_mobile",
+      "date": "2026-08-27",
+      "page": "Memberships",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-27_Memberships_tablet",
+      "date": "2026-08-27",
+      "page": "Memberships",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-27_Circulars_desktop",
+      "date": "2026-08-27",
+      "page": "Circulars",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-27_Circulars_mobile",
+      "date": "2026-08-27",
+      "page": "Circulars",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-27_Circulars_tablet",
+      "date": "2026-08-27",
+      "page": "Circulars",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-27_About_desktop",
+      "date": "2026-08-27",
+      "page": "About",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-27_About_mobile",
+      "date": "2026-08-27",
+      "page": "About",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-27_About_tablet",
+      "date": "2026-08-27",
+      "page": "About",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-26_Home_desktop",
+      "date": "2026-08-26",
+      "page": "Home",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-26_Home_mobile",
+      "date": "2026-08-26",
+      "page": "Home",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-26_Home_tablet",
+      "date": "2026-08-26",
+      "page": "Home",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-26_News_desktop",
+      "date": "2026-08-26",
+      "page": "News",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-26_News_mobile",
+      "date": "2026-08-26",
+      "page": "News",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-26_News_tablet",
+      "date": "2026-08-26",
+      "page": "News",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-26_Publications_desktop",
+      "date": "2026-08-26",
+      "page": "Publications",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-26_Publications_mobile",
+      "date": "2026-08-26",
+      "page": "Publications",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-26_Publications_tablet",
+      "date": "2026-08-26",
+      "page": "Publications",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-26_Memberships_desktop",
+      "date": "2026-08-26",
+      "page": "Memberships",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-26_Memberships_mobile",
+      "date": "2026-08-26",
+      "page": "Memberships",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-26_Memberships_tablet",
+      "date": "2026-08-26",
+      "page": "Memberships",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-26_Circulars_desktop",
+      "date": "2026-08-26",
+      "page": "Circulars",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-26_Circulars_mobile",
+      "date": "2026-08-26",
+      "page": "Circulars",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-26_Circulars_tablet",
+      "date": "2026-08-26",
+      "page": "Circulars",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-26_About_desktop",
+      "date": "2026-08-26",
+      "page": "About",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-26_About_mobile",
+      "date": "2026-08-26",
+      "page": "About",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-26_About_tablet",
+      "date": "2026-08-26",
+      "page": "About",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-25_Home_desktop",
+      "date": "2026-08-25",
+      "page": "Home",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-25_Home_mobile",
+      "date": "2026-08-25",
+      "page": "Home",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-25_Home_tablet",
+      "date": "2026-08-25",
+      "page": "Home",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-25_News_desktop",
+      "date": "2026-08-25",
+      "page": "News",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-25_News_mobile",
+      "date": "2026-08-25",
+      "page": "News",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-25_News_tablet",
+      "date": "2026-08-25",
+      "page": "News",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-25_Publications_desktop",
+      "date": "2026-08-25",
+      "page": "Publications",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-25_Publications_mobile",
+      "date": "2026-08-25",
+      "page": "Publications",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-25_Publications_tablet",
+      "date": "2026-08-25",
+      "page": "Publications",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-25_Memberships_desktop",
+      "date": "2026-08-25",
+      "page": "Memberships",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-25_Memberships_mobile",
+      "date": "2026-08-25",
+      "page": "Memberships",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-25_Memberships_tablet",
+      "date": "2026-08-25",
+      "page": "Memberships",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-25_Circulars_desktop",
+      "date": "2026-08-25",
+      "page": "Circulars",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-25_Circulars_mobile",
+      "date": "2026-08-25",
+      "page": "Circulars",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-25_Circulars_tablet",
+      "date": "2026-08-25",
+      "page": "Circulars",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-25_About_desktop",
+      "date": "2026-08-25",
+      "page": "About",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-25_About_mobile",
+      "date": "2026-08-25",
+      "page": "About",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-25_About_tablet",
+      "date": "2026-08-25",
+      "page": "About",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-24_Home_desktop",
+      "date": "2026-08-24",
+      "page": "Home",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-24_Home_mobile",
+      "date": "2026-08-24",
+      "page": "Home",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-24_Home_tablet",
+      "date": "2026-08-24",
+      "page": "Home",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-24_News_desktop",
+      "date": "2026-08-24",
+      "page": "News",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-24_News_mobile",
+      "date": "2026-08-24",
+      "page": "News",
+      "views": 11,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-24_News_tablet",
+      "date": "2026-08-24",
+      "page": "News",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-24_Publications_desktop",
+      "date": "2026-08-24",
+      "page": "Publications",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-24_Publications_mobile",
+      "date": "2026-08-24",
+      "page": "Publications",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-24_Publications_tablet",
+      "date": "2026-08-24",
+      "page": "Publications",
+      "views": 7,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-24_Memberships_desktop",
+      "date": "2026-08-24",
+      "page": "Memberships",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-24_Memberships_mobile",
+      "date": "2026-08-24",
+      "page": "Memberships",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-24_Memberships_tablet",
+      "date": "2026-08-24",
+      "page": "Memberships",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-24_Circulars_desktop",
+      "date": "2026-08-24",
+      "page": "Circulars",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-24_Circulars_mobile",
+      "date": "2026-08-24",
+      "page": "Circulars",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-24_Circulars_tablet",
+      "date": "2026-08-24",
+      "page": "Circulars",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-24_About_desktop",
+      "date": "2026-08-24",
+      "page": "About",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-24_About_mobile",
+      "date": "2026-08-24",
+      "page": "About",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-24_About_tablet",
+      "date": "2026-08-24",
+      "page": "About",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-23_Home_desktop",
+      "date": "2026-08-23",
+      "page": "Home",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-23_Home_mobile",
+      "date": "2026-08-23",
+      "page": "Home",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-23_Home_tablet",
+      "date": "2026-08-23",
+      "page": "Home",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-23_News_desktop",
+      "date": "2026-08-23",
+      "page": "News",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-23_News_mobile",
+      "date": "2026-08-23",
+      "page": "News",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-23_News_tablet",
+      "date": "2026-08-23",
+      "page": "News",
+      "views": 8,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-23_Publications_desktop",
+      "date": "2026-08-23",
+      "page": "Publications",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-23_Publications_mobile",
+      "date": "2026-08-23",
+      "page": "Publications",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-23_Publications_tablet",
+      "date": "2026-08-23",
+      "page": "Publications",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-23_Memberships_desktop",
+      "date": "2026-08-23",
+      "page": "Memberships",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-23_Memberships_mobile",
+      "date": "2026-08-23",
+      "page": "Memberships",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-23_Memberships_tablet",
+      "date": "2026-08-23",
+      "page": "Memberships",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-23_Circulars_desktop",
+      "date": "2026-08-23",
+      "page": "Circulars",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-23_Circulars_mobile",
+      "date": "2026-08-23",
+      "page": "Circulars",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-23_Circulars_tablet",
+      "date": "2026-08-23",
+      "page": "Circulars",
+      "views": 7,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-23_About_desktop",
+      "date": "2026-08-23",
+      "page": "About",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-23_About_mobile",
+      "date": "2026-08-23",
+      "page": "About",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-23_About_tablet",
+      "date": "2026-08-23",
+      "page": "About",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-22_Home_desktop",
+      "date": "2026-08-22",
+      "page": "Home",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-22_Home_mobile",
+      "date": "2026-08-22",
+      "page": "Home",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-22_Home_tablet",
+      "date": "2026-08-22",
+      "page": "Home",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-22_News_desktop",
+      "date": "2026-08-22",
+      "page": "News",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-22_News_mobile",
+      "date": "2026-08-22",
+      "page": "News",
+      "views": 11,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-22_News_tablet",
+      "date": "2026-08-22",
+      "page": "News",
+      "views": 7,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-22_Publications_desktop",
+      "date": "2026-08-22",
+      "page": "Publications",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-22_Publications_mobile",
+      "date": "2026-08-22",
+      "page": "Publications",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-22_Publications_tablet",
+      "date": "2026-08-22",
+      "page": "Publications",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-22_Memberships_desktop",
+      "date": "2026-08-22",
+      "page": "Memberships",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-22_Memberships_mobile",
+      "date": "2026-08-22",
+      "page": "Memberships",
+      "views": 11,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-22_Memberships_tablet",
+      "date": "2026-08-22",
+      "page": "Memberships",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-22_Circulars_desktop",
+      "date": "2026-08-22",
+      "page": "Circulars",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-22_Circulars_mobile",
+      "date": "2026-08-22",
+      "page": "Circulars",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-22_Circulars_tablet",
+      "date": "2026-08-22",
+      "page": "Circulars",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-22_About_desktop",
+      "date": "2026-08-22",
+      "page": "About",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-22_About_mobile",
+      "date": "2026-08-22",
+      "page": "About",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-22_About_tablet",
+      "date": "2026-08-22",
+      "page": "About",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-21_Home_desktop",
+      "date": "2026-08-21",
+      "page": "Home",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-21_Home_mobile",
+      "date": "2026-08-21",
+      "page": "Home",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-21_Home_tablet",
+      "date": "2026-08-21",
+      "page": "Home",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-21_News_desktop",
+      "date": "2026-08-21",
+      "page": "News",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-21_News_mobile",
+      "date": "2026-08-21",
+      "page": "News",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-21_News_tablet",
+      "date": "2026-08-21",
+      "page": "News",
+      "views": 7,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-21_Publications_desktop",
+      "date": "2026-08-21",
+      "page": "Publications",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-21_Publications_mobile",
+      "date": "2026-08-21",
+      "page": "Publications",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-21_Publications_tablet",
+      "date": "2026-08-21",
+      "page": "Publications",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-21_Memberships_desktop",
+      "date": "2026-08-21",
+      "page": "Memberships",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-21_Memberships_mobile",
+      "date": "2026-08-21",
+      "page": "Memberships",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-21_Memberships_tablet",
+      "date": "2026-08-21",
+      "page": "Memberships",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-21_Circulars_desktop",
+      "date": "2026-08-21",
+      "page": "Circulars",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-21_Circulars_mobile",
+      "date": "2026-08-21",
+      "page": "Circulars",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-21_Circulars_tablet",
+      "date": "2026-08-21",
+      "page": "Circulars",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-21_About_desktop",
+      "date": "2026-08-21",
+      "page": "About",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-21_About_mobile",
+      "date": "2026-08-21",
+      "page": "About",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-21_About_tablet",
+      "date": "2026-08-21",
+      "page": "About",
+      "views": 8,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-20_Home_desktop",
+      "date": "2026-08-20",
+      "page": "Home",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-20_Home_mobile",
+      "date": "2026-08-20",
+      "page": "Home",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-20_Home_tablet",
+      "date": "2026-08-20",
+      "page": "Home",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-20_News_desktop",
+      "date": "2026-08-20",
+      "page": "News",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-20_News_mobile",
+      "date": "2026-08-20",
+      "page": "News",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-20_News_tablet",
+      "date": "2026-08-20",
+      "page": "News",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-20_Publications_desktop",
+      "date": "2026-08-20",
+      "page": "Publications",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-20_Publications_mobile",
+      "date": "2026-08-20",
+      "page": "Publications",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-20_Publications_tablet",
+      "date": "2026-08-20",
+      "page": "Publications",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-20_Memberships_desktop",
+      "date": "2026-08-20",
+      "page": "Memberships",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-20_Memberships_mobile",
+      "date": "2026-08-20",
+      "page": "Memberships",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-20_Memberships_tablet",
+      "date": "2026-08-20",
+      "page": "Memberships",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-20_Circulars_desktop",
+      "date": "2026-08-20",
+      "page": "Circulars",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-20_Circulars_mobile",
+      "date": "2026-08-20",
+      "page": "Circulars",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-20_Circulars_tablet",
+      "date": "2026-08-20",
+      "page": "Circulars",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-20_About_desktop",
+      "date": "2026-08-20",
+      "page": "About",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-20_About_mobile",
+      "date": "2026-08-20",
+      "page": "About",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-20_About_tablet",
+      "date": "2026-08-20",
+      "page": "About",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-19_Home_desktop",
+      "date": "2026-08-19",
+      "page": "Home",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-19_Home_mobile",
+      "date": "2026-08-19",
+      "page": "Home",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-19_Home_tablet",
+      "date": "2026-08-19",
+      "page": "Home",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-19_News_desktop",
+      "date": "2026-08-19",
+      "page": "News",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-19_News_mobile",
+      "date": "2026-08-19",
+      "page": "News",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-19_News_tablet",
+      "date": "2026-08-19",
+      "page": "News",
+      "views": 8,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-19_Publications_desktop",
+      "date": "2026-08-19",
+      "page": "Publications",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-19_Publications_mobile",
+      "date": "2026-08-19",
+      "page": "Publications",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-19_Publications_tablet",
+      "date": "2026-08-19",
+      "page": "Publications",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-19_Memberships_desktop",
+      "date": "2026-08-19",
+      "page": "Memberships",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-19_Memberships_mobile",
+      "date": "2026-08-19",
+      "page": "Memberships",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-19_Memberships_tablet",
+      "date": "2026-08-19",
+      "page": "Memberships",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-19_Circulars_desktop",
+      "date": "2026-08-19",
+      "page": "Circulars",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-19_Circulars_mobile",
+      "date": "2026-08-19",
+      "page": "Circulars",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-19_Circulars_tablet",
+      "date": "2026-08-19",
+      "page": "Circulars",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-19_About_desktop",
+      "date": "2026-08-19",
+      "page": "About",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-19_About_mobile",
+      "date": "2026-08-19",
+      "page": "About",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-19_About_tablet",
+      "date": "2026-08-19",
+      "page": "About",
+      "views": 7,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-18_Home_desktop",
+      "date": "2026-08-18",
+      "page": "Home",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-18_Home_mobile",
+      "date": "2026-08-18",
+      "page": "Home",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-18_Home_tablet",
+      "date": "2026-08-18",
+      "page": "Home",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-18_News_desktop",
+      "date": "2026-08-18",
+      "page": "News",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-18_News_mobile",
+      "date": "2026-08-18",
+      "page": "News",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-18_News_tablet",
+      "date": "2026-08-18",
+      "page": "News",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-18_Publications_desktop",
+      "date": "2026-08-18",
+      "page": "Publications",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-18_Publications_mobile",
+      "date": "2026-08-18",
+      "page": "Publications",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-18_Publications_tablet",
+      "date": "2026-08-18",
+      "page": "Publications",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-18_Memberships_desktop",
+      "date": "2026-08-18",
+      "page": "Memberships",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-18_Memberships_mobile",
+      "date": "2026-08-18",
+      "page": "Memberships",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-18_Memberships_tablet",
+      "date": "2026-08-18",
+      "page": "Memberships",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-18_Circulars_desktop",
+      "date": "2026-08-18",
+      "page": "Circulars",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-18_Circulars_mobile",
+      "date": "2026-08-18",
+      "page": "Circulars",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-18_Circulars_tablet",
+      "date": "2026-08-18",
+      "page": "Circulars",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-18_About_desktop",
+      "date": "2026-08-18",
+      "page": "About",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-18_About_mobile",
+      "date": "2026-08-18",
+      "page": "About",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-18_About_tablet",
+      "date": "2026-08-18",
+      "page": "About",
+      "views": 7,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-17_Home_desktop",
+      "date": "2026-08-17",
+      "page": "Home",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-17_Home_mobile",
+      "date": "2026-08-17",
+      "page": "Home",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-17_Home_tablet",
+      "date": "2026-08-17",
+      "page": "Home",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-17_News_desktop",
+      "date": "2026-08-17",
+      "page": "News",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-17_News_mobile",
+      "date": "2026-08-17",
+      "page": "News",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-17_News_tablet",
+      "date": "2026-08-17",
+      "page": "News",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-17_Publications_desktop",
+      "date": "2026-08-17",
+      "page": "Publications",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-17_Publications_mobile",
+      "date": "2026-08-17",
+      "page": "Publications",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-17_Publications_tablet",
+      "date": "2026-08-17",
+      "page": "Publications",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-17_Memberships_desktop",
+      "date": "2026-08-17",
+      "page": "Memberships",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-17_Memberships_mobile",
+      "date": "2026-08-17",
+      "page": "Memberships",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-17_Memberships_tablet",
+      "date": "2026-08-17",
+      "page": "Memberships",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-17_Circulars_desktop",
+      "date": "2026-08-17",
+      "page": "Circulars",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-17_Circulars_mobile",
+      "date": "2026-08-17",
+      "page": "Circulars",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-17_Circulars_tablet",
+      "date": "2026-08-17",
+      "page": "Circulars",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-17_About_desktop",
+      "date": "2026-08-17",
+      "page": "About",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-17_About_mobile",
+      "date": "2026-08-17",
+      "page": "About",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-17_About_tablet",
+      "date": "2026-08-17",
+      "page": "About",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-16_Home_desktop",
+      "date": "2026-08-16",
+      "page": "Home",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-16_Home_mobile",
+      "date": "2026-08-16",
+      "page": "Home",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-16_Home_tablet",
+      "date": "2026-08-16",
+      "page": "Home",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-16_News_desktop",
+      "date": "2026-08-16",
+      "page": "News",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-16_News_mobile",
+      "date": "2026-08-16",
+      "page": "News",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-16_News_tablet",
+      "date": "2026-08-16",
+      "page": "News",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-16_Publications_desktop",
+      "date": "2026-08-16",
+      "page": "Publications",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-16_Publications_mobile",
+      "date": "2026-08-16",
+      "page": "Publications",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-16_Publications_tablet",
+      "date": "2026-08-16",
+      "page": "Publications",
+      "views": 3,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-16_Memberships_desktop",
+      "date": "2026-08-16",
+      "page": "Memberships",
+      "views": 16,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-16_Memberships_mobile",
+      "date": "2026-08-16",
+      "page": "Memberships",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-16_Memberships_tablet",
+      "date": "2026-08-16",
+      "page": "Memberships",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-16_Circulars_desktop",
+      "date": "2026-08-16",
+      "page": "Circulars",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-16_Circulars_mobile",
+      "date": "2026-08-16",
+      "page": "Circulars",
+      "views": 12,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-16_Circulars_tablet",
+      "date": "2026-08-16",
+      "page": "Circulars",
+      "views": 7,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-16_About_desktop",
+      "date": "2026-08-16",
+      "page": "About",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-16_About_mobile",
+      "date": "2026-08-16",
+      "page": "About",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-16_About_tablet",
+      "date": "2026-08-16",
+      "page": "About",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-15_Home_desktop",
+      "date": "2026-08-15",
+      "page": "Home",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-15_Home_mobile",
+      "date": "2026-08-15",
+      "page": "Home",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-15_Home_tablet",
+      "date": "2026-08-15",
+      "page": "Home",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-15_News_desktop",
+      "date": "2026-08-15",
+      "page": "News",
+      "views": 13,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-15_News_mobile",
+      "date": "2026-08-15",
+      "page": "News",
+      "views": 8,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-15_News_tablet",
+      "date": "2026-08-15",
+      "page": "News",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-15_Publications_desktop",
+      "date": "2026-08-15",
+      "page": "Publications",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-15_Publications_mobile",
+      "date": "2026-08-15",
+      "page": "Publications",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-15_Publications_tablet",
+      "date": "2026-08-15",
+      "page": "Publications",
+      "views": 2,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-15_Memberships_desktop",
+      "date": "2026-08-15",
+      "page": "Memberships",
+      "views": 15,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-15_Memberships_mobile",
+      "date": "2026-08-15",
+      "page": "Memberships",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-15_Memberships_tablet",
+      "date": "2026-08-15",
+      "page": "Memberships",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-15_Circulars_desktop",
+      "date": "2026-08-15",
+      "page": "Circulars",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-15_Circulars_mobile",
+      "date": "2026-08-15",
+      "page": "Circulars",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-15_Circulars_tablet",
+      "date": "2026-08-15",
+      "page": "Circulars",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-15_About_desktop",
+      "date": "2026-08-15",
+      "page": "About",
+      "views": 19,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-15_About_mobile",
+      "date": "2026-08-15",
+      "page": "About",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-15_About_tablet",
+      "date": "2026-08-15",
+      "page": "About",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-14_Home_desktop",
+      "date": "2026-08-14",
+      "page": "Home",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-14_Home_mobile",
+      "date": "2026-08-14",
+      "page": "Home",
+      "views": 15,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-14_Home_tablet",
+      "date": "2026-08-14",
+      "page": "Home",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-14_News_desktop",
+      "date": "2026-08-14",
+      "page": "News",
+      "views": 18,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-14_News_mobile",
+      "date": "2026-08-14",
+      "page": "News",
+      "views": 14,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-14_News_tablet",
+      "date": "2026-08-14",
+      "page": "News",
+      "views": 6,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-14_Publications_desktop",
+      "date": "2026-08-14",
+      "page": "Publications",
+      "views": 12,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-14_Publications_mobile",
+      "date": "2026-08-14",
+      "page": "Publications",
+      "views": 9,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-14_Publications_tablet",
+      "date": "2026-08-14",
+      "page": "Publications",
+      "views": 7,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-14_Memberships_desktop",
+      "date": "2026-08-14",
+      "page": "Memberships",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-14_Memberships_mobile",
+      "date": "2026-08-14",
+      "page": "Memberships",
+      "views": 13,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-14_Memberships_tablet",
+      "date": "2026-08-14",
+      "page": "Memberships",
+      "views": 5,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-14_Circulars_desktop",
+      "date": "2026-08-14",
+      "page": "Circulars",
+      "views": 14,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-14_Circulars_mobile",
+      "date": "2026-08-14",
+      "page": "Circulars",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-14_Circulars_tablet",
+      "date": "2026-08-14",
+      "page": "Circulars",
+      "views": 9,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_2026-08-14_About_desktop",
+      "date": "2026-08-14",
+      "page": "About",
+      "views": 17,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_2026-08-14_About_mobile",
+      "date": "2026-08-14",
+      "page": "About",
+      "views": 10,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_2026-08-14_About_tablet",
+      "date": "2026-08-14",
+      "page": "About",
+      "views": 4,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Home_desktop",
+      "date": "2026-01-15",
+      "page": "Home",
+      "views": 218,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Home_mobile",
+      "date": "2026-01-15",
+      "page": "Home",
+      "views": 195,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Home_tablet",
+      "date": "2026-01-15",
+      "page": "Home",
+      "views": 110,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_News_desktop",
+      "date": "2026-01-15",
+      "page": "News",
+      "views": 248,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_News_mobile",
+      "date": "2026-01-15",
+      "page": "News",
+      "views": 131,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_News_tablet",
+      "date": "2026-01-15",
+      "page": "News",
+      "views": 74,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Publications_desktop",
+      "date": "2026-01-15",
+      "page": "Publications",
+      "views": 235,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Publications_mobile",
+      "date": "2026-01-15",
+      "page": "Publications",
+      "views": 161,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Publications_tablet",
+      "date": "2026-01-15",
+      "page": "Publications",
+      "views": 100,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Memberships_desktop",
+      "date": "2026-01-15",
+      "page": "Memberships",
+      "views": 250,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Memberships_mobile",
+      "date": "2026-01-15",
+      "page": "Memberships",
+      "views": 174,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Memberships_tablet",
+      "date": "2026-01-15",
+      "page": "Memberships",
+      "views": 74,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Circulars_desktop",
+      "date": "2026-01-15",
+      "page": "Circulars",
+      "views": 187,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Circulars_mobile",
+      "date": "2026-01-15",
+      "page": "Circulars",
+      "views": 155,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_Circulars_tablet",
+      "date": "2026-01-15",
+      "page": "Circulars",
+      "views": 110,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_About_desktop",
+      "date": "2026-01-15",
+      "page": "About",
+      "views": 202,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_About_mobile",
+      "date": "2026-01-15",
+      "page": "About",
+      "views": 155,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-01-15_About_tablet",
+      "date": "2026-01-15",
+      "page": "About",
+      "views": 54,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Home_desktop",
+      "date": "2026-02-15",
+      "page": "Home",
+      "views": 242,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Home_mobile",
+      "date": "2026-02-15",
+      "page": "Home",
+      "views": 145,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Home_tablet",
+      "date": "2026-02-15",
+      "page": "Home",
+      "views": 82,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_News_desktop",
+      "date": "2026-02-15",
+      "page": "News",
+      "views": 253,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_News_mobile",
+      "date": "2026-02-15",
+      "page": "News",
+      "views": 135,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_News_tablet",
+      "date": "2026-02-15",
+      "page": "News",
+      "views": 77,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Publications_desktop",
+      "date": "2026-02-15",
+      "page": "Publications",
+      "views": 182,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Publications_mobile",
+      "date": "2026-02-15",
+      "page": "Publications",
+      "views": 167,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Publications_tablet",
+      "date": "2026-02-15",
+      "page": "Publications",
+      "views": 82,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Memberships_desktop",
+      "date": "2026-02-15",
+      "page": "Memberships",
+      "views": 235,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Memberships_mobile",
+      "date": "2026-02-15",
+      "page": "Memberships",
+      "views": 198,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Memberships_tablet",
+      "date": "2026-02-15",
+      "page": "Memberships",
+      "views": 85,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Circulars_desktop",
+      "date": "2026-02-15",
+      "page": "Circulars",
+      "views": 246,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Circulars_mobile",
+      "date": "2026-02-15",
+      "page": "Circulars",
+      "views": 164,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_Circulars_tablet",
+      "date": "2026-02-15",
+      "page": "Circulars",
+      "views": 56,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_About_desktop",
+      "date": "2026-02-15",
+      "page": "About",
+      "views": 204,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_About_mobile",
+      "date": "2026-02-15",
+      "page": "About",
+      "views": 175,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-02-15_About_tablet",
+      "date": "2026-02-15",
+      "page": "About",
+      "views": 70,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Home_desktop",
+      "date": "2026-03-15",
+      "page": "Home",
+      "views": 214,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Home_mobile",
+      "date": "2026-03-15",
+      "page": "Home",
+      "views": 191,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Home_tablet",
+      "date": "2026-03-15",
+      "page": "Home",
+      "views": 104,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_News_desktop",
+      "date": "2026-03-15",
+      "page": "News",
+      "views": 249,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_News_mobile",
+      "date": "2026-03-15",
+      "page": "News",
+      "views": 131,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_News_tablet",
+      "date": "2026-03-15",
+      "page": "News",
+      "views": 40,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Publications_desktop",
+      "date": "2026-03-15",
+      "page": "Publications",
+      "views": 183,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Publications_mobile",
+      "date": "2026-03-15",
+      "page": "Publications",
+      "views": 130,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Publications_tablet",
+      "date": "2026-03-15",
+      "page": "Publications",
+      "views": 86,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Memberships_desktop",
+      "date": "2026-03-15",
+      "page": "Memberships",
+      "views": 235,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Memberships_mobile",
+      "date": "2026-03-15",
+      "page": "Memberships",
+      "views": 181,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Memberships_tablet",
+      "date": "2026-03-15",
+      "page": "Memberships",
+      "views": 95,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Circulars_desktop",
+      "date": "2026-03-15",
+      "page": "Circulars",
+      "views": 220,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Circulars_mobile",
+      "date": "2026-03-15",
+      "page": "Circulars",
+      "views": 197,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_Circulars_tablet",
+      "date": "2026-03-15",
+      "page": "Circulars",
+      "views": 60,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_About_desktop",
+      "date": "2026-03-15",
+      "page": "About",
+      "views": 222,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_About_mobile",
+      "date": "2026-03-15",
+      "page": "About",
+      "views": 176,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-03-15_About_tablet",
+      "date": "2026-03-15",
+      "page": "About",
+      "views": 98,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Home_desktop",
+      "date": "2026-04-15",
+      "page": "Home",
+      "views": 205,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Home_mobile",
+      "date": "2026-04-15",
+      "page": "Home",
+      "views": 173,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Home_tablet",
+      "date": "2026-04-15",
+      "page": "Home",
+      "views": 36,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_News_desktop",
+      "date": "2026-04-15",
+      "page": "News",
+      "views": 257,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_News_mobile",
+      "date": "2026-04-15",
+      "page": "News",
+      "views": 141,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_News_tablet",
+      "date": "2026-04-15",
+      "page": "News",
+      "views": 36,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Publications_desktop",
+      "date": "2026-04-15",
+      "page": "Publications",
+      "views": 254,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Publications_mobile",
+      "date": "2026-04-15",
+      "page": "Publications",
+      "views": 160,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Publications_tablet",
+      "date": "2026-04-15",
+      "page": "Publications",
+      "views": 60,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Memberships_desktop",
+      "date": "2026-04-15",
+      "page": "Memberships",
+      "views": 233,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Memberships_mobile",
+      "date": "2026-04-15",
+      "page": "Memberships",
+      "views": 157,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Memberships_tablet",
+      "date": "2026-04-15",
+      "page": "Memberships",
+      "views": 57,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Circulars_desktop",
+      "date": "2026-04-15",
+      "page": "Circulars",
+      "views": 249,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Circulars_mobile",
+      "date": "2026-04-15",
+      "page": "Circulars",
+      "views": 177,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_Circulars_tablet",
+      "date": "2026-04-15",
+      "page": "Circulars",
+      "views": 78,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_About_desktop",
+      "date": "2026-04-15",
+      "page": "About",
+      "views": 250,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_About_mobile",
+      "date": "2026-04-15",
+      "page": "About",
+      "views": 140,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-04-15_About_tablet",
+      "date": "2026-04-15",
+      "page": "About",
+      "views": 61,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Home_desktop",
+      "date": "2026-05-15",
+      "page": "Home",
+      "views": 197,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Home_mobile",
+      "date": "2026-05-15",
+      "page": "Home",
+      "views": 133,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Home_tablet",
+      "date": "2026-05-15",
+      "page": "Home",
+      "views": 112,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_News_desktop",
+      "date": "2026-05-15",
+      "page": "News",
+      "views": 245,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_News_mobile",
+      "date": "2026-05-15",
+      "page": "News",
+      "views": 145,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_News_tablet",
+      "date": "2026-05-15",
+      "page": "News",
+      "views": 93,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Publications_desktop",
+      "date": "2026-05-15",
+      "page": "Publications",
+      "views": 212,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Publications_mobile",
+      "date": "2026-05-15",
+      "page": "Publications",
+      "views": 175,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Publications_tablet",
+      "date": "2026-05-15",
+      "page": "Publications",
+      "views": 52,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Memberships_desktop",
+      "date": "2026-05-15",
+      "page": "Memberships",
+      "views": 208,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Memberships_mobile",
+      "date": "2026-05-15",
+      "page": "Memberships",
+      "views": 175,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Memberships_tablet",
+      "date": "2026-05-15",
+      "page": "Memberships",
+      "views": 74,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Circulars_desktop",
+      "date": "2026-05-15",
+      "page": "Circulars",
+      "views": 258,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Circulars_mobile",
+      "date": "2026-05-15",
+      "page": "Circulars",
+      "views": 148,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_Circulars_tablet",
+      "date": "2026-05-15",
+      "page": "Circulars",
+      "views": 37,
+      "device": "tablet"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_About_desktop",
+      "date": "2026-05-15",
+      "page": "About",
+      "views": 198,
+      "device": "desktop"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_About_mobile",
+      "date": "2026-05-15",
+      "page": "About",
+      "views": 158,
+      "device": "mobile"
+    },
+    {
+      "id": "v_seed_m_2026-05-15_About_tablet",
+      "date": "2026-05-15",
+      "page": "About",
+      "views": 113,
+      "device": "tablet"
+    }
+  ],
   "organizations": [
     {
       "id": "org1",
@@ -329,5 +2850,63 @@
       "details": "মোবাইল (Chrome) থেকে লগইন চেষ্টা করা হয়েছে কিন্তু ইমেইল ভেরিফাইড ছিল না।"
     }
   ],
-  "invitations": []
+  "invitations": [],
+  "questions": [
+    {
+      "id": "q_1787891191425",
+      "title": "সমাজতান্ত্রিক ছাত্র ফ্রন্টের ইতিহাস ও বর্তমান ছাত্র আন্দোলনের রূপরেখা",
+      "content": "স্বাধীন বাংলাদেশে শোষণমুক্ত বৈজ্ঞানিক ও গণতান্ত্রিক শিক্ষাব্যবস্থা অর্জনের সংগ্রামে সমাজতান্ত্রিক ছাত্র ফ্রন্টের মূল ঐতিহাসিক মাইলফলকগুলো কী কী?",
+      "category": "ইতিহাস",
+      "tags": [
+        "ইতিহাস",
+        "ছাত্র আন্দোলন",
+        "শিক্ষা আন্দোলন"
+      ],
+      "author": "চিত্রণ ভট্টাচার্য",
+      "authorEmail": "chitronbhattacharjee@gmail.com",
+      "createdAt": "২৮/৮/২০২৬, ১০:২৬:৩১ AM",
+      "answerCount": 1,
+      "answers": [
+        {
+          "id": "a_1787891191452",
+          "content": "১৯৮৪ সালের ২১ জানুয়ারি শোষণমূলক শিক্ষাব্যবস্থা ও স্বৈরাচারী সামরিক শাসনের বিরুদ্ধে সর্বজনীন, বৈজ্ঞানিক, ধর্মনিরপেক্ষ ও একই পদ্ধতির শিক্ষার দাবিতে সমাজতান্ত্রিক ছাত্র ফ্রন্ট প্রতিষ্ঠিত হয়।",
+          "author": "চিত্রণ ভট্টাচার্য",
+          "authorEmail": "chitronbhattacharjee@gmail.com",
+          "createdAt": "২৮/৮/২০২৬, ১০:২৬:৩১ AM"
+        }
+      ],
+      "upvotes": 12,
+      "upvotedBy": [
+        "chitronbhattacharjee@gmail.com"
+      ]
+    },
+    {
+      "id": "q_1",
+      "title": "বর্তমান শিক্ষানীতিতে বৈজ্ঞানিক ও গণতান্ত্রিক ব্যবস্থার গুরুত্ব কতটুকু?",
+      "content": "আমাদের বর্তমান শিক্ষা ব্যবস্থায় বাণিজ্যিকীকরণ বৃদ্ধি পাচ্ছে। এই প্রেক্ষাপটে সর্বজনীন ও গণতান্ত্রিক শিক্ষার দাবিতে ছাত্র সমাজের ভূমিকা কী হওয়া উচিত?",
+      "category": "শিক্ষা",
+      "tags": [
+        "শিক্ষা",
+        "গণতন্ত্র",
+        "ছাত্র আন্দোলন"
+      ],
+      "author": "চিত্রণ ভট্টাচার্য",
+      "authorEmail": "chitronbhattacharjee@gmail.com",
+      "createdAt": "২০২৬-০৮-২৫ ১০:৩০",
+      "answerCount": 1,
+      "answers": [
+        {
+          "id": "a_1",
+          "content": "শিক্ষার বাণিজ্যিকীকরণ রোধে সকল ছাত্র সংগঠনকে ঐক্যবদ্ধ হয়ে আন্দোলন গড়ে তুলতে হবে।",
+          "author": "তানিজ হোসেন মুনিম",
+          "authorEmail": "tanij@gmail.com",
+          "createdAt": "২০২৬-০৮-২৫ ১১:১৫"
+        }
+      ],
+      "upvotes": 5,
+      "upvotedBy": [
+        "chitronbhattacharjee@gmail.com"
+      ]
+    }
+  ]
 }
