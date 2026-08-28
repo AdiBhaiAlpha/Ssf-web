@@ -6,8 +6,8 @@
     <link rel="icon" type="image/png" href="https://i.ibb.co.com/F4MKM3R2/20260527-055637.png" />
     <title>সমাজতান্ত্রিক ছাত্র ফ্রন্ট, ময়মনসিংহ জেলা শাখা</title>
     <meta name="description" content="সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখা - সর্বজনীন গণতান্ত্রিক ও বৈজ্ঞানিক সমাজতান্ত্রিক সমাজ বিনির্মাণের লক্ষ্যে আপোষহীন প্রগতিশীল ছাত্র আন্দোলন।" />
-    <script type="module" crossorigin src="/assets/index-DkKEx6Oj.js?v=9"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BWvdgNyb.css?v=9">
+    <script type="module" crossorigin src="/assets/index-DkKEx6Oj.js?v=12"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BWvdgNyb.css?v=12">
   
     <!-- Custom Bangla Fonts Preload -->
     <link rel="preload" href="/fonts/Bornopata-Regular.ttf" as="font" type="font/ttf" crossorigin>
@@ -15,6 +15,29 @@
     <link rel="preload" href="/fonts/Li-Alinur-Sangbadpatra2-Unicode.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="/fonts/Li-Alinur-Sangbadpatra2-Unicode-Italic.ttf" as="font" type="font/ttf" crossorigin>
     <style>
+      html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+      #locked-canvas-stage {
+        touch-action: none !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        -webkit-user-drag: none !important;
+      }
+      #locked-canvas-stage canvas {
+        pointer-events: none !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        -webkit-user-drag: none !important;
+      }
 
 @font-face {
   font-family: 'Bornopata Regular';
@@ -99,32 +122,228 @@
   font-display: swap;
 }
 
+    
+/* =========================================================
+   PREMIUM INSTITUTIONAL GLOBAL LOADER & BOOT EXPERIENCE
+   ========================================================= */
+@keyframes ssfLogoEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ssfLogoFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes ssfAmbientLight {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes ssfIndeterminateProgress {
+  0% {
+    left: 0%;
+    width: 0%;
+  }
+  30% {
+    left: 10%;
+    width: 40%;
+  }
+  70% {
+    left: 55%;
+    width: 45%;
+  }
+  100% {
+    left: 100%;
+    width: 0%;
+  }
+}
+
+@keyframes ssfDot1 {
+  0%, 20% { opacity: 0; }
+  35%, 100% { opacity: 1; }
+}
+
+@keyframes ssfDot2 {
+  0%, 45% { opacity: 0; }
+  60%, 100% { opacity: 1; }
+}
+
+@keyframes ssfDot3 {
+  0%, 70% { opacity: 0; }
+  85%, 100% { opacity: 1; }
+}
+
+@keyframes ssfTextFade {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ssf-boot-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  background-color: #fafafa;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ssf-boot-container {
+    background-color: #09090b;
+  }
+}
+
+.dark .ssf-boot-container {
+  background-color: #09090b;
+}
+
+.ssf-logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ssfLogoEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ssf-logo-floater {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ssfLogoFloat 4.5s ease-in-out infinite 0.75s;
+  will-change: transform;
+}
+
+.ssf-logo-ambient {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(225, 29, 72, 0.18) 0%, rgba(225, 29, 72, 0.05) 50%, transparent 70%);
+  animation: ssfAmbientLight 3.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.ssf-logo-emblem {
+  position: relative;
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.1), 0 4px 12px -2px rgba(225, 29, 72, 0.12);
+  border: 1.5px solid rgba(225, 29, 72, 0.25);
+  background-color: #ffffff;
+}
+
+.dark .ssf-logo-emblem {
+  box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.5), 0 4px 14px -2px rgba(225, 29, 72, 0.2);
+  border: 1.5px solid rgba(225, 29, 72, 0.35);
+  background-color: #18181b;
+}
+
+.ssf-progress-track {
+  position: relative;
+  width: 150px;
+  height: 2.5px;
+  border-radius: 9999px;
+  background-color: rgba(225, 29, 72, 0.12);
+  overflow: hidden;
+}
+
+.dark .ssf-progress-track {
+  background-color: rgba(225, 29, 72, 0.2);
+}
+
+.ssf-progress-bar-active {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  background-color: #e11d48;
+  animation: ssfIndeterminateProgress 1.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.ssf-dot-1 {
+  display: inline-block;
+  animation: ssfDot1 1.6s infinite;
+}
+.ssf-dot-2 {
+  display: inline-block;
+  animation: ssfDot2 1.6s infinite;
+}
+.ssf-dot-3 {
+  display: inline-block;
+  animation: ssfDot3 1.6s infinite;
+}
+
+.ssf-status-text {
+  animation: ssfTextFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ssf-logo-wrapper,
+  .ssf-logo-floater,
+  .ssf-logo-ambient,
+  .ssf-status-text,
+  .ssf-dot-1,
+  .ssf-dot-2,
+  .ssf-dot-3 {
+    animation: none !important;
+  }
+}
     </style>
   
   </head>
   <body>
     <div id="root">
-      <style>
-        .app-initial-loader {
-          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          display: flex; justify-content: center; align-items: center;
-          background-color: #ffffff; z-index: 99999;
-        }
-        @media (prefers-color-scheme: dark) {
-          .app-initial-loader { background-color: #09090b; }
-        }
-        .app-spinner {
-          width: 44px; height: 44px;
-          border: 3px solid rgba(225, 29, 72, 0.15);
-          border-radius: 50%;
-          border-top-color: #e11d48;
-          animation: app-spin 0.8s ease-in-out infinite;
-        }
-        @keyframes app-spin {
-          to { transform: rotate(360deg); }
-        }
-      </style>
-      <div class="app-initial-loader"><div class="app-spinner"></div></div>
+      <div class="ssf-boot-container" style="position: fixed; inset: 0; z-index: 99999; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Bornopata', 'Hind Siliguri', sans-serif;">
+        <!-- Logo with subtle depth & soft ambient light -->
+        <div class="ssf-logo-wrapper" style="margin-bottom: 20px;">
+          <div class="ssf-logo-floater">
+            <div class="ssf-logo-ambient" style="width: 140px; height: 140px;"></div>
+            <div class="ssf-logo-emblem" style="width: 88px; height: 88px; display: flex; align-items: center; justify-content: center;">
+              <img src="https://i.ibb.co.com/F4MKM3R2/20260527-055637.png" alt="সমাজতান্ত্রিক ছাত্র ফ্রন্ট" style="width: 100%; height: 100%; object-fit: contain; border-radius: 9999px; pointer-events: none;" />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Institutional Typography -->
+        <div style="text-align: center; margin-bottom: 16px;">
+          <h1 style="font-size: 19px; font-weight: 700; color: #18181b; margin: 0 0 3px 0; font-family: 'Bornopata Bold', 'Bornopata', 'Hind Siliguri', serif; letter-spacing: 0.3px;">সমাজতান্ত্রিক ছাত্র ফ্রন্ট</h1>
+          <p style="font-size: 12px; font-weight: 600; color: #e11d48; margin: 0; letter-spacing: 0.5px;">ময়মনসিংহ জেলা শাখা</p>
+        </div>
+        
+        <!-- Status Text with 3-dot animation -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: #52525b; margin-bottom: 14px; font-family: 'Hind Siliguri', sans-serif;">
+          <span>অনলাইন ডাটাবেজ লোড হচ্ছে</span>
+          <span style="font-weight: 700; color: #e11d48; letter-spacing: 1px;"><span class="ssf-dot-1">.</span><span class="ssf-dot-2">.</span><span class="ssf-dot-3">.</span></span>
+        </div>
+        
+        <!-- Refined Thin Horizontal Progress Line -->
+        <div class="ssf-progress-track">
+          <div class="ssf-progress-bar-active"></div>
+        </div>
+      </div>
     </div>
     <script src="/jante-chai.js?v=6" defer></script>
     
