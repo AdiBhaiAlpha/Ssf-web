@@ -1050,34 +1050,30 @@ function isSuperAdmin(email) {
   try {
     const db = loadDatabase();
     const matchedInvite = (db.invitations || []).find(
-      (i) => i.email.toLowerCase() === lowerEmail && i.status === "accepted"
+      (i) => i.email.toLowerCase() === lowerEmail && i.status === accepted
     );
     if (matchedInvite) {
       return true;
     }
-
-const crypto = require("crypto");
-function hashPassword(pwd) {
-  if (!pwd) return "";
-  return crypto.createHash("sha256").update(String(pwd).trim()).digest("hex");
-}
-function isVerifiedMemberUser(email, db) {
-  if (!email) return false;
-  if (isSuperAdmin(email)) return true;
-  const norm = String(email).trim().toLowerCase();
-  return (db.memberships || []).some(m => m.email && m.email.trim().toLowerCase() === norm && (m.status === "verified" || m.emailVerified));
-}
-
-
-  } catch (e) {
-    console.error("Failed to read dynamic credentials", e);
-  }
+  } catch(e) {}
   return false;
 }
+
+// Security and Sanitization Helpers
+
+
+
+
+
+
+
+
+
 async function esmImport(moduleName) {
   const dynamicImport = new Function("specifier", "return import(specifier)");
   return dynamicImport(moduleName);
 }
+
 async function startServer() {
   const app = (0, import_express.default)();
   const PORT = 3e3;
@@ -1091,6 +1087,10 @@ async function startServer() {
 
 
 
+
+  app.use("/assets", import_express.default.static(import_path2.default.join(process.cwd(), "assets")));
+  app.use(import_express.default.static(import_path2.default.join(process.cwd(), "public")));
+  app.use(import_express.default.static(process.cwd(), { index: false }));
 
   const uploadsPath = import_path2.default.join(process.cwd(), "public", "uploads");
   app.use("/uploads", import_express.default.static(uploadsPath));
@@ -1207,9 +1207,50 @@ async function startServer() {
       res.status(500).send("Error proxying image");
     }
   });
+  
+  // Security & Sanitization Helpers inside startServer scope
+    function hashPassword(pwd) {
+    if (!pwd) return "";
+    const nodeCrypto = require("crypto");
+    return nodeCrypto.createHash("sha256").update(String(pwd).trim()).digest("hex");
+  }
+
+    function verifyPassword(pwd, hash) {
+    if (!pwd || !hash) return false;
+    const nodeCrypto = require("crypto");
+    const hashedInput = hashPassword(pwd);
+    return nodeCrypto.timingSafeEqual(Buffer.from(hashedInput), Buffer.from(hash));
+  }
+
+  function isVerifiedMemberUser(email, db) {
+    if (!email) return false;
+    if (isSuperAdmin(email)) return true;
+    const norm = String(email).trim().toLowerCase();
+    return (db.memberships || []).some(m => m.email && m.email.trim().toLowerCase() === norm && (m.status === "verified" || m.isVerifiedMember === true || m.isVerifiedMember === "true"));
+  }
+
+  function sanitizeCircular(circular, userEmail, db) {
+    if (!circular) return circular;
+    if (!circular.isPrivate && !circular.isPasswordProtected) return circular;
+    const isSuper = isSuperAdmin(userEmail);
+    const isVerified = isVerifiedMemberUser(userEmail, db);
+    if (isSuper) return circular;
+    if (circular.isPrivate && !circular.isPasswordProtected && isVerified) return circular;
+    
+    const { password, passwordHash, ...rest } = circular;
+    return {
+      ...rest,
+      content: null,
+      pressReleaseData: null,
+      isContentRedacted: true
+    };
+  }
+
   app.get("/api/db", (req, res) => {
     const db = loadDatabase();
-    res.json(db);
+    const userEmail = req.headers["user-email"] || req.query.userEmail;
+    const sanitizedCirculars = (db.circulars || []).map(c => sanitizeCircular(c, userEmail, db));
+    res.json({ ...db, circulars: sanitizedCirculars });
   });
 
 
@@ -2235,18 +2276,28 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
       return res.status(403).json({ error: "Unauthorized" });
     }
     const db = loadDatabase();
+    let pwdHash = null;
+    if (circular.isPasswordProtected && circular.password) {
+      pwdHash = hashPassword(circular.password);
+    } else if (circular.passwordHash) {
+      pwdHash = circular.passwordHash;
+    }
+    const { password, ...cleanCirc } = circular;
     const newCircular = {
-      ...circular,
+      ...cleanCirc,
       id: "circ_" + Date.now(),
-      date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+      date: circular.date || (new Date()).toISOString().split("T")[0],
+      isPrivate: Boolean(circular.isPrivate),
+      isPasswordProtected: Boolean(circular.isPasswordProtected),
+      passwordHash: pwdHash
     };
     db.circulars.unshift(newCircular);
     db.logs.unshift({
       id: "log_" + Date.now(),
-      timestamp: (/* @__PURE__ */ new Date()).toISOString().replace("T", " ").substring(0, 19),
-      action: "\u09B8\u09BE\u09B0\u09CD\u0995\u09C1\u09B2\u09BE\u09B0 \u099C\u09BE\u09B0\u09BF",
+      timestamp: (new Date()).toISOString().replace("T", " ").substring(0, 19),
+      action: "সার্কুলার জারি",
       user: userEmail,
-      details: `\u09AC\u09BF\u099C\u09CD\u099E\u09AA\u09CD\u09A4\u09BF / \u09B0\u09C7\u099C\u09CB\u09B2\u09BF\u0989\u09B6\u09A8 \u09B6\u09BF\u09B0\u09CB\u09A8\u09BE\u09AE: "${newCircular.title}" \u09AA\u09CD\u09B0\u0995\u09BE\u09B6 \u0995\u09B0\u09BE \u09B9\u09AF\u09BC\u09C7\u099B\u09C7\u0964`
+      details: 'বিজ্ঞপ্তি / রেজোলিউশন শিরোনাম: "' + newCircular.title + '" প্রকাশ করা হয়েছে।'
     });
     saveDatabase(db);
     res.json(newCircular);
