@@ -6,6 +6,25 @@
     <link rel="icon" type="image/png" href="https://i.ibb.co.com/F4MKM3R2/20260527-055637.png" />
     <title>সমাজতান্ত্রিক ছাত্র ফ্রন্ট, ময়মনসিংহ জেলা শাখা</title>
     <meta name="description" content="সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখা - সর্বজনীন গণতান্ত্রিক ও বৈজ্ঞানিক সমাজতান্ত্রিক সমাজ বিনির্মাণের লক্ষ্যে আপোষহীন প্রগতিশীল ছাত্র আন্দোলন।" />
+    <script>
+      // Bulletproof CanvasGradient.prototype.addColorStop protection for html2canvas & export
+      if (typeof CanvasGradient !== 'undefined' && CanvasGradient.prototype && CanvasGradient.prototype.addColorStop) {
+        const _origAddColorStop = CanvasGradient.prototype.addColorStop;
+        CanvasGradient.prototype.addColorStop = function(offset, color) {
+          let safeOffset = Number(offset);
+          if (!Number.isFinite(safeOffset) || isNaN(safeOffset)) {
+            safeOffset = 0;
+          } else {
+            safeOffset = Math.max(0, Math.min(1, safeOffset));
+          }
+          try {
+            return _origAddColorStop.call(this, safeOffset, color);
+          } catch (e) {
+            console.warn('[CanvasGradient] Guarded invalid stop:', offset, color, e);
+          }
+        };
+      }
+    </script>
     <script type="module" crossorigin src="/assets/index-DkKEx6Oj.js?v=13"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-BWvdgNyb.css?v=13">
   

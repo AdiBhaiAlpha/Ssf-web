@@ -1055,6 +1055,20 @@ function isSuperAdmin(email) {
     if (matchedInvite) {
       return true;
     }
+
+const crypto = require("crypto");
+function hashPassword(pwd) {
+  if (!pwd) return "";
+  return crypto.createHash("sha256").update(String(pwd).trim()).digest("hex");
+}
+function isVerifiedMemberUser(email, db) {
+  if (!email) return false;
+  if (isSuperAdmin(email)) return true;
+  const norm = String(email).trim().toLowerCase();
+  return (db.memberships || []).some(m => m.email && m.email.trim().toLowerCase() === norm && (m.status === "verified" || m.emailVerified));
+}
+
+
   } catch (e) {
     console.error("Failed to read dynamic credentials", e);
   }
@@ -2257,6 +2271,47 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
     saveDatabase(db);
     res.json(db.circulars[index]);
   });
+  
+  app.post("/api/circulars/:id/verify-password", (req, res) => {
+    try {
+      const { id } = req.params;
+      const { password, userEmail } = req.body;
+      const db = loadDatabase();
+      const circular = (db.circulars || []).find(c => c.id === id);
+      if (!circular) {
+        return res.status(404).json({ success: false, error: "সার্কুলার পাওয়া যায়নি।" });
+      }
+      const isSuper = isSuperAdmin(userEmail);
+      const isMember = isVerifiedMemberUser(userEmail, db);
+      if (!isSuper && !isMember) {
+        return res.status(403).json({ success: false, error: "শুধুমাত্র নিবন্ধিত ও অনুমোদিত সদস্যরা এই সংরক্ষিত সার্কুলারের অ্যাক্সেস পাবেন। প্রথমে মেম্বার পোর্টালে লগইন করুন।" });
+      }
+      if (!circular.isPasswordProtected || !circular.passwordHash) {
+        return res.json({
+          success: true,
+          content: circular.content,
+          pressReleaseData: circular.pressReleaseData,
+          image: circular.image,
+          pdfUrl: circular.pdfUrl
+        });
+      }
+      const hashed = hashPassword(password);
+      if (hashed !== circular.passwordHash) {
+        return res.status(401).json({ success: false, error: "ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড দিন।" });
+      }
+      return res.json({
+        success: true,
+        content: circular.content,
+        pressReleaseData: circular.pressReleaseData,
+        image: circular.image,
+        pdfUrl: circular.pdfUrl
+      });
+    } catch (err) {
+      console.error("verify-password error:", err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   app.delete("/api/circulars/:id", (req, res) => {
     const { id } = req.params;
     const validatedEmail = req.headers["user-email"] || req.query.userEmail || req.body && req.body.userEmail;
@@ -2339,26 +2394,80 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
   });
   app.put("/api/memberships/:id/verify", (req, res) => {
     const { id } = req.params;
-    const { status, userEmail } = req.body;
+    const { status, userEmail, isVerifiedMember, actionType } = req.body;
     if (!isSuperAdmin(userEmail)) {
       return res.status(403).json({ error: "Unauthorized action" });
     }
     const db = loadDatabase();
     const index = db.memberships.findIndex((m) => m.id === id);
     if (index === -1) return res.status(404).json({ error: "Membership not found" });
-    db.memberships[index].status = status;
-    if (status === "verified") {
-      db.memberships[index].verifiedAt = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+    const member = db.memberships[index];
+    if (actionType === "verify_member" || isVerifiedMember === true || isVerifiedMember === "true") {
+      member.isVerifiedMember = true;
+      member.verifiedAt = new Date().toISOString().replace("T", " ").substring(0, 19);
+      member.verifiedBy = userEmail || "Admin";
+      db.logs.unshift({
+        id: "log_" + Date.now(),
+        timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
+        action: "মেম্বার ভেরিফাইড (Member Verified)",
+        user: userEmail,
+        details: `সদস্য "${member.name}" (${member.email || member.id})-কে এডমিন কর্তৃক ভেরিফাইড করা হয়েছে।`
+      });
+    } else if (actionType === "undo_verification" || isVerifiedMember === false || isVerifiedMember === "false") {
+      member.isVerifiedMember = false;
+      member.verifiedAt = null;
+      member.verifiedBy = null;
+      db.logs.unshift({
+        id: "log_" + Date.now(),
+        timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
+        action: "ভেরিফিকেশন রিভোক (Verification Undone)",
+        user: userEmail,
+        details: `সদস্য "${member.name}" (${member.email || member.id})-এর এডমিন ভেরিফিকেশন বাতিল/রিভোক করা হয়েছে।`
+      });
+    } else if (status) {
+      member.status = status;
+      if (status === "verified") {
+        member.verifiedAt = new Date().toISOString().split("T")[0];
+      }
+      db.logs.unshift({
+        id: "log_" + Date.now(),
+        timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
+        action: `সদস্যতা স্ট্যাটাস: ${status === "verified" ? "অনুমোদিত" : "প্রত্যাখ্যাত"}`,
+        user: userEmail,
+        details: `আবেদনকারী "${member.name}"-এর মেম্বারশিপ আবেদন স্ট্যাটাস পরিবর্তন করা হয়েছে।`
+      });
+    }
+    saveDatabase(db);
+    res.json(member);
+  });
+  app.patch("/api/admin/members/:id/verify", (req, res) => {
+    const { id } = req.params;
+    const { isVerifiedMember, userEmail } = req.body;
+    if (!isSuperAdmin(userEmail)) {
+      return res.status(403).json({ error: "Unauthorized action" });
+    }
+    const db = loadDatabase();
+    const index = db.memberships.findIndex((m) => m.id === id);
+    if (index === -1) return res.status(404).json({ error: "Membership not found" });
+    const member = db.memberships[index];
+    const shouldVerify = isVerifiedMember === true || isVerifiedMember === "true";
+    member.isVerifiedMember = shouldVerify;
+    if (shouldVerify) {
+      member.verifiedAt = new Date().toISOString().replace("T", " ").substring(0, 19);
+      member.verifiedBy = userEmail || "Admin";
+    } else {
+      member.verifiedAt = null;
+      member.verifiedBy = null;
     }
     db.logs.unshift({
       id: "log_" + Date.now(),
-      timestamp: (/* @__PURE__ */ new Date()).toISOString().replace("T", " ").substring(0, 19),
-      action: `\u09B8\u09A6\u09B8\u09CD\u09AF\u09A4\u09BE \u09B8\u09CD\u099F\u09CD\u09AF\u09BE\u099F\u09BE\u09B8 \u09AA\u09B0\u09BF\u09AC\u09B0\u09CD\u09A4\u09A8: ${status === "verified" ? "\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4" : "\u09AA\u09CD\u09B0\u09A4\u09CD\u09AF\u09BE\u0996\u09CD\u09AF\u09BE\u09A4"}`,
+      timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
+      action: shouldVerify ? "মেম্বার ভেরিফাইড (Member Verified)" : "ভেরিফিকেশন বাতিল (Verification Undone)",
       user: userEmail,
-      details: `\u0986\u09AC\u09C7\u09A6\u09A8\u0995\u09BE\u09B0\u09C0 "${db.memberships[index].name}"-\u098F\u09B0 \u09B8\u09A6\u09B8\u09CD\u09AF\u09A4\u09BE \u09AF\u09BE\u099A\u09BE\u0987 \u09B8\u09CD\u099F\u09CD\u09AF\u09BE\u099F\u09BE\u09B8 \u09AA\u09B0\u09BF\u09AC\u09B0\u09CD\u09A4\u09A8 \u0995\u09B0\u09BE \u09B9\u09AF\u09BC\u09C7\u099B\u09C7\u0964`
+      details: `সদস্য "${member.name}"-এর ভেরিফিকেশন স্ট্যাটাস ${shouldVerify ? "ভেরিফাইড" : "আনভেরিফাইড"} করা হয়েছে।`
     });
     saveDatabase(db);
-    res.json(db.memberships[index]);
+    res.json({ success: true, member });
   });
   app.put("/api/memberships/:id/photo", (req, res) => {
     const { id } = req.params;
