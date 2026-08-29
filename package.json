@@ -5,6 +5,7 @@
   "description": "সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখা",
   "main": "server.cjs",
   "scripts": {
+    "dev": "node server.cjs",
     "build": "echo 'No build step required'",
     "start": "node server.cjs"
   },
