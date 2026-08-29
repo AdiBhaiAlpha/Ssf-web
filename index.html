@@ -10,6 +10,9 @@
     <link rel="stylesheet" crossorigin href="/assets/index-BWvdgNyb.css?v=12">
   
     <!-- Custom Bangla Fonts Preload -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
     <link rel="preload" href="/fonts/Bornopata-Regular.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="/fonts/Bornopata-Bold.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="/fonts/Li-Alinur-Sangbadpatra2-Unicode.ttf" as="font" type="font/ttf" crossorigin>
@@ -309,6 +312,356 @@
   .ssf-dot-2,
   .ssf-dot-3 {
     animation: none !important;
+  }
+}
+
+/* =========================================
+   SSF PRESS RELEASE TEMPLATE (ssfpr.html EXACT)
+========================================= */
+:root {
+  --brand-red: #c90d15;
+  --brand-dark: #a70910;
+  --deep-black: #171717;
+  --soft-black: #333333;
+  --paper: #ffffff;
+  --background: #eeeeee;
+  --line: #c9c9c9;
+}
+
+.ssf-pr-document {
+  font-family: "Tiro Bangla", serif;
+  color: #171717;
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 1in;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.ssf-pr-document::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, transparent 0%, #c90d15 12%, #c90d15 88%, transparent 100%);
+}
+
+.ssf-pr-header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-bottom: 18px;
+  position: relative;
+}
+
+.ssf-pr-logo-frame {
+  width: 138px;
+  min-width: 138px;
+  height: 150px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px;
+  margin-top: 15px;
+  box-sizing: border-box;
+}
+
+.ssf-pr-logo {
+  width: 120%;
+  height: 120%;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+}
+
+.ssf-pr-logo-frame::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border-top: 2px solid #222;
+  border-left: 2px solid #222;
+}
+
+.ssf-pr-logo-frame::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border-top: 2px solid #222;
+  border-right: 2px solid #222;
+}
+
+.ssf-pr-logo-corner-bl,
+.ssf-pr-logo-corner-br {
+  position: absolute;
+  bottom: 0;
+  width: 36px;
+  height: 36px;
+}
+
+.ssf-pr-logo-corner-bl {
+  left: 0;
+  border-bottom: 2px solid #222;
+  border-left: 2px solid #222;
+}
+
+.ssf-pr-logo-corner-br {
+  right: 0;
+  border-bottom: 2px solid #222;
+  border-right: 2px solid #222;
+}
+
+.ssf-pr-org-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ssf-pr-title-image {
+  width: 100%;
+  max-width: 465px;
+  max-height: 78px;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.ssf-pr-english-name {
+  font-family: "Roboto Slab", Georgia, serif;
+  color: #a70910;
+  font-size: 15.5pt;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+.ssf-pr-district-name {
+  color: #a70910;
+  font-size: 13.5pt;
+  line-height: 1.35;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+.ssf-pr-divider {
+  width: 100%;
+  height: 4px;
+  margin-top: 2px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.ssf-pr-divider::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-top: 1.5px solid #a70910;
+}
+
+.ssf-pr-divider::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-bottom: 1px solid #555;
+  opacity: 0.65;
+}
+
+.ssf-pr-meta {
+  position: relative;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0 10px;
+}
+
+.ssf-pr-release-title {
+  display: inline-block;
+  font-size: 16pt;
+  line-height: 1.15;
+  font-weight: 700;
+  padding: 0 10px 4px;
+  border-bottom: 2px solid #171717;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+.ssf-pr-date {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11pt;
+  line-height: 1.4;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.ssf-pr-headline-banner {
+  background: #c90d15;
+  color: #ffffff;
+  text-align: center;
+  padding: 15px 32px 16px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.ssf-pr-headline-banner::before,
+.ssf-pr-headline-banner::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.ssf-pr-headline-banner::before {
+  top: 7px;
+}
+
+.ssf-pr-headline-banner::after {
+  bottom: 7px;
+}
+
+.ssf-pr-headline-banner p {
+  font-size: 14pt;
+  line-height: 1.52;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.ssf-pr-article {
+  font-size: 12pt;
+  line-height: 1.65;
+  font-weight: 400;
+  text-align: justify;
+  color: #171717;
+}
+
+.ssf-pr-article p {
+  margin: 0 0 12px 0;
+}
+.ssf-pr-article p:last-child {
+  margin-bottom: 0;
+}
+
+.ssf-pr-committee-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #d5d5d5;
+}
+
+.ssf-pr-committee-grid {
+  display: grid;
+  grid-template-columns: 1.18fr 0.82fr;
+  align-items: start;
+}
+
+.ssf-pr-committee-col {
+  font-size: 12pt;
+  line-height: 1.65;
+}
+
+.ssf-pr-committee-col p {
+  margin: 0;
+}
+
+.ssf-pr-committee-col strong {
+  font-weight: 700;
+}
+
+.ssf-pr-members-col {
+  padding-left: 35px;
+  border-left: 1px solid #d0d0d0;
+}
+
+.ssf-pr-members-title {
+  display: inline-block;
+  font-weight: 700;
+  border-bottom: 1px solid #c90d15;
+  margin-bottom: 4px !important;
+  padding-bottom: 1px;
+}
+
+.ssf-pr-signature-wrap {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ssf-pr-signature {
+  width: 255px;
+  padding-top: 12px;
+  border-top: 2px solid #c90d15;
+  text-align: left;
+  font-size: 11pt;
+  line-height: 1.55;
+  color: #333333;
+}
+
+.ssf-pr-signature p {
+  margin: 0;
+}
+
+.ssf-pr-signature-label {
+  font-weight: 700;
+  color: #171717;
+  margin-bottom: 3px !important;
+}
+
+.ssf-pr-signature-name {
+  font-weight: 700;
+  color: #171717;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 1in;
+  }
+  body {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .ssf-pr-document {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+  .ssf-pr-document::before {
+    display: none !important;
+  }
+  .ssf-pr-headline-banner,
+  .ssf-pr-committee-section,
+  .ssf-pr-signature-wrap {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
     </style>
