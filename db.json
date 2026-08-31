@@ -3236,22 +3236,22 @@
   "communityMessages": [
     {
       "id": "test_ping",
-      "ping": true,
-      "timestamp": 1788183533761
+      "timestamp": 1788183533761,
+      "ping": true
     },
     {
       "id": "msg_1788184311629_rou7r",
-      "userAvatar": "",
       "attachment": null,
-      "isModerated": false,
-      "reportsCount": 0,
-      "editedAt": null,
-      "text": "✊",
-      "createdAt": "2026-08-31T13:51:51.629Z",
       "reportedBy": [],
-      "replyTo": null,
+      "editedAt": null,
+      "userAvatar": "",
+      "reportsCount": 0,
+      "text": "✊",
       "userEmail": "chitronbhattacharjee@gmail.com",
-      "userName": "চিত্রণ ভট্টাচার্য"
+      "replyTo": null,
+      "userName": "চিত্রণ ভট্টাচার্য",
+      "createdAt": "2026-08-31T13:51:51.629Z",
+      "isModerated": false
     }
   ]
 }

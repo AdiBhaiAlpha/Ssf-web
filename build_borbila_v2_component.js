@@ -1,13 +1,34 @@
 
-// Borbila PhotoCard Generator V2 Component Generator
 const fs = require("fs");
 
-const componentSource = `
-// ============================================================================
-// BORBILA PHOTOCARD GENERATOR V2 (REACT COMPONENT)
-// ============================================================================
+function generateBorbilaV2Component() {
+  return `function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, setCurrentTab }) {
+  // Built-in Complete Borbila PhotoCard V2 Canvas Engine
+  const DEFAULT_SETTINGS = {
+    format: "classic-red",
+    primaryColor: "#d60000",
+    secondaryColor: "#7a0000",
+    accentColor: "#ff2d2d",
+    topBackgroundColor: "#fff0f0",
+    titleColor: "#ffffff",
+    dateColor: "#3f3f46",
+    textColor: "#181818",
+    logoColor: "#181818",
+    logoUrl: "",
+    bottomText: "বিস্তারিত কমেন্টে",
+    captionText: "ছবি: সংগৃহীত",
+    sectionLabel: "সংবাদ",
+    footerLeftText: "",
+    footerRightText: "",
+    adText: "",
+    brandUrl: "ssf-mymensingh.org",
+    facebookUrl: "fb.com/ssfmymensingh",
+    youtubeUrl: "",
+    instagramUrl: "",
+    frontButtonText: "Download PhotoCard",
+    downloadPrefix: "ssf-photocard"
+  };
 
-function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, setCurrentTab }) {
   const PRESETS = {
     "classic-red": {
       id: "classic-red",
@@ -77,7 +98,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
       primaryColor: "#cf0000",
       secondaryColor: "#530000",
       accentColor: "#ffef00",
-      topBackgroundColor: "#080000",
+      topBackgroundColor: "#1a0505",
       titleColor: "#ffffff",
       dateColor: "#ffffff",
       textColor: "#ffffff",
@@ -86,6 +107,845 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
     }
   };
 
+  // Helper Engine Functions
+  function normalizeHexColor(value, fallback) {
+    var color = String(value || "").trim();
+    var shortHex = /^#([0-9a-f]{3})$/i.exec(color);
+    if (shortHex) {
+      color = "#" + shortHex[1].split("").map(function(char) { return char + char; }).join("");
+    }
+    if (/^#[0-9a-f]{6}$/i.test(color)) {
+      return color;
+    }
+    return fallback;
+  }
+
+  function hexToRgb(color) {
+    var normalized = normalizeHexColor(color, "#000000").replace("#", "");
+    return {
+      r: parseInt(normalized.slice(0, 2), 16) || 0,
+      g: parseInt(normalized.slice(2, 4), 16) || 0,
+      b: parseInt(normalized.slice(4, 6), 16) || 0
+    };
+  }
+
+  function colorWithAlpha(color, alpha) {
+    var rgb = hexToRgb(color);
+    return "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", " + alpha + ")";
+  }
+
+  function displayUrlText(url, fallback) {
+    var raw = String(url || "").trim();
+    if (!raw) return String(fallback || "").trim();
+    try {
+      var parsed = new URL(raw.startsWith("http") ? raw : "https://" + raw);
+      var host = parsed.hostname.replace(/^www\\./i, "");
+      var path = parsed.pathname.replace(/\\/$/, "");
+      return host + (path && path !== "/" ? path : "");
+    } catch (e) {
+      return raw.replace(/^https?:\\/\\//i, "").replace(/^www\\./i, "").replace(/\\/$/, "");
+    }
+  }
+
+  function socialHandleText(url, fallback) {
+    var raw = String(url || "").trim();
+    if (!raw) return String(fallback || "").trim();
+    try {
+      var parsed = new URL(raw.startsWith("http") ? raw : "https://" + raw);
+      var parts = parsed.pathname.split("/").filter(Boolean);
+      return parts.length ? parts[parts.length - 1] : parsed.hostname.replace(/^www\\./i, "");
+    } catch (e) {
+      return raw.replace(/^https?:\\/\\//i, "").replace(/^www\\./i, "").replace(/\\/$/, "");
+    }
+  }
+
+  function getTextFont(weight, size) {
+    return weight + " " + size + "px \"SolaimanLipi\", \"Noto Sans Bengali\", \"Hind Siliguri\", \"Arial\", sans-serif";
+  }
+
+  function getTitleFont(size) {
+    return "700 " + size + "px \"SolaimanLipi\", \"Noto Sans Bengali\", \"Hind Siliguri\", Arial, sans-serif";
+  }
+
+  function getTitleFontMedium(size) {
+    return "500 " + size + "px Arial, \"Noto Sans Bengali\", \"SolaimanLipi\", \"Hind Siliguri\", sans-serif";
+  }
+
+  function trimTextToWidth(ctx, text, maxWidth) {
+    var value = String(text || "").trim();
+    if (!value) return "";
+    if (ctx.measureText(value).width <= maxWidth) return value;
+    var ellipsis = "...";
+    var left = 0;
+    var right = value.length;
+    var best = ellipsis;
+    while (left <= right) {
+      var mid = Math.floor((left + right) / 2);
+      var candidate = value.slice(0, mid).trim() + ellipsis;
+      if (ctx.measureText(candidate).width <= maxWidth) {
+        best = candidate;
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    return best;
+  }
+
+  function wrapText(ctx, text, maxWidth) {
+    var words = String(text || "").trim().split(/\\s+/);
+    if (!words.length || !words[0]) return [];
+    var lines = [];
+    var currentLine = "";
+    for (var i = 0; i < words.length; i++) {
+      var testLine = currentLine ? currentLine + " " + words[i] : words[i];
+      if (ctx.measureText(testLine).width <= maxWidth || !currentLine) {
+        currentLine = testLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = words[i];
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  }
+
+  function drawAdaptiveMultiline(ctx, text, options) {
+    var maxWidth = options.maxWidth || 900;
+    var maxLines = options.maxLines || 3;
+    var maxFont = options.maxFont || 80;
+    var minFont = options.minFont || 38;
+    var lineGap = options.lineGap || 1.12;
+    var fontGetter = options.fontGetter || function(size) { return getTextFont("700", size); };
+    var x = options.x;
+    var y = options.y;
+    var boxHeight = options.height || 240;
+    var bestSize = minFont;
+    var lines = [];
+    for (var size = maxFont; size >= minFont; size -= 2) {
+      ctx.font = fontGetter(size);
+      var testLines = wrapText(ctx, text, maxWidth);
+      if (testLines.length <= maxLines) {
+        lines = testLines;
+        bestSize = size;
+        break;
+      }
+      if (!lines.length) lines = testLines;
+    }
+    ctx.font = fontGetter(bestSize);
+    if (lines.length > maxLines) {
+      lines = lines.slice(0, maxLines);
+      lines[maxLines - 1] = trimTextToWidth(ctx, lines[maxLines - 1], maxWidth - 10);
+    }
+    if (!lines.length) return;
+    var lineHeight = Math.round(bestSize * lineGap);
+    var blockHeight = lines.length * lineHeight;
+    var startY = y + Math.max(0, Math.floor((boxHeight - blockHeight) / 2));
+    ctx.textAlign = options.align || "center";
+    ctx.textBaseline = "top";
+    for (var i = 0; i < lines.length; i++) {
+      ctx.fillText(lines[i], x, startY + i * lineHeight);
+    }
+  }
+
+  function toEnglishDateText(text) {
+    var map = { "০":"0","১":"1","২":"2","৩":"3","৪":"4","৫":"5","৬":"6","৭":"7","৮":"8","৯":"9" };
+    return String(text || "").replace(/[০-৯]/g, function(digit) { return map[digit] || digit; });
+  }
+
+  function roundedRectPath(ctx, x, y, w, h, r) {
+    var radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + w - radius, y);
+    ctx.arcTo(x + w, y, x + w, y + radius, radius);
+    ctx.lineTo(x + w, y + h - radius);
+    ctx.arcTo(x + w, y + h, x + w - radius, y + h, radius);
+    ctx.lineTo(x + radius, y + h);
+    ctx.arcTo(x, y + h, x, y + h - radius, radius);
+    ctx.lineTo(x, y + radius);
+    ctx.arcTo(x, y, x + radius, y, radius);
+    ctx.closePath();
+  }
+
+  function fillRoundedRect(ctx, x, y, w, h, r, fillStyle) {
+    ctx.fillStyle = fillStyle;
+    roundedRectPath(ctx, x, y, w, h, r);
+    ctx.fill();
+  }
+
+  function strokeRoundedRect(ctx, x, y, w, h, r, strokeStyle, lineWidth) {
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = lineWidth || 1;
+    roundedRectPath(ctx, x, y, w, h, r);
+    ctx.stroke();
+  }
+
+  function drawCornerTriangle(ctx, size, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(size, 0);
+    ctx.lineTo(size - 120, 0);
+    ctx.lineTo(size, 120);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawSquarePattern(ctx, startX, startY, color) {
+    var square = 16;
+    var gap = 11;
+    var rows = 9;
+    var cols = 4;
+    ctx.fillStyle = color;
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        if ((r + c) % 2 === 0) {
+          ctx.fillRect(startX + c * (square + gap), startY + r * (square + gap), square, square);
+        }
+      }
+    }
+  }
+
+  function chamferPath(ctx, x, y, w, h, cut) {
+    var c = Math.max(0, Math.min(cut, Math.min(w, h) / 3));
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + w - c, y);
+    ctx.lineTo(x + w, y + c);
+    ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x + c, y + h);
+    ctx.lineTo(x, y + h - c);
+    ctx.closePath();
+  }
+
+  function drawPlaceholderPattern(ctx, x, y, w, h, label) {
+    var grad = ctx.createLinearGradient(x, y, x + w, y + h);
+    grad.addColorStop(0, "#2d3748");
+    grad.addColorStop(0.5, "#1a202c");
+    grad.addColorStop(1, "#171923");
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, w, h);
+
+    // Subtle grid
+    ctx.strokeStyle = "rgba(255,255,255,0.06)";
+    ctx.lineWidth = 1;
+    for (var gx = x; gx <= x + w; gx += 40) {
+      ctx.beginPath();
+      ctx.moveTo(gx, y);
+      ctx.lineTo(gx, y + h);
+      ctx.stroke();
+    }
+    for (var gy = y; gy <= y + h; gy += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, gy);
+      ctx.lineTo(x + w, gy);
+      ctx.stroke();
+    }
+
+    // Central Icon badge
+    var cx = x + w / 2;
+    var cy = y + h / 2 - 15;
+    ctx.fillStyle = "rgba(255,255,255,0.12)";
+    ctx.beginPath();
+    ctx.arc(cx, cy, 44, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Camera silhouette
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.fillRect(cx - 24, cy - 14, 48, 30);
+    ctx.fillRect(cx - 10, cy - 20, 20, 7);
+    ctx.fillStyle = "#1a202c";
+    ctx.beginPath();
+    ctx.arc(cx, cy + 1, 9, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Text Label
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.font = getTextFont("600", 22);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label || "সংবাদ ছবি যুক্ত করুন", cx, cy + 42);
+  }
+
+  function drawImageCover(ctx, img, x, y, width, height) {
+    if (!img || !img.width || !img.height) {
+      drawPlaceholderPattern(ctx, x, y, width, height, "সংবাদ ছবি");
+      return;
+    }
+    var boxRatio = width / height;
+    var imageRatio = img.width / img.height;
+    var drawWidth, drawHeight, drawX, drawY;
+    if (imageRatio > boxRatio) {
+      drawHeight = height;
+      drawWidth = height * imageRatio;
+      drawX = x - (drawWidth - width) / 2;
+      drawY = y;
+    } else {
+      drawWidth = width;
+      drawHeight = width / imageRatio;
+      drawX = x;
+      drawY = y - (drawHeight - height) / 2;
+    }
+    try {
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+    } catch (e) {
+      drawPlaceholderPattern(ctx, x, y, width, height, "সংবাদ ছবি");
+    }
+  }
+
+  function drawLogo(ctx, logoImage, payload, settings, options) {
+    var x = options.x;
+    var y = options.y;
+    var maxW = options.maxW || 330;
+    var maxH = options.maxH || 110;
+    var align = options.align || "left";
+    if (logoImage && logoImage.width && logoImage.height) {
+      var ratio = logoImage.width / logoImage.height;
+      var w = maxW;
+      var h = maxW / ratio;
+      if (h > maxH) {
+        h = maxH;
+        w = h * ratio;
+      }
+      var drawX = x;
+      if (align === "center") {
+        drawX = x + (maxW - w) / 2;
+      } else if (align === "right") {
+        drawX = x + maxW - w;
+      }
+      try {
+        ctx.drawImage(logoImage, drawX, y + (maxH - h) / 2, w, h);
+        return;
+      } catch (e) {}
+    }
+    var siteText = payload.siteName || payload.domain || "সমাজতান্ত্রিক ছাত্র ফ্রন্ট";
+    var textX = x;
+    if (align === "center") {
+      textX = x + maxW / 2;
+    } else if (align === "right") {
+      textX = x + maxW;
+    }
+    ctx.fillStyle = options.color || settings.logoColor || "#181818";
+    ctx.font = getTextFont("800", options.fontSize || 38);
+    ctx.textAlign = align;
+    ctx.textBaseline = "middle";
+    ctx.fillText(trimTextToWidth(ctx, siteText, maxW), textX, y + maxH / 2);
+  }
+
+  function drawDate(ctx, payload, settings, x, y, align, size, color) {
+    var dateText = toEnglishDateText(payload.dateText || "");
+    ctx.fillStyle = color || settings.dateColor;
+    ctx.font = getTextFont("700", size || 42);
+    ctx.textAlign = align || "right";
+    ctx.textBaseline = "middle";
+    ctx.fillText(dateText, x, y);
+  }
+
+  function drawImageFrameClassic(ctx, photoImage) {
+    var x = 40;
+    var y = 145;
+    var w = 1000;
+    var h = 590;
+    var cut = 42;
+    var inset = 8;
+    ctx.fillStyle = "#ffffff";
+    chamferPath(ctx, x, y, w, h, cut);
+    ctx.fill();
+    var ix = x + inset;
+    var iy = y + inset;
+    var iw = w - inset * 2;
+    var ih = h - inset * 2;
+    var icut = Math.max(0, cut - inset);
+    ctx.save();
+    chamferPath(ctx, ix, iy, iw, ih, icut);
+    ctx.clip();
+    drawImageCover(ctx, photoImage, ix, iy, iw, ih);
+    ctx.restore();
+  }
+
+  function drawBottomLinkStrip(ctx, text, settings, options) {
+    options = options || {};
+    var stripX = options.x || 162;
+    var stripY = options.y || 968;
+    var stripW = options.w || 756;
+    var stripH = options.h || 74;
+    var radius = stripH / 2;
+    ctx.save();
+    ctx.shadowColor = colorWithAlpha(settings.primaryColor, 0.28);
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 0;
+    fillRoundedRect(ctx, stripX, stripY, stripW, stripH, radius, colorWithAlpha(settings.primaryColor, 0.18));
+    ctx.restore();
+    var body = ctx.createLinearGradient(stripX, stripY, stripX, stripY + stripH);
+    body.addColorStop(0, settings.accentColor);
+    body.addColorStop(0.45, settings.primaryColor);
+    body.addColorStop(1, settings.secondaryColor);
+    fillRoundedRect(ctx, stripX, stripY, stripW, stripH, radius, body);
+    ctx.save();
+    roundedRectPath(ctx, stripX + 1.5, stripY + 1.5, stripW - 3, stripH - 3, radius - 1.5);
+    ctx.clip();
+    var gloss = ctx.createLinearGradient(stripX, stripY, stripX, stripY + stripH * 0.62);
+    gloss.addColorStop(0, "rgba(255,255,255,0.58)");
+    gloss.addColorStop(0.28, "rgba(255,255,255,0.22)");
+    gloss.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = gloss;
+    ctx.fillRect(stripX, stripY, stripW, stripH * 0.62);
+    ctx.restore();
+    strokeRoundedRect(ctx, stripX, stripY, stripW, stripH, radius, colorWithAlpha(settings.accentColor, 0.72), 1.2);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = getTextFont("700", options.fontSize || 30);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(trimTextToWidth(ctx, text, stripW - 80), stripX + stripW / 2, stripY + stripH / 2 + 1);
+  }
+
+  function drawSubtleGrid(ctx, x, y, w, h, color) {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    for (var gx = x; gx <= x + w; gx += 42) {
+      ctx.beginPath();
+      ctx.moveTo(gx, y);
+      ctx.lineTo(gx, y + h);
+      ctx.stroke();
+    }
+    for (var gy = y; gy <= y + h; gy += 42) {
+      ctx.beginPath();
+      ctx.moveTo(x, gy);
+      ctx.lineTo(x + w, gy);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawFooterMeta(ctx, payload, settings, options) {
+    options = options || {};
+    var y = options.y || 1022;
+    var left = settings.footerLeftText || payload.siteName || "";
+    var right = settings.footerRightText || displayUrlText(settings.brandUrl, payload.domain);
+    ctx.fillStyle = options.color || settings.textColor;
+    ctx.font = getTextFont("600", options.size || 28);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(trimTextToWidth(ctx, left + (left && payload.dateText ? " | " : "") + toEnglishDateText(payload.dateText || ""), 450), options.leftX || 54, y);
+    ctx.textAlign = "right";
+    ctx.fillText(trimTextToWidth(ctx, right, 420), options.rightX || 1026, y);
+  }
+
+  function drawSocialStrip(ctx, payload, settings, x, y, w, h) {
+    var site = displayUrlText(settings.brandUrl, payload.domain);
+    var facebook = socialHandleText(settings.facebookUrl, "");
+    var youtube = socialHandleText(settings.youtubeUrl, "");
+    var instagram = socialHandleText(settings.instagramUrl, "");
+    var items = [site];
+    if (facebook) items.push("f  " + facebook);
+    if (youtube) items.push("▶  " + youtube);
+    if (instagram) items.push("ig  " + instagram);
+    var gradient = ctx.createLinearGradient(x, y, x + w, y);
+    gradient.addColorStop(0, settings.secondaryColor);
+    gradient.addColorStop(0.55, settings.primaryColor);
+    gradient.addColorStop(1, settings.secondaryColor);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = getTextFont("700", 30);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(trimTextToWidth(ctx, items.join("   |   "), w - 80), x + w / 2, y + h / 2);
+  }
+
+  function drawAdBar(ctx, settings, x, y, w, h) {
+    var adText = settings.adText || "";
+    if (!adText) return;
+    var gradient = ctx.createLinearGradient(x, y, x + w, y);
+    gradient.addColorStop(0, "#ffffff");
+    gradient.addColorStop(0.5, colorWithAlpha(settings.accentColor, 0.18));
+    gradient.addColorStop(1, "#ffffff");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = settings.primaryColor;
+    ctx.font = getTextFont("800", 34);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(trimTextToWidth(ctx, adText, w - 80), x + w / 2, y + h / 2);
+  }
+
+  // 1. CLASSIC RED FORMAT
+  function drawClassicFormat(ctx, photoImage, logoImage, payload, settings, size) {
+    ctx.fillStyle = settings.topBackgroundColor || "#fff0f0";
+    ctx.fillRect(0, 0, size, size);
+    var redGradient = ctx.createLinearGradient(0, 456, 0, size);
+    redGradient.addColorStop(0, settings.primaryColor);
+    redGradient.addColorStop(1, settings.secondaryColor);
+    ctx.fillStyle = redGradient;
+    ctx.fillRect(0, 456, size, size - 456);
+    drawCornerTriangle(ctx, size, settings.primaryColor);
+    ctx.fillStyle = settings.primaryColor;
+    ctx.fillRect(0, 455, size, 135);
+    drawSquarePattern(ctx, 0, 600, colorWithAlpha(settings.accentColor, 0.34));
+    drawSquarePattern(ctx, 0, 920, colorWithAlpha(settings.accentColor, 0.34));
+    drawSquarePattern(ctx, 980, 600, colorWithAlpha(settings.accentColor, 0.34));
+    drawSquarePattern(ctx, 980, 920, colorWithAlpha(settings.accentColor, 0.34));
+    drawLogo(ctx, logoImage, payload, settings, {
+      x: 66,
+      y: 34,
+      maxW: 330,
+      maxH: 110,
+      align: "left"
+    });
+    drawDate(ctx, payload, settings, 980, 82, "right", 42);
+    drawImageFrameClassic(ctx, photoImage);
+    if (settings.captionText) {
+      ctx.fillStyle = colorWithAlpha("#000000", 0.52);
+      ctx.font = getTextFont("500", 24);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(trimTextToWidth(ctx, settings.captionText, 450), 62, 702);
+    }
+    ctx.fillStyle = settings.titleColor;
+    drawAdaptiveMultiline(ctx, payload.title || "", {
+      x: 540,
+      y: 730,
+      maxWidth: 960,
+      maxLines: 3,
+      maxFont: 72,
+      minFont: 36,
+      lineGap: 1.12,
+      height: 220,
+      fontGetter: getTitleFont
+    });
+    drawBottomLinkStrip(ctx, payload.centerText || settings.bottomText || "বিস্তারিত কমেন্টে", settings, {
+      x: 162,
+      y: 968,
+      w: 756,
+      h: 74
+    });
+  }
+
+  // 2. FRESH BLUE / EDITORIAL WHITE FORMAT
+  function drawSplitFormat(ctx, photoImage, logoImage, payload, settings, size) {
+    ctx.fillStyle = settings.topBackgroundColor || "#f3f3f3";
+    ctx.fillRect(0, 0, size, size);
+    drawImageCover(ctx, photoImage, 0, 0, size, 620);
+    var imageFade = ctx.createLinearGradient(0, 450, 0, 620);
+    imageFade.addColorStop(0, "rgba(0,0,0,0)");
+    imageFade.addColorStop(1, "rgba(0,0,0,0.42)");
+    ctx.fillStyle = imageFade;
+    ctx.fillRect(0, 450, size, 170);
+    if (settings.captionText) {
+      ctx.fillStyle = "rgba(255,255,255,0.88)";
+      ctx.font = getTextFont("500", 25);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(trimTextToWidth(ctx, settings.captionText, 720), 52, 575);
+    }
+    ctx.fillStyle = settings.topBackgroundColor || "#f3f3f3";
+    ctx.beginPath();
+    ctx.moveTo(0, 620);
+    ctx.lineTo(455, 620);
+    ctx.quadraticCurveTo(540, 535, 625, 620);
+    ctx.lineTo(size, 620);
+    ctx.lineTo(size, size);
+    ctx.lineTo(0, size);
+    ctx.closePath();
+    ctx.fill();
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 24;
+    ctx.shadowOffsetY = 6;
+    fillRoundedRect(ctx, 442, 510, 196, 120, 24, "#ffffff");
+    ctx.restore();
+    drawLogo(ctx, logoImage, payload, settings, {
+      x: 458,
+      y: 524,
+      maxW: 164,
+      maxH: 92,
+      align: "center",
+      color: settings.logoColor
+    });
+    ctx.fillStyle = settings.titleColor;
+    drawAdaptiveMultiline(ctx, payload.title || "", {
+      x: 540,
+      y: 672,
+      maxWidth: 960,
+      maxLines: 4,
+      maxFont: 64,
+      minFont: 36,
+      lineGap: 1.1,
+      height: 290,
+      fontGetter: getTitleFont
+    });
+    ctx.fillStyle = colorWithAlpha(settings.primaryColor, 0.12);
+    ctx.fillRect(0, 978, size, 102);
+    drawFooterMeta(ctx, payload, settings, {
+      y: 1028,
+      color: settings.textColor,
+      size: 30,
+      leftX: 62,
+      rightX: 1018
+    });
+  }
+
+  // 3. DARK BREAKING NEWS FORMAT
+  function drawMarketFormat(ctx, photoImage, logoImage, payload, settings, size) {
+    var bg = ctx.createLinearGradient(0, 0, 0, size);
+    bg.addColorStop(0, settings.secondaryColor || "#050000");
+    bg.addColorStop(0.52, settings.primaryColor || "#e50914");
+    bg.addColorStop(1, "#001a55");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, size, size);
+    drawSubtleGrid(ctx, 0, 0, size, 420, "rgba(255,255,255,0.08)");
+    drawLogo(ctx, logoImage, payload, settings, {
+      x: 34,
+      y: 28,
+      maxW: 240,
+      maxH: 85,
+      align: "left",
+      color: settings.logoColor
+    });
+    if (settings.sectionLabel) {
+      fillRoundedRect(ctx, 825, 36, 210, 54, 12, colorWithAlpha(settings.primaryColor, 0.82));
+      ctx.fillStyle = "#ffffff";
+      ctx.font = getTextFont("800", 28);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(trimTextToWidth(ctx, settings.sectionLabel, 180), 930, 63);
+    }
+    var cardX = 36;
+    var cardY = 126;
+    var cardW = 1008;
+    var cardH = 540;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.55)";
+    ctx.shadowBlur = 32;
+    ctx.shadowOffsetY = 16;
+    fillRoundedRect(ctx, cardX, cardY, cardW, cardH, 28, "#ffffff");
+    ctx.restore();
+    ctx.save();
+    roundedRectPath(ctx, cardX, cardY, cardW, cardH, 28);
+    ctx.clip();
+    drawImageCover(ctx, photoImage, cardX, cardY, cardW, cardH);
+    if (settings.captionText) {
+      fillRoundedRect(ctx, cardX + 24, cardY + cardH - 64, 460, 44, 12, "rgba(0,0,0,0.65)");
+      ctx.fillStyle = "#ffffff";
+      ctx.font = getTextFont("500", 22);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(trimTextToWidth(ctx, settings.captionText, 420), cardX + 44, cardY + cardH - 42);
+    }
+    ctx.restore();
+    ctx.fillStyle = settings.titleColor;
+    drawAdaptiveMultiline(ctx, payload.title || "", {
+      x: 540,
+      y: 700,
+      maxWidth: 960,
+      maxLines: 3,
+      maxFont: 68,
+      minFont: 36,
+      lineGap: 1.1,
+      height: 200,
+      fontGetter: getTitleFont
+    });
+    drawBottomLinkStrip(ctx, payload.centerText || settings.bottomText || "বিস্তারিত কমেন্টে", settings, {
+      x: 180,
+      y: 914,
+      w: 720,
+      h: 68,
+      fontSize: 28
+    });
+    drawFooterMeta(ctx, payload, settings, {
+      y: 1024,
+      color: "#ffffff",
+      size: 26,
+      leftX: 52,
+      rightX: 1028
+    });
+  }
+
+  // 4. SOCIAL FOOTER TV CARD FORMAT
+  function drawMagazineFormat(ctx, photoImage, logoImage, payload, settings, size) {
+    ctx.fillStyle = settings.primaryColor || "#b40000";
+    ctx.fillRect(0, 0, size, size);
+    ctx.strokeStyle = settings.secondaryColor || "#6c0000";
+    ctx.lineWidth = 14;
+    ctx.strokeRect(7, 7, size - 14, size - 14);
+    drawImageCover(ctx, photoImage, 8, 8, size - 16, 560);
+    var overlay = ctx.createLinearGradient(0, 380, 0, 568);
+    overlay.addColorStop(0, "rgba(0,0,0,0)");
+    overlay.addColorStop(1, "rgba(0,0,0,0.45)");
+    ctx.fillStyle = overlay;
+    ctx.fillRect(8, 380, size - 16, 188);
+    drawLogo(ctx, logoImage, payload, settings, {
+      x: 32,
+      y: 22,
+      maxW: 260,
+      maxH: 80,
+      align: "left",
+      color: settings.logoColor
+    });
+    if (settings.sectionLabel) {
+      fillRoundedRect(ctx, 820, 36, 220, 58, 8, colorWithAlpha(settings.secondaryColor, 0.68));
+      ctx.fillStyle = "#ffffff";
+      ctx.font = getTextFont("800", 30);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(trimTextToWidth(ctx, settings.sectionLabel, 190), 930, 65);
+    }
+    if (settings.captionText) {
+      ctx.fillStyle = "rgba(255,255,255,0.92)";
+      ctx.font = getTextFont("600", 25);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(trimTextToWidth(ctx, settings.captionText, 700), 38, 528);
+    }
+    var titleBox = ctx.createLinearGradient(0, 568, 0, 890);
+    titleBox.addColorStop(0, settings.primaryColor);
+    titleBox.addColorStop(1, settings.secondaryColor);
+    ctx.fillStyle = titleBox;
+    ctx.fillRect(8, 568, size - 16, 322);
+    ctx.fillStyle = settings.titleColor;
+    drawAdaptiveMultiline(ctx, payload.title || "", {
+      x: 540,
+      y: 602,
+      maxWidth: 960,
+      maxLines: 4,
+      maxFont: 66,
+      minFont: 36,
+      lineGap: 1.08,
+      height: 254,
+      fontGetter: getTitleFont
+    });
+    drawSocialStrip(ctx, payload, settings, 8, 890, size - 16, 68);
+    if (settings.adText) {
+      drawAdBar(ctx, settings, 8, 958, size - 16, 66);
+      drawFooterMeta(ctx, payload, settings, {
+        y: 1048,
+        color: "#ffffff",
+        size: 24,
+        leftX: 36,
+        rightX: 1044
+      });
+    } else {
+      drawFooterMeta(ctx, payload, settings, {
+        y: 994,
+        color: "#ffffff",
+        size: 28,
+        leftX: 36,
+        rightX: 1044
+      });
+    }
+  }
+
+  // 5. RED CAPTION SQUARE FRAME FORMAT
+  function drawFrameFormat(ctx, photoImage, logoImage, payload, settings, size) {
+    ctx.fillStyle = settings.topBackgroundColor || "#1a0505";
+    ctx.fillRect(0, 0, size, size);
+    ctx.strokeStyle = settings.primaryColor;
+    ctx.lineWidth = 22;
+    ctx.strokeRect(11, 11, size - 22, size - 22);
+    drawImageCover(ctx, photoImage, 24, 24, size - 48, 620);
+    drawLogo(ctx, logoImage, payload, settings, {
+      x: 34,
+      y: 30,
+      maxW: 180,
+      maxH: 110,
+      align: "left",
+      color: settings.logoColor
+    });
+    var imageOverlay = ctx.createLinearGradient(0, 440, 0, 645);
+    imageOverlay.addColorStop(0, "rgba(0,0,0,0)");
+    imageOverlay.addColorStop(1, "rgba(0,0,0,0.52)");
+    ctx.fillStyle = imageOverlay;
+    ctx.fillRect(24, 440, size - 48, 205);
+    if (settings.captionText) {
+      ctx.fillStyle = "#ffffff";
+      ctx.font = getTextFont("700", 34);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(trimTextToWidth(ctx, settings.captionText, 520), 48, 596);
+    }
+    var redPanel = ctx.createLinearGradient(0, 632, 0, size);
+    redPanel.addColorStop(0, settings.primaryColor);
+    redPanel.addColorStop(1, settings.secondaryColor);
+    ctx.fillStyle = redPanel;
+    ctx.fillRect(0, 632, size, 448);
+    drawSubtleGrid(ctx, 0, 632, size, 380, colorWithAlpha(settings.accentColor, 0.06));
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.35)";
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 5;
+    fillRoundedRect(ctx, 444, 590, 192, 110, 60, "#ffffff");
+    ctx.restore();
+    drawLogo(ctx, logoImage, payload, settings, {
+      x: 462,
+      y: 600,
+      maxW: 156,
+      maxH: 88,
+      align: "center",
+      color: settings.primaryColor,
+      fontSize: 34
+    });
+    ctx.fillStyle = settings.titleColor;
+    drawAdaptiveMultiline(ctx, payload.title || "", {
+      x: 540,
+      y: 710,
+      maxWidth: 940,
+      maxLines: 4,
+      maxFont: 62,
+      minFont: 36,
+      lineGap: 1.08,
+      height: 260,
+      fontGetter: getTitleFont
+    });
+    ctx.fillStyle = colorWithAlpha("#000000", 0.35);
+    ctx.fillRect(0, 1010, size, 70);
+    drawDate(ctx, payload, settings, 56, 1044, "left", 28, "#ffffff");
+    ctx.fillStyle = "#ffffff";
+    ctx.font = getTextFont("800", 31);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(trimTextToWidth(ctx, settings.bottomText || "বিস্তারিত কমেন্টে", 360), 540, 1044);
+    ctx.textAlign = "right";
+    ctx.fillText(trimTextToWidth(ctx, displayUrlText(settings.brandUrl, payload.domain), 340), 1024, 1044);
+    if (settings.accentColor) {
+      ctx.fillStyle = settings.accentColor;
+      ctx.font = getTextFont("900", 58);
+      ctx.textAlign = "right";
+      ctx.textBaseline = "alphabetic";
+      var words = String(payload.title || "").trim().split(/\\s+/);
+      if (words.length > 2) {
+        ctx.fillText(trimTextToWidth(ctx, words[words.length - 1], 270), 1016, 952);
+      }
+    }
+  }
+
+  const FORMAT_RENDERERS = {
+    "classic-red": drawClassicFormat,
+    "fresh-blue": drawSplitFormat,
+    "green-market": drawMarketFormat,
+    "dark-magazine": drawMagazineFormat,
+    "gold-frame": drawFrameFormat
+  };
+
+  // Safe Image Loader
+  const loadSafeImage = (src) => {
+    if (!src || typeof src !== "string" || !src.trim()) return Promise.resolve(null);
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = () => {
+        // Fallback without crossOrigin for data URIs or local assets
+        const fallback = new Image();
+        fallback.onload = () => resolve(fallback);
+        fallback.onerror = () => resolve(null); // Never reject to prevent rendering crash
+        fallback.src = src;
+      };
+      img.src = src;
+    });
+  };
+
+  // Component State
   const defaultImg = "https://i.ibb.co.com/F4MKM3R2/20260527-055637.png";
   const defaultLogo = "https://i.ibb.co.com/F4MKM3R2/20260527-055637.png";
 
@@ -94,20 +954,21 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
   const [title, setTitle] = Q.useState((item && (item.title || item.headline)) || "সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখার ঐতিহাসিক প্রতিনিধি সম্মেলন অনুষ্ঠিত");
   const [imageUrl, setImageUrl] = Q.useState((item && (item.image || item.coverImage || item.coverUrl)) || defaultImg);
   const [logoUrl, setLogoUrl] = Q.useState(defaultLogo);
-  const [dateText, setDateText] = Q.useState((item && item.date) || "০৬ ডিসেম্বর, ২০২৫");
+  const [dateText, setDateText] = Q.useState((item && item.date) || "৩১ আগস্ট ২০২৬");
   const [siteName, setSiteName] = Q.useState("সমাজতান্ত্রিক ছাত্র ফ্রন্ট");
-  const [domain, setDomain] = Q.useState("socialistchhatrafront.org");
+  const [domain, setDomain] = Q.useState("ssf-mymensingh.org");
   const [bottomText, setBottomText] = Q.useState("বিস্তারিত কমেন্টে");
   const [captionText, setCaptionText] = Q.useState("ছবি: সংগৃহীত");
-  const [sectionLabel, setSectionLabel] = Q.useState((item && item.category) || "সংবাদপত্রক");
-  const [footerLeftText, setFooterLeftText] = Q.useState("সমাজতান্ত্রিক ছাত্র ফ্রন্ট");
-  const [footerRightText, setFooterRightText] = Q.useState("ময়মনসিংহ জেলা শাখা");
+  const [sectionLabel, setSectionLabel] = Q.useState((item && item.category) || "সংবাদ");
+  const [footerLeftText, setFooterLeftText] = Q.useState("");
+  const [footerRightText, setFooterRightText] = Q.useState("");
   const [adText, setAdText] = Q.useState("");
-  const [facebookUrl, setFacebookUrl] = Q.useState("fb.com/chhatrafront");
-  const [youtubeUrl, setYoutubeUrl] = Q.useState("youtube.com/@chhatrafront");
-  const [instagramUrl, setInstagramUrl] = Q.useState("instagram.com/chhatrafront");
+  const [facebookUrl, setFacebookUrl] = Q.useState("fb.com/ssfmymensingh");
+  const [youtubeUrl, setYoutubeUrl] = Q.useState("");
+  const [instagramUrl, setInstagramUrl] = Q.useState("");
   const [downloadPrefix, setDownloadPrefix] = Q.useState("ssf-photocard");
 
+  // Colors
   const [primaryColor, setPrimaryColor] = Q.useState("#d60000");
   const [secondaryColor, setSecondaryColor] = Q.useState("#7a0000");
   const [accentColor, setAccentColor] = Q.useState("#ff2d2d");
@@ -117,14 +978,17 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
   const [textColor, setTextColor] = Q.useState("#181818");
   const [logoColor, setLogoColor] = Q.useState("#181818");
 
-  const [zoomLevel, setZoomLevel] = Q.useState("fit"); // fit, 50, 75, 100
   const [isExporting, setIsExporting] = Q.useState(false);
   const [exportNotice, setExportNotice] = Q.useState("");
+  const [renderError, setRenderError] = Q.useState("");
+  const [zoomLevel, setZoomLevel] = Q.useState("fit");
   const [selectedArticleId, setSelectedArticleId] = Q.useState((item && item.id) || "");
+  const [isRendering, setIsRendering] = Q.useState(false);
 
   const previewCanvasRef = Q.useRef(null);
+  const fileInputRef = Q.useRef(null);
+  const logoInputRef = Q.useRef(null);
 
-  // Apply preset
   const applyPreset = (presetKey) => {
     const p = PRESETS[presetKey];
     if (!p) return;
@@ -139,7 +1003,6 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
     setLogoColor(p.logoColor);
   };
 
-  // Switch article if db passed
   const handleSelectArticle = (e) => {
     const artId = e.target.value;
     setSelectedArticleId(artId);
@@ -156,15 +1019,44 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
     }
   };
 
-  // Real-time canvas drawing
+  const handleCustomPhotoUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      if (evt.target && evt.target.result) {
+        setImageUrl(evt.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCustomLogoUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      if (evt.target && evt.target.result) {
+        setLogoUrl(evt.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Live Canvas Rendering Effect
   Q.useEffect(() => {
     let active = true;
     const canvas = previewCanvasRef.current;
     if (!canvas) return;
+
     const size = 1080;
     canvas.width = size;
     canvas.height = size;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    setIsRendering(true);
+    setRenderError("");
 
     const settings = {
       format: format,
@@ -201,26 +1093,41 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
       settings: settings
     };
 
-    // Load assets and render
+    // Load assets safely
     Promise.all([
-      window.borbilaLoadImage(payload.imageUrl).catch(() => null),
-      payload.logoUrl ? window.borbilaLoadImage(payload.logoUrl).catch(() => null) : Promise.resolve(null)
+      loadSafeImage(payload.imageUrl),
+      payload.logoUrl ? loadSafeImage(payload.logoUrl) : Promise.resolve(null)
     ]).then(([photoImg, logoImg]) => {
       if (!active) return;
+
+      // 1. Clear and fill solid base
       ctx.clearRect(0, 0, size, size);
-      const renderers = {
-        "classic-red": window.borbilaDrawClassicFormat,
-        "fresh-blue": window.borbilaDrawSplitFormat,
-        "green-market": window.borbilaDrawMarketFormat,
-        "dark-magazine": window.borbilaDrawMagazineFormat,
-        "gold-frame": window.borbilaDrawFrameFormat
-      };
-      const renderer = renderers[format] || window.borbilaDrawClassicFormat;
-      if (typeof renderer === "function") {
+      ctx.fillStyle = settings.topBackgroundColor || "#ffffff";
+      ctx.fillRect(0, 0, size, size);
+
+      // 2. Select and run renderer
+      const renderer = FORMAT_RENDERERS[format] || drawClassicFormat;
+      try {
         renderer(ctx, photoImg, logoImg, payload, settings, size);
+        setIsRendering(false);
+      } catch (drawErr) {
+        console.error("Format render error:", drawErr);
+        // Guaranteed Emergency Fallback: Draw clean card with title and branding
+        ctx.fillStyle = settings.primaryColor || "#d60000";
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = getTextFont("800", 52);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(payload.title, size / 2, size / 2);
+        setRenderError("ড্রয়িং রেন্ডারিংয়ে সমস্যা হয়েছে: " + drawErr.message);
+        setIsRendering(false);
       }
     }).catch(err => {
+      if (!active) return;
       console.warn("Borbila preview draw error:", err);
+      setRenderError("ছবি লোড করতে সমস্যা হয়েছে: " + (err.message || ""));
+      setIsRendering(false);
     });
 
     return () => {
@@ -253,10 +1160,10 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
     logoColor
   ]);
 
-  // Export handlers
+  // Export Handlers
   const handleDownload = async (exportFormat = "png") => {
     setIsExporting(true);
-    setExportNotice("ফটোকার্ড প্রস্তুত হচ্ছে...");
+    setExportNotice("ফটোকার্ড প্রস্তুত হচ্ছে (" + exportFormat.toUpperCase() + ")...");
     try {
       const canvas = previewCanvasRef.current;
       if (!canvas) throw new Error("ক্যানভাস পাওয়া যায়নি");
@@ -272,7 +1179,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
         }
         const cleanedTitle = String(title || "photocard")
           .toLowerCase()
-          .replace(/[^\w\u0980-\u09FF]+/g, "-")
+          .replace(/[^\\w\\u0980-\\u09FF]+/g, "-")
           .replace(/-+/g, "-")
           .slice(0, 40);
         const fileName = (downloadPrefix || "ssf-photocard") + "-" + cleanedTitle + "." + exportFormat;
@@ -284,7 +1191,6 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-
         setExportNotice("সফলভাবে ডাউনলোড হয়েছে (" + exportFormat.toUpperCase() + ")");
         setIsExporting(false);
         setTimeout(() => setExportNotice(""), 4000);
@@ -307,622 +1213,477 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
           await navigator.clipboard.write([
             new ClipboardItem({ "image/png": blob })
           ]);
-          setExportNotice("ক্লিপবোর্ডে কপি হয়েছে!");
+          setExportNotice("ক্লিপবোর্ডে কপি সম্পন্ন হয়েছে!");
           setTimeout(() => setExportNotice(""), 3000);
-        } catch (err) {
-          setExportNotice("ক্লিপবোর্ডে সরাসরি কপি সাপোর্ট করছে না");
+        } catch (clipErr) {
+          setExportNotice("ক্লিপবোর্ড অনুমতি নেই");
           setTimeout(() => setExportNotice(""), 3000);
         }
       }, "image/png");
     } catch (e) {
-      setExportNotice("কপি করা যায়নি");
+      setExportNotice("কপি ব্যর্থ হয়েছে");
+      setTimeout(() => setExportNotice(""), 3000);
     }
   };
 
-  // Image upload
-  const handleImageUpload = (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      if (evt.target && evt.target.result) {
-        setImageUrl(evt.target.result);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleLogoUpload = (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      if (evt.target && evt.target.result) {
-        setLogoUrl(evt.target.result);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const allArticlesList = db ? [...(db.news || []), ...(db.blogs || [])] : [];
+  const allArticles = db ? [...(db.news || []), ...(db.blogs || [])] : [];
 
   return i.jsxs("div", {
-    className: "borbila-photocard-root w-full bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans select-none",
+    className: "w-full h-full flex flex-col bg-slate-950 text-slate-100 min-h-0",
     children: [
-      // Top Studio Header
-      i.jsxs("header", {
-        className: "bg-slate-950 border-b border-slate-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30 shadow-md",
+      // Top Navigation / Header Bar
+      i.jsxs("div", {
+        className: "bg-slate-900/90 border-b border-slate-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-lg",
         children: [
           i.jsxs("div", {
             className: "flex items-center gap-3",
             children: [
               i.jsx("div", {
-                className: "w-9 h-9 rounded-lg bg-gradient-to-br from-rose-600 to-rose-900 flex items-center justify-center shadow-inner border border-rose-500/30",
-                children: i.jsx("svg", {
-                  className: "w-5 h-5 text-white",
-                  fill: "none",
-                  stroke: "currentColor",
-                  viewBox: "0 0 24 24",
-                  children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" })
-                })
+                className: "w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-rose-900/40 font-bold text-lg",
+                children: "B2"
               }),
               i.jsxs("div", {
                 children: [
                   i.jsxs("div", {
                     className: "flex items-center gap-2",
                     children: [
-                      i.jsx("h1", { className: "text-sm sm:text-base font-bold text-white tracking-wide", children: "Borbila PhotoCard Generator V2" }),
-                      i.jsx("span", { className: "px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30", children: "প্রো সংস্করণ" })
+                      i.jsx("h2", { className: "text-base sm:text-lg font-bold text-white tracking-wide", children: "Borbila PhotoCard Pro V2" }),
+                      i.jsx("span", { className: "px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 uppercase", children: "Pro Engine" })
                     ]
                   }),
-                  i.jsx("p", { className: "text-[11px] text-slate-400 hidden sm:block", children: "১০৮০×১০৮০ হাই-রেজোলিউশন সোশাল ফটোকার্ড নির্মাতা ও রিয়েল-টাইম ক্যানভাস" })
+                  i.jsx("p", { className: "text-xs text-slate-400 hidden sm:block", children: "৫টি প্রফেশনাল লেআউট, লাইভ ক্যানভাস প্রিভিউ এবং ফুল রেজোলিউশন এক্সপোর্ট" })
                 ]
               })
             ]
           }),
-
-          // Action controls
           i.jsxs("div", {
-            className: "flex items-center gap-2.5",
+            className: "flex items-center gap-2",
             children: [
-              // Export Status Notice
-              exportNotice && i.jsx("span", {
-                className: "text-xs font-semibold px-3 py-1 bg-rose-600/30 border border-rose-500/50 text-rose-200 rounded-full animate-pulse",
-                children: exportNotice
-              }),
-
-              // Quick PNG download
               i.jsxs("button", {
                 onClick: () => handleDownload("png"),
                 disabled: isExporting,
-                className: "px-4 py-2 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-rose-900/30 disabled:opacity-50 cursor-pointer",
+                className: "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-900/50 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50",
                 children: [
-                  i.jsx("svg", {
-                    className: "w-4 h-4",
-                    fill: "none",
-                    stroke: "currentColor",
-                    viewBox: "0 0 24 24",
-                    children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" })
-                  }),
-                  i.jsx("span", { children: isExporting ? "প্রসেসিং..." : "PNG ডাউনলোড (1080p)" })
+                  i.jsx("span", { children: "PNG ডাউনলোড (১০৮০p)" })
                 ]
               }),
-
-              // Close button
+              i.jsxs("button", {
+                onClick: handleCopyToClipboard,
+                className: "px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer hidden md:flex items-center gap-1.5",
+                children: [
+                  i.jsx("span", { children: "কপি" })
+                ]
+              }),
               onClose && i.jsx("button", {
                 onClick: onClose,
-                className: "p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-xs transition cursor-pointer border border-slate-700",
-                title: "বন্ধ করুন",
-                children: i.jsx("svg", {
-                  className: "w-4 h-4",
-                  fill: "none",
-                  stroke: "currentColor",
-                  viewBox: "0 0 24 24",
-                  children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M6 18L18 6M6 6l12 12" })
-                })
+                className: "p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer ml-1",
+                children: "✕"
               })
             ]
           })
         ]
       }),
 
-      // Main Two-Column Layout
+      // Main Studio Layout (Sidebar + Live Preview Stage)
       i.jsxs("div", {
-        className: "flex-grow flex flex-col lg:flex-row min-h-0",
+        className: "flex-grow flex flex-col lg:flex-row min-h-0 overflow-hidden",
         children: [
-          // Left Settings Panel
+          // Left Sidebar: Form Controls
           i.jsxs("div", {
-            className: "w-full lg:w-[460px] xl:w-[500px] flex-shrink-0 bg-slate-950 border-r border-slate-800 flex flex-col overflow-y-auto max-h-[calc(100vh-60px)]",
+            className: "w-full lg:w-[460px] xl:w-[500px] border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col bg-slate-900/60 shrink-0 min-h-0",
             children: [
-              // Tabs Navigator
+              // Tab Header
               i.jsxs("div", {
-                className: "flex border-b border-slate-800 bg-slate-900/60 sticky top-0 z-20 overflow-x-auto",
+                className: "flex items-center border-b border-slate-800 bg-slate-950/70 px-2 pt-2 gap-1 shrink-0 overflow-x-auto",
                 children: [
-                  [
-                    { id: "formats", label: "ফরম্যাট", icon: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" },
-                    { id: "text", label: "কন্টেন্ট", icon: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" },
-                    { id: "colors", label: "কালার থিম", icon: "M7 21a4 4 0 01-4-4 5 5 0 012-4.2V8a2 2 0 012-2h4a2 2 0 012 2v4.8A5 5 0 0117 17a4 4 0 01-4 4H7z" },
-                    { id: "media", label: "ছবি ও লোগো", icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" },
-                    { id: "social", label: "সোশাল ও লিঙ্ক", icon: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" }
-                  ].map(tab => (
-                    i.jsxs("button", {
-                      key: tab.id,
-                      onClick: () => setActiveTab(tab.id),
-                      className: `flex-1 py-3 px-2 text-xs font-semibold flex items-center justify-center gap-1.5 transition border-b-2 whitespace-nowrap cursor-pointer ${
-                        activeTab === tab.id
-                          ? "text-rose-400 border-rose-500 bg-slate-900"
-                          : "text-slate-400 border-transparent hover:text-slate-200 hover:bg-slate-900/40"
-                      }`,
-                      children: [
-                        i.jsx("svg", {
-                          className: "w-3.5 h-3.5",
-                          fill: "none",
-                          stroke: "currentColor",
-                          viewBox: "0 0 24 24",
-                          children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: tab.icon })
-                        }),
-                        i.jsx("span", { children: tab.label })
-                      ]
-                    })
-                  ))
+                  i.jsx("button", {
+                    onClick: () => setActiveTab("formats"),
+                    className: "px-3 py-2 text-xs font-bold rounded-t-lg transition-all border-b-2 " + (activeTab === "formats" ? "text-rose-400 border-rose-500 bg-slate-900" : "text-slate-400 border-transparent hover:text-slate-200"),
+                    children: "লেআউট ফরম্যাট (৫)"
+                  }),
+                  i.jsx("button", {
+                    onClick: () => setActiveTab("content"),
+                    className: "px-3 py-2 text-xs font-bold rounded-t-lg transition-all border-b-2 " + (activeTab === "content" ? "text-rose-400 border-rose-500 bg-slate-900" : "text-slate-400 border-transparent hover:text-slate-200"),
+                    children: "কন্টেন্ট ও ছবি"
+                  }),
+                  i.jsx("button", {
+                    onClick: () => setActiveTab("colors"),
+                    className: "px-3 py-2 text-xs font-bold rounded-t-lg transition-all border-b-2 " + (activeTab === "colors" ? "text-rose-400 border-rose-500 bg-slate-900" : "text-slate-400 border-transparent hover:text-slate-200"),
+                    children: "রং ও স্টাইলিং"
+                  }),
+                  i.jsx("button", {
+                    onClick: () => setActiveTab("branding"),
+                    className: "px-3 py-2 text-xs font-bold rounded-t-lg transition-all border-b-2 " + (activeTab === "branding" ? "text-rose-400 border-rose-500 bg-slate-900" : "text-slate-400 border-transparent hover:text-slate-200"),
+                    children: "ব্র্যান্ড ও ফুটার"
+                  })
                 ]
               }),
 
-              // Tab Panels
+              // Tab Scrollable Body
               i.jsxs("div", {
-                className: "p-5 space-y-6 flex-grow",
+                className: "flex-grow p-4 overflow-y-auto space-y-4 custom-scrollbar",
                 children: [
-                  // Tab 1: Formats & Layouts
+                  // Tab 1: Formats & Presets
                   activeTab === "formats" && i.jsxs("div", {
-                    className: "space-y-4",
+                    className: "space-y-3",
                     children: [
-                      // Article Quick Selector
-                      allArticlesList.length > 0 && i.jsxs("div", {
-                        className: "p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2",
+                      i.jsxs("div", {
+                        className: "bg-slate-950 p-3 rounded-xl border border-slate-800",
                         children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300 flex items-center gap-1.5", children: [
-                            i.jsx("span", { children: "📰 খবর/পোস্ট থেকে সরাসরি লোড করুন:" })
-                          ] }),
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1.5", children: "ডাটাবেজ থেকে সংবাদ নির্বাচন করুন (ঐচ্ছিক)" }),
                           i.jsxs("select", {
                             value: selectedArticleId,
                             onChange: handleSelectArticle,
-                            className: "w-full text-xs bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-rose-500",
+                            className: "w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-rose-500",
                             children: [
-                              i.jsx("option", { value: "", children: "-- যেকোনো পোস্ট নির্বাচন করুন --" }),
-                              allArticlesList.map(a => (
-                                i.jsx("option", { key: a.id, value: a.id, children: (a.title || "").slice(0, 60) })
-                              ))
+                              i.jsx("option", { value: "", children: "-- সাম্প্রতিক সংবাদ নির্বাচন করুন --" }),
+                              allArticles.map(a => i.jsx("option", { value: a.id, children: (a.title || a.headline || "Untitled").slice(0, 60) }, a.id))
                             ]
                           })
                         ]
                       }),
-
-                      i.jsxs("div", {
-                        className: "flex items-center justify-between",
-                        children: [
-                          i.jsx("h3", { className: "text-xs font-bold text-slate-300 uppercase tracking-wider", children: "রেডি ফরম্যাট নির্বাচন করুন (৫টি প্রফেশনাল লেআউট)" }),
-                          i.jsx("span", { className: "text-[11px] text-slate-400", children: "Borbila Presets" })
-                        ]
-                      }),
-
-                      // Presets Cards Grid
+                      i.jsx("div", { className: "text-xs font-bold text-slate-400 uppercase tracking-wider mt-2", children: "Borbila Pro ৫টি অফিসিয়াল ফরম্যাট" }),
                       i.jsx("div", {
-                        className: "space-y-3",
-                        children: Object.keys(PRESETS).map(key => {
-                          const p = PRESETS[key];
-                          const isSelected = format === key;
-                          return i.jsxs("div", {
-                            key: key,
-                            onClick: () => applyPreset(key),
-                            className: `p-3.5 rounded-xl border transition-all cursor-pointer relative flex gap-3.5 items-start ${
-                              isSelected
-                                ? "bg-rose-950/20 border-rose-500 shadow-md shadow-rose-950/40 ring-1 ring-rose-500"
-                                : "bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900"
-                            }`,
-                            children: [
-                              // Preset Thumbnail Indicator
-                              i.jsxs("div", {
-                                className: "w-14 h-14 rounded-lg overflow-hidden border border-slate-700 shrink-0 relative flex flex-col justify-between p-1 shadow-sm",
-                                style: { background: p.primaryColor },
-                                children: [
-                                  i.jsx("div", { className: "w-full h-4 rounded-xs", style: { background: p.topBackgroundColor } }),
-                                  i.jsx("div", { className: "w-full h-1.5 rounded-xs", style: { background: p.accentColor } })
-                                ]
-                              }),
-                              i.jsxs("div", {
-                                className: "flex-grow min-w-0",
-                                children: [
-                                  i.jsxs("div", {
-                                    className: "flex items-center justify-between gap-2",
-                                    children: [
-                                      i.jsx("h4", { className: `text-xs font-bold truncate ${isSelected ? "text-rose-400" : "text-slate-200"}`, children: p.label }),
-                                      i.jsx("span", { className: "text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700", children: p.badge })
-                                    ]
-                                  }),
-                                  i.jsx("p", { className: "text-[11px] text-slate-400 mt-1 leading-relaxed line-clamp-2", children: p.description }),
-                                  i.jsxs("div", {
-                                    className: "flex items-center gap-2 mt-2",
-                                    children: [
-                                      i.jsx("span", { className: "w-3 h-3 rounded-full border border-black/30", style: { background: p.primaryColor } }),
-                                      i.jsx("span", { className: "w-3 h-3 rounded-full border border-black/30", style: { background: p.secondaryColor } }),
-                                      i.jsx("span", { className: "w-3 h-3 rounded-full border border-black/30", style: { background: p.accentColor } }),
-                                      i.jsx("span", { className: "text-[10px] text-slate-500 font-mono", children: p.labelEn })
-                                    ]
-                                  })
-                                ]
-                              })
-                            ]
-                          });
-                        })
+                        className: "grid grid-cols-1 gap-2.5",
+                        children: Object.values(PRESETS).map(p => i.jsxs("div", {
+                          key: p.id,
+                          onClick: () => applyPreset(p.id),
+                          className: "p-3 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-3 " + (format === p.id ? "bg-rose-950/40 border-rose-500 ring-1 ring-rose-500 shadow-md" : "bg-slate-950/60 border-slate-800 hover:border-slate-700"),
+                          children: [
+                            i.jsxs("div", {
+                              className: "space-y-1",
+                              children: [
+                                i.jsxs("div", {
+                                  className: "flex items-center gap-2",
+                                  children: [
+                                    i.jsx("span", { className: "text-sm font-bold text-white", children: p.label }),
+                                    i.jsx("span", { className: "text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-semibold", children: p.badge })
+                                  ]
+                                }),
+                                i.jsx("p", { className: "text-[11px] text-slate-400 leading-relaxed", children: p.description })
+                              ]
+                            }),
+                            i.jsx("div", {
+                              className: "w-8 h-8 rounded-lg shrink-0 border border-white/20 shadow-inner flex items-center justify-center",
+                              style: { backgroundColor: p.primaryColor },
+                              children: format === p.id && i.jsx("span", { className: "text-white text-xs font-bold", children: "✓" })
+                            })
+                          ]
+                        }))
                       })
                     ]
                   }),
 
-                  // Tab 2: Text & Content
-                  activeTab === "text" && i.jsxs("div", {
-                    className: "space-y-4",
+                  // Tab 2: Content & Images
+                  activeTab === "content" && i.jsxs("div", {
+                    className: "space-y-3",
                     children: [
                       i.jsxs("div", {
-                        className: "space-y-1.5",
                         children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "মূল শিরোনাম (Headline / Title)" }),
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "হেডলাইন / শিরোনাম *" }),
                           i.jsx("textarea", {
                             rows: 3,
                             value: title,
                             onChange: (e) => setTitle(e.target.value),
-                            className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-rose-500 leading-relaxed",
-                            placeholder: "ফটোকার্ডের শিরোনাম লিখুন..."
-                          }),
-                          i.jsx("span", { className: "text-[10px] text-slate-400", children: "শিরোনাম লেখার পর ক্যানভাস স্বয়ংক্রিয়ভাবে ফন্ট সাইজ মানিয়ে নেয়।" })
+                            placeholder: "সংবাদের শিরোনাম লিখুন...",
+                            className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-rose-500 leading-relaxed"
+                          })
                         ]
                       }),
-
                       i.jsxs("div", {
-                        className: "grid grid-cols-2 gap-3",
+                        className: "grid grid-cols-2 gap-2",
                         children: [
                           i.jsxs("div", {
-                            className: "space-y-1.5",
                             children: [
-                              i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "তারিখ ও স্থান (Date)" }),
-                              i.jsx("input", {
-                                type: "text",
-                                value: dateText,
-                                onChange: (e) => setDateText(e.target.value),
-                                className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500"
-                              })
-                            ]
-                          }),
-                          i.jsxs("div", {
-                            className: "space-y-1.5",
-                            children: [
-                              i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "বিভাগ / ক্যাটাগরি" }),
+                              i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "ক্যাটাগরি ব্যাজ" }),
                               i.jsx("input", {
                                 type: "text",
                                 value: sectionLabel,
                                 onChange: (e) => setSectionLabel(e.target.value),
-                                className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500"
-                              })
-                            ]
-                          })
-                        ]
-                      }),
-
-                      i.jsxs("div", {
-                        className: "grid grid-cols-2 gap-3",
-                        children: [
-                          i.jsxs("div", {
-                            className: "space-y-1.5",
-                            children: [
-                              i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "বটম কল-টু-অ্যাকশন (CTA)" }),
-                              i.jsx("input", {
-                                type: "text",
-                                value: bottomText,
-                                onChange: (e) => setBottomText(e.target.value),
-                                className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500",
-                                placeholder: "বিস্তারিত কমেন্টে"
+                                className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
                               })
                             ]
                           }),
                           i.jsxs("div", {
-                            className: "space-y-1.5",
                             children: [
-                              i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "ছবির ক্যাপশন / উৎস" }),
+                              i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "তারিখ" }),
                               i.jsx("input", {
                                 type: "text",
-                                value: captionText,
-                                onChange: (e) => setCaptionText(e.target.value),
-                                className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500",
-                                placeholder: "ছবি: সংগৃহীত"
+                                value: dateText,
+                                onChange: (e) => setDateText(e.target.value),
+                                className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
                               })
                             ]
                           })
                         ]
                       }),
-
                       i.jsxs("div", {
-                        className: "grid grid-cols-2 gap-3",
                         children: [
-                          i.jsxs("div", {
-                            className: "space-y-1.5",
-                            children: [
-                              i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "ফুটার বাম টেক্সট" }),
-                              i.jsx("input", {
-                                type: "text",
-                                value: footerLeftText,
-                                onChange: (e) => setFooterLeftText(e.target.value),
-                                className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500"
-                              })
-                            ]
-                          }),
-                          i.jsxs("div", {
-                            className: "space-y-1.5",
-                            children: [
-                              i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "ফুটার ডান টেক্সট" }),
-                              i.jsx("input", {
-                                type: "text",
-                                value: footerRightText,
-                                onChange: (e) => setFooterRightText(e.target.value),
-                                className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500"
-                              })
-                            ]
-                          })
-                        ]
-                      }),
-
-                      i.jsxs("div", {
-                        className: "space-y-1.5",
-                        children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "বটম হাইলাইট / অ্যাড টেক্সট (ঐচ্ছিক)" }),
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "ছবি ক্যাপশন / ক্রেডিট" }),
                           i.jsx("input", {
                             type: "text",
-                            value: adText,
-                            onChange: (e) => setAdText(e.target.value),
-                            className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500",
-                            placeholder: "www.socialistchhatrafront.org"
+                            value: captionText,
+                            onChange: (e) => setCaptionText(e.target.value),
+                            placeholder: "ছবি: সংগৃহীত",
+                            className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
                           })
                         ]
-                      })
-                    ]
-                  }),
-
-                  // Tab 3: Colors & Theme
-                  activeTab === "colors" && i.jsxs("div", {
-                    className: "space-y-4",
-                    children: [
-                      i.jsx("h3", { className: "text-xs font-bold text-slate-300 uppercase tracking-wider", children: "কাস্টম কালার ও প্যালেট" }),
+                      }),
                       i.jsxs("div", {
-                        className: "grid grid-cols-2 gap-3",
                         children: [
-                          [
-                            { label: "Primary Color (প্রধান রং)", val: primaryColor, set: setPrimaryColor },
-                            { label: "Secondary Color (দ্বিতীয় রং)", val: secondaryColor, set: setSecondaryColor },
-                            { label: "Accent Color (হাইলাইট)", val: accentColor, set: setAccentColor },
-                            { label: "Top Background (টপ ব্যাকগ্রাউন্ড)", val: topBackgroundColor, set: setTopBackgroundColor },
-                            { label: "Title Color (শিরোনাম রং)", val: titleColor, set: setTitleColor },
-                            { label: "Date Color (তারিখের রং)", val: dateColor, set: setDateColor },
-                            { label: "Text Color (সাধারণ লেখা)", val: textColor, set: setTextColor },
-                            { label: "Logo Color (লোগো টেক্সট)", val: logoColor, set: setLogoColor }
-                          ].map((item, idx) => (
-                            i.jsxs("div", {
-                              key: idx,
-                              className: "p-2.5 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5",
-                              children: [
-                                i.jsx("span", { className: "text-[11px] font-semibold text-slate-300 block truncate", children: item.label }),
-                                i.jsxs("div", {
-                                  className: "flex items-center gap-2",
-                                  children: [
-                                    i.jsx("input", {
-                                      type: "color",
-                                      value: item.val,
-                                      onChange: (e) => item.set(e.target.value),
-                                      className: "w-8 h-8 rounded border border-slate-700 bg-transparent cursor-pointer"
-                                    }),
-                                    i.jsx("input", {
-                                      type: "text",
-                                      value: item.val,
-                                      onChange: (e) => item.set(e.target.value),
-                                      className: "w-full text-xs font-mono bg-slate-950 border border-slate-700 rounded px-2 py-1 text-slate-200"
-                                    })
-                                  ]
-                                })
-                              ]
-                            })
-                          ))
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "বটম কল-টু-অ্যাকশন টেক্সট" }),
+                          i.jsx("input", {
+                            type: "text",
+                            value: bottomText,
+                            onChange: (e) => setBottomText(e.target.value),
+                            placeholder: "বিস্তারিত কমেন্টে",
+                            className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
+                          })
                         ]
                       }),
-
-                      // Quick Palettes
                       i.jsxs("div", {
-                        className: "p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2",
+                        className: "pt-2 border-t border-slate-800 space-y-2",
                         children: [
-                          i.jsx("h4", { className: "text-xs font-bold text-slate-300", children: "কুইক থিম প্যালেট নির্বাচন:" }),
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300", children: "সংবাদ ছবি আপলোড বা URL" }),
                           i.jsxs("div", {
-                            className: "flex flex-wrap gap-2",
+                            className: "flex items-center gap-2",
                             children: [
-                              { name: "সমাজতান্ত্রিক লাল", p: "#d60000", s: "#7a0000", a: "#ff2d2d", bg: "#fff0f0" },
-                              { name: "গাঢ় ব্রেকিং", p: "#e50914", s: "#050000", a: "#ff3232", bg: "#130000" },
-                              { name: "হোয়াইট ক্লিন", p: "#d32929", s: "#e6e6e6", a: "#f44336", bg: "#f3f3f3" },
-                              { name: "টেলিভিশন রেড", p: "#b40000", s: "#6c0000", a: "#ffffff", bg: "#ffffff" },
-                              { name: "গোল্ডেন ফ্রেম", p: "#cf0000", s: "#530000", a: "#ffef00", bg: "#080000" }
-                            ].map((pal, pidx) => (
+                              i.jsx("input", {
+                                type: "text",
+                                value: imageUrl,
+                                onChange: (e) => setImageUrl(e.target.value),
+                                placeholder: "https://... অথবা ডিভাইস থেকে আপলোড করুন",
+                                className: "flex-grow bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500 font-mono text-[11px]"
+                              }),
+                              i.jsx("input", {
+                                type: "file",
+                                ref: fileInputRef,
+                                onChange: handleCustomPhotoUpload,
+                                accept: "image/*",
+                                className: "hidden"
+                              }),
                               i.jsx("button", {
-                                key: pidx,
-                                onClick: () => {
-                                  setPrimaryColor(pal.p);
-                                  setSecondaryColor(pal.s);
-                                  setAccentColor(pal.a);
-                                  setTopBackgroundColor(pal.bg);
-                                },
-                                className: "px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] rounded-md text-slate-200 border border-slate-700 cursor-pointer",
-                                children: pal.name
-                              })
-                            ))
-                          ]
-                        })
-                      ]
-                    })
-                  }),
-
-                  // Tab 4: Media & Logo
-                  activeTab === "media" && i.jsxs("div", {
-                    className: "space-y-4",
-                    children: [
-                      // Featured Photo Box
-                      i.jsxs("div", {
-                        className: "p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-3",
-                        children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300 block", children: "মূল ছবি (Featured Image)" }),
-                          i.jsxs("div", {
-                            className: "flex gap-3 items-center",
-                            children: [
-                              i.jsx("div", {
-                                className: "w-16 h-16 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shrink-0",
-                                children: i.jsx("img", { src: imageUrl, alt: "Preview", className: "w-full h-full object-cover" })
-                              }),
-                              i.jsxs("div", {
-                                className: "flex-grow space-y-2",
-                                children: [
-                                  i.jsx("input", {
-                                    type: "file",
-                                    accept: "image/*",
-                                    onChange: handleImageUpload,
-                                    className: "text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-rose-600 file:text-white hover:file:bg-rose-500 cursor-pointer"
-                                  }),
-                                  i.jsx("input", {
-                                    type: "text",
-                                    value: imageUrl,
-                                    onChange: (e) => setImageUrl(e.target.value),
-                                    placeholder: "অথবা ইমেজ ইউআরএল পেস্ট করুন...",
-                                    className: "w-full text-xs bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-slate-200"
-                                  })
-                                ]
+                                type: "button",
+                                onClick: () => fileInputRef.current && fileInputRef.current.click(),
+                                className: "px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-slate-200 cursor-pointer shrink-0",
+                                children: "আপলোড"
                               })
                             ]
-                          })
-                        ]
-                      }),
-
-                      // Logo Box
-                      i.jsxs("div", {
-                        className: "p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-3",
-                        children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300 block", children: "সংগঠনের লোগো (Organization Logo)" }),
-                          i.jsxs("div", {
-                            className: "flex gap-3 items-center",
-                            children: [
-                              i.jsx("div", {
-                                className: "w-16 h-16 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 shrink-0 p-1 flex items-center justify-center",
-                                children: i.jsx("img", { src: logoUrl, alt: "Logo", className: "w-full h-full object-contain" })
-                              }),
-                              i.jsxs("div", {
-                                className: "flex-grow space-y-2",
-                                children: [
-                                  i.jsx("input", {
-                                    type: "file",
-                                    accept: "image/*",
-                                    onChange: handleLogoUpload,
-                                    className: "text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-600 cursor-pointer"
-                                  }),
-                                  i.jsx("input", {
-                                    type: "text",
-                                    value: logoUrl,
-                                    onChange: (e) => setLogoUrl(e.target.value),
-                                    placeholder: "লোগো ইমেজ ইউআরএল...",
-                                    className: "w-full text-xs bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-slate-200"
-                                  })
-                                ]
-                              })
-                            ]
-                          })
-                        ]
-                      }),
-
-                      // Organization / Site Name
-                      i.jsxs("div", {
-                        className: "space-y-1.5",
-                        children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "সংগঠন / সাইটের নাম (Site / Org Name)" }),
-                          i.jsx("input", {
-                            type: "text",
-                            value: siteName,
-                            onChange: (e) => setSiteName(e.target.value),
-                            className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500"
                           })
                         ]
                       })
                     ]
                   }),
 
-                  // Tab 5: Social & Links
-                  activeTab === "social" && i.jsxs("div", {
-                    className: "space-y-4",
+                  // Tab 3: Colors & Styling
+                  activeTab === "colors" && i.jsxs("div", {
+                    className: "space-y-3",
+                    children: [
+                      i.jsx("div", { className: "text-xs font-bold text-slate-400 uppercase tracking-wider mb-1", children: "প্যালেট ও ব্যাকগ্রাউন্ড কন্ট্রোল" }),
+                      i.jsxs("div", {
+                        className: "grid grid-cols-2 gap-2.5",
+                        children: [
+                          i.jsxs("div", {
+                            className: "bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between",
+                            children: [
+                              i.jsxs("div", {
+                                children: [
+                                  i.jsx("div", { className: "text-xs font-bold text-slate-200", children: "Primary Color" }),
+                                  i.jsx("div", { className: "text-[10px] text-slate-400 font-mono", children: primaryColor })
+                                ]
+                              }),
+                              i.jsx("input", {
+                                type: "color",
+                                value: primaryColor,
+                                onChange: (e) => setPrimaryColor(e.target.value),
+                                className: "w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            className: "bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between",
+                            children: [
+                              i.jsxs("div", {
+                                children: [
+                                  i.jsx("div", { className: "text-xs font-bold text-slate-200", children: "Secondary Color" }),
+                                  i.jsx("div", { className: "text-[10px] text-slate-400 font-mono", children: secondaryColor })
+                                ]
+                              }),
+                              i.jsx("input", {
+                                type: "color",
+                                value: secondaryColor,
+                                onChange: (e) => setSecondaryColor(e.target.value),
+                                className: "w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            className: "bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between",
+                            children: [
+                              i.jsxs("div", {
+                                children: [
+                                  i.jsx("div", { className: "text-xs font-bold text-slate-200", children: "Accent Color" }),
+                                  i.jsx("div", { className: "text-[10px] text-slate-400 font-mono", children: accentColor })
+                                ]
+                              }),
+                              i.jsx("input", {
+                                type: "color",
+                                value: accentColor,
+                                onChange: (e) => setAccentColor(e.target.value),
+                                className: "w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            className: "bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between",
+                            children: [
+                              i.jsxs("div", {
+                                children: [
+                                  i.jsx("div", { className: "text-xs font-bold text-slate-200", children: "Top Background" }),
+                                  i.jsx("div", { className: "text-[10px] text-slate-400 font-mono", children: topBackgroundColor })
+                                ]
+                              }),
+                              i.jsx("input", {
+                                type: "color",
+                                value: topBackgroundColor,
+                                onChange: (e) => setTopBackgroundColor(e.target.value),
+                                className: "w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            className: "bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between",
+                            children: [
+                              i.jsxs("div", {
+                                children: [
+                                  i.jsx("div", { className: "text-xs font-bold text-slate-200", children: "Title Color" }),
+                                  i.jsx("div", { className: "text-[10px] text-slate-400 font-mono", children: titleColor })
+                                ]
+                              }),
+                              i.jsx("input", {
+                                type: "color",
+                                value: titleColor,
+                                onChange: (e) => setTitleColor(e.target.value),
+                                className: "w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            className: "bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between",
+                            children: [
+                              i.jsxs("div", {
+                                children: [
+                                  i.jsx("div", { className: "text-xs font-bold text-slate-200", children: "Date/Meta Color" }),
+                                  i.jsx("div", { className: "text-[10px] text-slate-400 font-mono", children: dateColor })
+                                ]
+                              }),
+                              i.jsx("input", {
+                                type: "color",
+                                value: dateColor,
+                                onChange: (e) => setDateColor(e.target.value),
+                                className: "w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                              })
+                            ]
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+
+                  // Tab 4: Branding & Footers
+                  activeTab === "branding" && i.jsxs("div", {
+                    className: "space-y-3",
                     children: [
                       i.jsxs("div", {
-                        className: "space-y-1.5",
                         children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "অফিসিয়াল ওয়েবসাইট ডোমেইন" }),
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "ওয়েবসাইট ডোমেইন / ব্র্যান্ড নাম" }),
                           i.jsx("input", {
                             type: "text",
                             value: domain,
                             onChange: (e) => setDomain(e.target.value),
-                            className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500",
-                            placeholder: "socialistchhatrafront.org"
+                            placeholder: "ssf-mymensingh.org",
+                            className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500 font-mono"
                           })
                         ]
                       }),
-
                       i.jsxs("div", {
-                        className: "space-y-1.5",
                         children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "ফেসবুক পেজ / লিঙ্ক" }),
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "সংগঠনের নাম (লোগো অল্টারনেট)" }),
                           i.jsx("input", {
                             type: "text",
-                            value: facebookUrl,
-                            onChange: (e) => setFacebookUrl(e.target.value),
-                            className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500",
-                            placeholder: "fb.com/chhatrafront"
+                            value: siteName,
+                            onChange: (e) => setSiteName(e.target.value),
+                            className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
                           })
                         ]
                       }),
-
                       i.jsxs("div", {
-                        className: "space-y-1.5",
                         children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "ইউটিউব চ্যানেল" }),
-                          i.jsx("input", {
-                            type: "text",
-                            value: youtubeUrl,
-                            onChange: (e) => setYoutubeUrl(e.target.value),
-                            className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500",
-                            placeholder: "youtube.com/@chhatrafront"
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "লোগো ইমেজ আপলোড / URL" }),
+                          i.jsxs("div", {
+                            className: "flex items-center gap-2",
+                            children: [
+                              i.jsx("input", {
+                                type: "text",
+                                value: logoUrl,
+                                onChange: (e) => setLogoUrl(e.target.value),
+                                className: "flex-grow bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500 font-mono text-[11px]"
+                              }),
+                              i.jsx("input", {
+                                type: "file",
+                                ref: logoInputRef,
+                                onChange: handleCustomLogoUpload,
+                                accept: "image/*",
+                                className: "hidden"
+                              }),
+                              i.jsx("button", {
+                                type: "button",
+                                onClick: () => logoInputRef.current && logoInputRef.current.click(),
+                                className: "px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-slate-200 cursor-pointer shrink-0",
+                                children: "লোগো"
+                              })
+                            ]
                           })
                         ]
                       }),
-
                       i.jsxs("div", {
-                        className: "space-y-1.5",
+                        className: "grid grid-cols-2 gap-2",
                         children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "ইনস্টাগ্রাম হ্যান্ডেল" }),
-                          i.jsx("input", {
-                            type: "text",
-                            value: instagramUrl,
-                            onChange: (e) => setInstagramUrl(e.target.value),
-                            className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500",
-                            placeholder: "instagram.com/chhatrafront"
+                          i.jsxs("div", {
+                            children: [
+                              i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "ফেসবুক হ্যান্ডেল" }),
+                              i.jsx("input", {
+                                type: "text",
+                                value: facebookUrl,
+                                onChange: (e) => setFacebookUrl(e.target.value),
+                                placeholder: "fb.com/...",
+                                className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
+                              })
+                            ]
+                          }),
+                          i.jsxs("div", {
+                            children: [
+                              i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "ইউটিউব / ইনস্টাগ্রাম" }),
+                              i.jsx("input", {
+                                type: "text",
+                                value: youtubeUrl,
+                                onChange: (e) => setYoutubeUrl(e.target.value),
+                                placeholder: "yt.com/...",
+                                className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
+                              })
+                            ]
                           })
                         ]
                       }),
-
                       i.jsxs("div", {
-                        className: "space-y-1.5",
                         children: [
-                          i.jsx("label", { className: "text-xs font-bold text-slate-300", children: "ডাউনলোড ফাইলনেম প্রিফিক্স" }),
+                          i.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "অ্যাডভার্টাইজ / ফুটার ব্যানার টেক্সট" }),
                           i.jsx("input", {
                             type: "text",
-                            value: downloadPrefix,
-                            onChange: (e) => setDownloadPrefix(e.target.value),
-                            className: "w-full text-xs bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-rose-500",
-                            placeholder: "ssf-photocard"
+                            value: adText,
+                            onChange: (e) => setAdText(e.target.value),
+                            placeholder: "বিজ্ঞাপন বা স্পেশাল মেসেজ...",
+                            className: "w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
                           })
                         ]
                       })
@@ -933,117 +1694,86 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
             ]
           }),
 
-          // Right Live Preview Pane
+          // Right Stage: Live Interactive Canvas View
           i.jsxs("div", {
-            className: "flex-grow bg-slate-900/90 p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-between overflow-y-auto",
+            className: "flex-grow flex flex-col items-center justify-between p-3 sm:p-6 bg-slate-950 overflow-y-auto min-h-0 relative",
             children: [
-              // Zoom & Control Toolbar
-              i.jsxs("div", {
-                className: "w-full max-w-2xl flex items-center justify-between mb-4 bg-slate-950/80 px-4 py-2 rounded-xl border border-slate-800 shadow-sm",
-                children: [
-                  i.jsxs("div", {
-                    className: "flex items-center gap-2 text-xs text-slate-300",
-                    children: [
-                      i.jsx("span", { className: "w-2 h-2 rounded-full bg-emerald-500 animate-pulse" }),
-                      i.jsx("span", { className: "font-semibold", children: "লাইভ ক্যানভাস প্রিভিউ" }),
-                      i.jsx("span", { className: "text-[11px] text-slate-500 font-mono", children: "(১০৮০ × ১০৮০ পিক্সেল)" })
-                    ]
-                  }),
-
-                  // Scale Controls
-                  i.jsxs("div", {
-                    className: "flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800",
-                    children: [
-                      [
-                        { id: "fit", label: "ফিট" },
-                        { id: "50", label: "৫০%" },
-                        { id: "75", label: "৭৫%" },
-                        { id: "100", label: "১০০%" }
-                      ].map(z => (
-                        i.jsx("button", {
-                          key: z.id,
-                          onClick: () => setZoomLevel(z.id),
-                          className: `px-2 py-0.5 text-[11px] font-semibold rounded transition cursor-pointer ${
-                            zoomLevel === z.id
-                              ? "bg-rose-600 text-white shadow-xs"
-                              : "text-slate-400 hover:text-slate-200"
-                          }`,
-                          children: z.label
-                        })
-                      ))
-                    ]
-                  })
-                ]
+              // Notice / Status Bar
+              (exportNotice || renderError) && i.jsx("div", {
+                className: "w-full max-w-xl mb-3 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg text-center transition-all " + (renderError ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"),
+                children: renderError || exportNotice
               }),
 
-              // Canvas Display Frame
+              // Canvas Preview Centering Container
               i.jsx("div", {
                 className: "w-full flex-grow flex items-center justify-center py-2",
-                children: i.jsx("div", {
-                  className: `relative shadow-2xl rounded-2xl overflow-hidden border-2 border-slate-800 bg-black transition-all duration-200 ${
-                    zoomLevel === "fit" ? "max-w-[480px] w-full" : zoomLevel === "50" ? "w-[540px]" : zoomLevel === "75" ? "w-[810px]" : "w-[1080px]"
-                  }`,
+                children: i.jsxs("div", {
+                  className: "relative shadow-2xl rounded-2xl overflow-hidden border-2 border-slate-800 bg-slate-900 transition-all duration-200 " + (zoomLevel === "fit" ? "max-w-[480px] w-full" : zoomLevel === "50" ? "w-[540px]" : zoomLevel === "75" ? "w-[810px]" : "w-[1080px]"),
                   style: { aspectRatio: "1 / 1" },
-                  children: i.jsx("canvas", {
-                    ref: previewCanvasRef,
-                    className: "w-full h-full object-contain block select-none pointer-events-none"
-                  })
+                  children: [
+                    i.jsx("canvas", {
+                      ref: previewCanvasRef,
+                      className: "w-full h-full object-contain block select-none pointer-events-none"
+                    }),
+                    isRendering && i.jsx("div", {
+                      className: "absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center text-white text-xs font-bold",
+                      children: "রেন্ডার হচ্ছে..."
+                    })
+                  ]
                 })
               }),
 
-              // Bottom Action Buttons
+              // Bottom Canvas Toolbar (Zoom + Multi-Format Export)
               i.jsxs("div", {
                 className: "w-full max-w-2xl mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3",
                 children: [
-                  // Multi-Format Export Buttons
                   i.jsxs("div", {
                     className: "flex flex-wrap items-center gap-2",
                     children: [
-                      i.jsxs("button", {
-                        onClick: () => handleDownload("png"),
-                        disabled: isExporting,
-                        className: "px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-md cursor-pointer disabled:opacity-50",
-                        children: [
-                          i.jsx("svg", { className: "w-3.5 h-3.5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" }) }),
-                          i.jsx("span", { children: "PNG (1080p)" })
-                        ]
+                      i.jsx("span", { className: "text-xs font-semibold text-slate-400", children: "জুম:" }),
+                      i.jsx("button", {
+                        onClick: () => setZoomLevel("fit"),
+                        className: "px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all " + (zoomLevel === "fit" ? "bg-rose-600 text-white font-bold shadow" : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"),
+                        children: "Fit"
                       }),
-                      i.jsxs("button", {
-                        onClick: () => handleDownload("jpg"),
-                        disabled: isExporting,
-                        className: "px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 cursor-pointer disabled:opacity-50",
-                        children: [
-                          i.jsx("svg", { className: "w-3.5 h-3.5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" }) }),
-                          i.jsx("span", { children: "JPG ডাউনলোড" })
-                        ]
+                      i.jsx("button", {
+                        onClick: () => setZoomLevel("50"),
+                        className: "px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all " + (zoomLevel === "50" ? "bg-rose-600 text-white font-bold shadow" : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"),
+                        children: "50%"
                       }),
-                      i.jsxs("button", {
-                        onClick: () => handleDownload("webp"),
-                        disabled: isExporting,
-                        className: "px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 cursor-pointer disabled:opacity-50",
-                        children: [
-                          i.jsx("svg", { className: "w-3.5 h-3.5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" }) }),
-                          i.jsx("span", { children: "WEBP" })
-                        ]
+                      i.jsx("button", {
+                        onClick: () => setZoomLevel("75"),
+                        className: "px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all " + (zoomLevel === "75" ? "bg-rose-600 text-white font-bold shadow" : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"),
+                        children: "75%"
                       }),
-                      i.jsxs("button", {
-                        onClick: handleCopyToClipboard,
-                        className: "px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5 border border-slate-700 cursor-pointer",
-                        title: "ক্লিপবোর্ডে কপি করুন",
-                        children: [
-                          i.jsx("svg", { className: "w-3.5 h-3.5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" }) }),
-                          i.jsx("span", { children: "কপি" })
-                        ]
+                      i.jsx("button", {
+                        onClick: () => setZoomLevel("100"),
+                        className: "px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all " + (zoomLevel === "100" ? "bg-rose-600 text-white font-bold shadow" : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"),
+                        children: "100%"
                       })
                     ]
                   }),
-
-                  // Version / License Status
                   i.jsxs("div", {
-                    className: "flex items-center gap-2 text-[11px] text-slate-500",
+                    className: "flex flex-wrap items-center gap-2",
                     children: [
-                      i.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-rose-500" }),
-                      i.jsx("span", { children: "Borbila PhotoCard Studio Pro" })
+                      i.jsx("button", {
+                        onClick: () => handleDownload("png"),
+                        disabled: isExporting,
+                        className: "px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow transition-all cursor-pointer disabled:opacity-50",
+                        children: "PNG (1080p)"
+                      }),
+                      i.jsx("button", {
+                        onClick: () => handleDownload("jpg"),
+                        disabled: isExporting,
+                        className: "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer disabled:opacity-50",
+                        children: "JPG"
+                      }),
+                      i.jsx("button", {
+                        onClick: () => handleDownload("webp"),
+                        disabled: isExporting,
+                        className: "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer disabled:opacity-50",
+                        children: "WebP"
+                      })
                     ]
                   })
                 ]
@@ -1054,87 +1784,10 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
       })
     ]
   });
+}`;
 }
 
-// ============================================================================
-// PHOTOCARD MODAL HOST (DUAL-VERSION SWITCHER WRAPPER)
-// ============================================================================
-
-function PhotoCardModalHost({ item, db, onClose, defaultVersion = "v2", onSelectItem, setCurrentTab }) {
-  const [currentVersion, setCurrentVersion] = Q.useState(() => {
-    return localStorage.getItem("ssf_photocard_version") || defaultVersion || "v2";
-  });
-
-  const handleVersionChange = (ver) => {
-    setCurrentVersion(ver);
-    try {
-      localStorage.setItem("ssf_photocard_version", ver);
-    } catch (e) {}
-  };
-
-  return i.jsxs("div", {
-    className: "fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-0 sm:p-2 overflow-hidden",
-    children: [
-      // Version Switcher Top Bar
-      i.jsxs("div", {
-        className: "w-full max-w-7xl bg-slate-950 border-b border-slate-800 px-4 py-2 flex items-center justify-between gap-3 shrink-0 shadow-lg",
-        children: [
-          // Version Tabs
-          i.jsxs("div", {
-            className: "flex items-center gap-2",
-            children: [
-              i.jsx("span", { className: "text-xs font-bold text-slate-400 hidden sm:inline", children: "সংস্করণ নির্বাচন:" }),
-              i.jsxs("button", {
-                onClick: () => handleVersionChange("v2"),
-                className: `px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  currentVersion === "v2"
-                    ? "bg-rose-600 text-white shadow-md shadow-rose-950"
-                    : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
-                }`,
-                children: [
-                  i.jsx("span", { className: "w-2 h-2 rounded-full bg-white animate-pulse" }),
-                  i.jsx("span", { children: "ফটোকার্ড মেকার V2 (Borbila জেনারেটর)" }),
-                  i.jsx("span", { className: "text-[10px] px-1 py-0.2 rounded bg-black/30", children: "নতুন" })
-                ]
-              }),
-              i.jsxs("button", {
-                onClick: () => handleVersionChange("v1"),
-                className: `px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  currentVersion === "v1"
-                    ? "bg-rose-600 text-white shadow-md shadow-rose-950"
-                    : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
-                }`,
-                children: [
-                  i.jsx("span", { children: "ফটোকার্ড মেকার V1 (ক্লাসিক স্টুডিও)" }),
-                  i.jsx("span", { className: "text-[10px] px-1 py-0.2 rounded bg-black/30", children: "২৮+ টেমপ্লেট" })
-                ]
-              })
-            ]
-          }),
-
-          // Close button
-          i.jsxs("button", {
-            onClick: onClose,
-            className: "p-1.5 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white rounded-md text-xs transition cursor-pointer border border-slate-800 flex items-center gap-1",
-            children: [
-              i.jsx("svg", { className: "w-4 h-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: i.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M6 18L18 6M6 6l12 12" }) }),
-              i.jsx("span", { className: "hidden sm:inline text-[11px]", children: "বন্ধ করুন" })
-            ]
-          })
-        ]
-      }),
-
-      // Content Body: Either V2 or V1
-      i.jsx("div", {
-        className: "w-full max-w-7xl flex-grow overflow-hidden flex flex-col bg-slate-950 rounded-b-xl shadow-2xl relative",
-        children: currentVersion === "v2"
-          ? i.jsx(BorbilaPhotoCardV2, { item: item, db: db, onClose: onClose, onSelectItem: onSelectItem, setCurrentTab: setCurrentTab })
-          : i.jsx(GQ, { item: item, onClose: onClose })
-      })
-    ]
-  });
-}
-`;
-
-fs.writeFileSync("borbila_v2_component.js", componentSource, "utf8");
-console.log("borbila_v2_component.js written successfully");
+// Generate the component and save to borbila_v2_bundle_part.js
+const code = generateBorbilaV2Component();
+fs.writeFileSync("borbila_v2_bundle_part.js", code, "utf8");
+console.log("borbila_v2_bundle_part.js generated successfully! Length:", code.length);
