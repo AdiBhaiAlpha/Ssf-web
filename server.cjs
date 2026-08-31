@@ -1092,7 +1092,7 @@ function isSuperAdmin(email) {
   try {
     const db = loadDatabase();
     const matchedInvite = (db.invitations || []).find(
-      (i) => i.email.toLowerCase() === lowerEmail && i.status === accepted
+      (i) => i.email.toLowerCase() === lowerEmail && i.status === "accepted"
     );
     if (matchedInvite) {
       return true;

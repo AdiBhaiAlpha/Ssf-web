@@ -119,5 +119,29 @@ service cloud.firestore {
       allow get, list: if isAdmin();
       allow create, update, delete: if isAdmin();
     }
+    // Member Login Logs
+    match /memberLogins/{logId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Organization Metadata & Branches
+    match /organizations/{orgId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Site Visits & Analytics
+    match /visits/{visitId} {
+      allow get, list: if true;
+      allow create, update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // Admin Invitations
+    match /invitations/{invitationId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
   }
 }
