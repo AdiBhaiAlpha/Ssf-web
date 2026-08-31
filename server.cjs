@@ -1251,18 +1251,53 @@ async function startServer() {
   });
   
   // Security & Sanitization Helpers inside startServer scope
-    function hashPassword(pwd) {
-    if (!pwd) return "";
-    const nodeCrypto = require("crypto");
-    return nodeCrypto.createHash("sha256").update(String(pwd).trim()).digest("hex");
-  }
+    function hashPassword(plainPassword) {
+      if (!plainPassword) return "";
+      const nodeCrypto = require("crypto");
+      const salt = nodeCrypto.randomBytes(16).toString("hex");
+      const hash = nodeCrypto.scryptSync(String(plainPassword).trim(), salt, 32).toString("hex");
+      return `${salt}:${hash}`;
+    }
 
-    function verifyPassword(pwd, hash) {
-    if (!pwd || !hash) return false;
-    const nodeCrypto = require("crypto");
-    const hashedInput = hashPassword(pwd);
-    return nodeCrypto.timingSafeEqual(Buffer.from(hashedInput), Buffer.from(hash));
-  }
+    function verifyPassword(plainPassword, stored) {
+      if (!plainPassword || !stored) return false;
+      const nodeCrypto = require("crypto");
+      try {
+        if (!stored.includes(":")) {
+          // Fallback for old SHA256 hashes
+          const hashedInput = nodeCrypto.createHash("sha256").update(String(plainPassword).trim()).digest("hex");
+          return nodeCrypto.timingSafeEqual(Buffer.from(hashedInput), Buffer.from(stored));
+        }
+        const [salt, hash] = stored.split(":");
+        if (!salt || !hash) return false;
+        const check = nodeCrypto.scryptSync(String(plainPassword).trim(), salt, 32).toString("hex");
+        return nodeCrypto.timingSafeEqual(Buffer.from(hash, "hex"), Buffer.from(check, "hex"));
+      } catch (err) {
+        console.error("verifyPassword error:", err);
+        return false;
+      }
+    }
+
+    function prepareCircular(circularInput, existingCircular = {}) {
+      const { password, ...rest } = circularInput;
+      let pwdHash = existingCircular.passwordHash || null;
+      
+      if (rest.isPasswordProtected) {
+        if (password) {
+          pwdHash = hashPassword(password);
+        } else if (rest.passwordHash) {
+          pwdHash = rest.passwordHash;
+        }
+      } else {
+        pwdHash = null;
+      }
+
+      return {
+        ...existingCircular,
+        ...rest,
+        passwordHash: pwdHash
+      };
+    }
 
   function isVerifiedMemberUser(email, db) {
     if (!email) return false;
@@ -2427,21 +2462,12 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
       return res.status(403).json({ error: "Unauthorized" });
     }
     const db = loadDatabase();
-    let pwdHash = null;
-    if (circular.isPasswordProtected && circular.password) {
-      pwdHash = hashPassword(circular.password);
-    } else if (circular.passwordHash) {
-      pwdHash = circular.passwordHash;
-    }
-    const { password, ...cleanCirc } = circular;
-    const newCircular = {
-      ...cleanCirc,
-      id: "circ_" + Date.now(),
-      date: circular.date || (new Date()).toISOString().split("T")[0],
-      isPrivate: Boolean(circular.isPrivate),
-      isPasswordProtected: Boolean(circular.isPasswordProtected),
-      passwordHash: pwdHash
-    };
+    const newCircular = prepareCircular(circular);
+    newCircular.id = "circ_" + Date.now();
+    newCircular.date = newCircular.date || (new Date()).toISOString().split("T")[0];
+    newCircular.isPrivate = Boolean(newCircular.isPrivate);
+    newCircular.isPasswordProtected = Boolean(newCircular.isPasswordProtected);
+    
     db.circulars.unshift(newCircular);
     db.logs.unshift({
       id: "log_" + Date.now(),
@@ -2462,7 +2488,8 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
     const db = loadDatabase();
     const index = db.circulars.findIndex((c) => c.id === id);
     if (index === -1) return res.status(444).json({ error: "Circular not found" });
-    db.circulars[index] = { ...db.circulars[index], ...circular };
+    
+    db.circulars[index] = prepareCircular(circular, db.circulars[index]);
     db.logs.unshift({
       id: "log_" + Date.now(),
       timestamp: (/* @__PURE__ */ new Date()).toISOString().replace("T", " ").substring(0, 19),
@@ -2497,8 +2524,7 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
           pdfUrl: circular.pdfUrl
         });
       }
-      const hashed = hashPassword(password);
-      if (hashed !== circular.passwordHash) {
+      if (!verifyPassword(password, circular.passwordHash)) {
         return res.status(401).json({ success: false, error: "ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড দিন।" });
       }
       return res.json({
@@ -3150,7 +3176,8 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
     }
     return { title, description, image, type, currentUrl, schema };
   };
-  if (process.env.NODE_ENV === "production") {
+  const isDev = process.env.NODE_ENV === "development" || process.env.VITE_DEV === "true";
+  if (!isDev) {
     const distPath = process.cwd();
     app.use(import_express.default.static(import_path2.default.join(process.cwd(), "public")));
     app.use(import_express.default.static(distPath, {

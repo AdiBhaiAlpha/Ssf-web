@@ -7,6 +7,9 @@
     <title>সমাজতান্ত্রিক ছাত্র ফ্রন্ট, ময়মনসিংহ জেলা শাখা</title>
     <meta name="description" content="সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখা - সর্বজনীন গণতান্ত্রিক ও বৈজ্ঞানিক সমাজতান্ত্রিক সমাজ বিনির্মাণের লক্ষ্যে আপোষহীন প্রগতিশীল ছাত্র আন্দোলন।" />
     <script>
+      // Prevent Vite ReferenceError: __DEFINES__ is not defined
+      window.__DEFINES__ = window.__DEFINES__ || {};
+
       // Bulletproof CanvasGradient.prototype.addColorStop protection for html2canvas & export
       if (typeof CanvasGradient !== 'undefined' && CanvasGradient.prototype && CanvasGradient.prototype.addColorStop) {
         const _origAddColorStop = CanvasGradient.prototype.addColorStop;
