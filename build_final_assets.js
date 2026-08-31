@@ -30,7 +30,9 @@ if (gqStart === -1 || wqStart === -1) {
 }
 
 console.log('Replacing GQ from', gqStart, 'to', wqStart);
-let finalBundle = step1.slice(0, gqStart) + gqReplacement + '\n' + step1.slice(wqStart);
+const borbilaV2 = fs.readFileSync('borbila_v2_component.js', 'utf8');
+const modalHost = fs.readFileSync('photocard_modal_host.js', 'utf8');
+let finalBundle = step1.slice(0, gqStart) + gqReplacement + '\n' + borbilaV2 + '\n' + modalHost + '\n' + step1.slice(wqStart);
 
 fs.writeFileSync('assets/index-DkKEx6Oj.js', finalBundle, 'utf8');
 console.log('Successfully written assets/index-DkKEx6Oj.js! Final length:', finalBundle.length);

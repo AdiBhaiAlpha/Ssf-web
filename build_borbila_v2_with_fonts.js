@@ -1,4 +1,6 @@
-function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, setCurrentTab }) {
+const fs = require('fs');
+
+const code = `function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, setCurrentTab }) {
   // Built-in Complete Borbila PhotoCard V2 Canvas Engine with Font Controls
   const DEFAULT_SETTINGS = {
     format: 'classic-red',
@@ -154,11 +156,11 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
     if (!raw) return String(fallback || '').trim();
     try {
       var parsed = new URL(raw.startsWith('http') ? raw : 'https://' + raw);
-      var host = parsed.hostname.replace(/^www./i, '');
-      var path = parsed.pathname.replace(/\/$/, '');
+      var host = parsed.hostname.replace(/^www\./i, '');
+      var path = parsed.pathname.replace(/\\/$/, '');
       return host + (path && path !== '/' ? path : '');
     } catch (e) {
-      return raw.replace(/^https?:\/\//i, '').replace(/^www./i, '').replace(/\/$/, '');
+      return raw.replace(/^https?:\\/\\//i, '').replace(/^www\./i, '').replace(/\\/$/, '');
     }
   }
 
@@ -168,9 +170,9 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
     try {
       var parsed = new URL(raw.startsWith('http') ? raw : 'https://' + raw);
       var parts = parsed.pathname.split('/').filter(Boolean);
-      return parts.length ? parts[parts.length - 1] : parsed.hostname.replace(/^www./i, '');
+      return parts.length ? parts[parts.length - 1] : parsed.hostname.replace(/^www\./i, '');
     } catch (e) {
-      return raw.replace(/^https?:\/\//i, '').replace(/^www./i, '').replace(/\/$/, '');
+      return raw.replace(/^https?:\\/\\//i, '').replace(/^www\./i, '').replace(/\\/$/, '');
     }
   }
 
@@ -206,7 +208,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
   }
 
   function wrapText(ctx, text, maxWidth) {
-    var words = String(text || '').trim().split(/\s+/);
+    var words = String(text || '').trim().split(/\\s+/);
     if (!words.length || !words[0]) return [];
     var lines = [];
     var currentLine = '';
@@ -939,7 +941,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
       ctx.font = getTextFont('900', 58);
       ctx.textAlign = 'right';
       ctx.textBaseline = 'alphabetic';
-      var words = String(payload.title || '').trim().split(/\s+/);
+      var words = String(payload.title || '').trim().split(/\\s+/);
       if (words.length > 2) {
         ctx.fillText(trimTextToWidth(ctx, words[words.length - 1], 270), 1016, 952);
       }
@@ -1217,7 +1219,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
         }
         const cleanedTitle = String(title || 'photocard')
           .toLowerCase()
-          .replace(/[^\w\u0980-\u09FF]+/g, '-')
+          .replace(/[^\\w\\u0980-\\u09FF]+/g, '-')
           .replace(/-+/g, '-')
           .slice(0, 40);
         const fileName = (downloadPrefix || 'ssf-photocard') + '-' + cleanedTitle + '.' + exportFormat;
@@ -1926,4 +1928,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
       })
     ]
   });
-}
+}`;
+
+fs.writeFileSync('borbila_v2_component.js', code);
+console.log('borbila_v2_component.js created successfully with length:', code.length);
