@@ -1292,9 +1292,62 @@ async function startServer() {
     const db = loadDatabase();
     const userEmail = req.headers["user-email"] || req.query.userEmail;
     const sanitizedCirculars = (db.circulars || []).map(c => sanitizeCircular(c, userEmail, db));
-    const sortedNews = (db.news || []).slice().sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime() || (b.id || "").localeCompare(a.id || ""));
-    const sortedBlogs = (db.blogs || []).slice().sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime() || (b.id || "").localeCompare(a.id || ""));
+    const _getArticleTime = (item) => {
+      if (!item) return 0;
+      if (item.publishedAt) {
+        const t = new Date(item.publishedAt).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      if (item.createdAt) {
+        const t = new Date(item.createdAt).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      if (item.id && typeof item.id === "string") {
+        const match = item.id.match(/\d{10,}/);
+        if (match) {
+          const num = Number(match[0]);
+          if (!isNaN(num) && num > 0) return num;
+        }
+      }
+      if (item.date) {
+        const t = new Date(item.date).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      return 0;
+    };
+
+    const sortedNews = (db.news || []).slice().sort((a, b) => _getArticleTime(b) - _getArticleTime(a) || String(b.id || "").localeCompare(String(a.id || "")));
+    const sortedBlogs = (db.blogs || []).slice().sort((a, b) => _getArticleTime(b) - _getArticleTime(a) || String(b.id || "").localeCompare(String(a.id || "")));
     res.json({ ...db, news: sortedNews, blogs: sortedBlogs, circulars: sanitizedCirculars });
+  });
+
+  app.get("/api/news", (req, res) => {
+    const db = loadDatabase();
+    const _getArticleTime = (item) => {
+      if (!item) return 0;
+      if (item.publishedAt) {
+        const t = new Date(item.publishedAt).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      if (item.createdAt) {
+        const t = new Date(item.createdAt).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      if (item.id && typeof item.id === "string") {
+        const match = item.id.match(/\d{10,}/);
+        if (match) {
+          const num = Number(match[0]);
+          if (!isNaN(num) && num > 0) return num;
+        }
+      }
+      if (item.date) {
+        const t = new Date(item.date).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      return 0;
+    };
+    const sorted = (db.news || []).slice().sort((a, b) => _getArticleTime(b) - _getArticleTime(a) || String(b.id || "").localeCompare(String(a.id || "")));
+    res.json(sorted);
   });
 
 
@@ -2053,7 +2106,9 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
       ...article,
       id: "news_" + Date.now(),
       views: 0,
-      date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+      date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+      createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+      publishedAt: (/* @__PURE__ */ new Date()).toISOString()
     };
     db.news.unshift(newArticle);
     db.logs.unshift({
@@ -2116,7 +2171,9 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
       id: "blog_" + Date.now(),
       views: 0,
       comments: [],
-      date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+      date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+      createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+      publishedAt: (/* @__PURE__ */ new Date()).toISOString()
     };
     db.blogs.unshift(newBlog);
     db.logs.unshift({

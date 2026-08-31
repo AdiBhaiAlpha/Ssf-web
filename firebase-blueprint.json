@@ -1,0 +1,151 @@
+{
+  "entities": {
+    "CommunityMessage": {
+      "title": "CommunityMessage",
+      "description": "Public community chat message with sender metadata and optional attachments",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the message"
+        },
+        "userEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "Email of the sender"
+        },
+        "userName": {
+          "type": "string",
+          "description": "Display name of the sender"
+        },
+        "userAvatar": {
+          "type": "string",
+          "description": "Avatar URL of the sender"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Body text of the message"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp when the message was sent"
+        },
+        "editedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp when the message was edited"
+        },
+        "replyTo": {
+          "type": "string",
+          "description": "ID of parent message being replied to"
+        },
+        "attachment": {
+          "type": "object",
+          "description": "Optional media attachment metadata",
+          "properties": {
+            "url": { "type": "string" },
+            "name": { "type": "string" },
+            "size": { "type": "number" },
+            "type": { "type": "string" },
+            "thumbUrl": { "type": "string" },
+            "provider": { "type": "string" }
+          }
+        },
+        "isModerated": {
+          "type": "boolean",
+          "description": "Whether message has been hidden by moderators"
+        },
+        "reportsCount": {
+          "type": "number",
+          "description": "Number of community reports"
+        },
+        "reportedBy": {
+          "type": "array",
+          "description": "List of user emails that reported this message"
+        }
+      },
+      "required": ["id", "userEmail", "userName", "text", "createdAt"]
+    },
+    "NewsArticle": {
+      "title": "NewsArticle",
+      "description": "News articles published by SSF Mymensingh branch or national branches",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "section": { "type": "string" },
+        "author": { "type": "string" },
+        "date": { "type": "string" },
+        "publishedAt": { "type": "string" },
+        "image": { "type": "string" },
+        "views": { "type": "number" },
+        "isFeatured": { "type": "boolean" },
+        "location": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "title", "content", "category"]
+    },
+    "BlogPost": {
+      "title": "BlogPost",
+      "description": "Progressive political writings and opinion columns",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "author": { "type": "string" },
+        "authorEmail": { "type": "string" },
+        "date": { "type": "string" },
+        "publishedAt": { "type": "string" },
+        "image": { "type": "string" },
+        "views": { "type": "number" },
+        "status": { "type": "string" },
+        "comments": { "type": "array" }
+      },
+      "required": ["id", "title", "content"]
+    },
+    "Question": {
+      "title": "Question",
+      "description": "Public community Q&A question thread",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "tags": { "type": "array" },
+        "author": { "type": "string" },
+        "authorEmail": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "answerCount": { "type": "number" },
+        "upvotes": { "type": "number" },
+        "answers": { "type": "array" }
+      },
+      "required": ["id", "title", "content", "authorEmail"]
+    }
+  },
+  "firestore": {
+    "/community_messages/{messageId}": {
+      "schema": "CommunityMessage",
+      "description": "Real-time persistent community chat messages"
+    },
+    "/news/{newsId}": {
+      "schema": "NewsArticle",
+      "description": "News articles published by the organization"
+    },
+    "/blogs/{blogId}": {
+      "schema": "BlogPost",
+      "description": "Blog and opinion column articles"
+    },
+    "/questions/{questionId}": {
+      "schema": "Question",
+      "description": "Public inquiries and member Q&A threads"
+    }
+  }
+}

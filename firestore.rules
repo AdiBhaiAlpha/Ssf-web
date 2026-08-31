@@ -1,8 +1,123 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "chitronbhattacharjee@gmail.com" ||
+        request.auth.token.email == "tanij@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Default deny all unknown collections
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
+    }
+
+    // Community Chat Messages
+    match /community_messages/{messageId} {
+      allow get, list: if true;
+      allow create: if isValidId(messageId) && (
+        incoming().text is string &&
+        incoming().text.size() <= 2000 &&
+        incoming().userEmail is string
+      );
+      allow update: if isValidId(messageId) && (
+        isAdmin() ||
+        (isSignedIn() && incoming().userEmail == existing().userEmail)
+      );
+      allow delete: if isValidId(messageId) && (
+        isAdmin() ||
+        (isSignedIn() && existing().userEmail == request.auth.token.email)
+      );
+    }
+
+    // Public News Articles
+    match /news/{newsId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Progressive Column & Blog Posts
+    match /blogs/{blogId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Community Inquiries and Q&A
+    match /questions/{questionId} {
+      allow get, list: if true;
+      allow create: if isValidId(questionId) && incoming().content is string;
+      allow update, delete: if isValidId(questionId) && (
+        isAdmin() ||
+        (isSignedIn() && existing().authorEmail == request.auth.token.email)
+      );
+    }
+
+    // Organizational Circulars & Notices
+    match /circulars/{circularId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Events & Programs
+    match /events/{eventId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Publication Library
+    match /books/{bookId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Media & Photo Gallery
+    match /gallery/{galleryId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Member Profiles & Applications
+    match /memberships/{memberId} {
+      allow get, list: if true;
+      allow create: if isValidId(memberId);
+      allow update, delete: if isAdmin();
+    }
+
+    // Administrative System Logs
+    match /logs/{logId} {
+      allow get, list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Organization Metadata Settings
+    match /settings/{settingId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Admin Access Collection
+    match /admins/{adminId} {
+      allow get, list: if isAdmin();
+      allow create, update, delete: if isAdmin();
     }
   }
 }

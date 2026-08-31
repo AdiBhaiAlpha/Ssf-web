@@ -776,6 +776,16 @@
     }
   });
 
+  window.addEventListener('storage', () => {
+    getCurrentUser();
+    render();
+  });
+
+  window.addEventListener('ssf_auth_state_changed', () => {
+    getCurrentUser();
+    render();
+  });
+
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('#ssf-scroll-top-btn');
     if (btn) {
