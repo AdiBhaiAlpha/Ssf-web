@@ -3233,5 +3233,20 @@
       ]
     }
   ],
-  "communityMessages": []
+  "communityMessages": [
+    {
+      "id": "msg_1788183717500_7n2ur",
+      "userEmail": "chitronbhattacharjee@gmail.com",
+      "userName": "চিত্রণ ভট্টাচার্য",
+      "userAvatar": "",
+      "text": "সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখার অফিশিয়াল কমিউনিটি চ্যাটে স্বাগতম!",
+      "createdAt": "2026-08-31T13:41:57.500Z",
+      "editedAt": null,
+      "replyTo": null,
+      "attachment": null,
+      "isModerated": false,
+      "reportsCount": 0,
+      "reportedBy": []
+    }
+  ]
 }

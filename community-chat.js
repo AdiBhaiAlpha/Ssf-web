@@ -377,10 +377,41 @@
 
   async function handleFileUpload(file) {
     if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      alert("ফাইলের সাইজ ১০ মেগাবাইটের বেশি হতে পারবে না।");
+    if (file.size > 15 * 1024 * 1024) {
+      alert("ফাইলের সাইজ ১৫ মেগাবাইটের বেশি হতে পারবে না।");
       return;
     }
+
+    const isImg = file.type.startsWith("image/") || file.name.match(/\.(png|jpe?g|gif|webp|bmp|svg)$/i);
+    if (isImg) {
+      try {
+        const formData = new FormData();
+        formData.append("image", file);
+        const imgbbKey = "3601399f318b007db7c3a8fdf499d8d0";
+        const imgbbRes = await fetch("https://api.imgbb.com/1/upload?key=" + imgbbKey, {
+          method: "POST",
+          body: formData
+        });
+        if (imgbbRes.ok) {
+          const resData = await imgbbRes.json();
+          if (resData && resData.success && resData.data && resData.data.url) {
+            activeAttachment = {
+              url: resData.data.url,
+              thumbUrl: resData.data.thumb ? resData.data.thumb.url : (resData.data.display_url || resData.data.url),
+              name: file.name,
+              size: file.size,
+              type: "image",
+              provider: "imgbb"
+            };
+            render();
+            return;
+          }
+        }
+      } catch (clientErr) {
+        console.warn("[ImgBB direct upload failed, falling back to server]:", clientErr);
+      }
+    }
+
     const formData = new FormData();
     formData.append("file", file);
     try {
@@ -531,12 +562,18 @@
                       ${m.text}
                       ${m.attachment ? `
                         <div style="margin-top: 6px;">
-                          ${m.attachment.type === "image" ? `
-                            <a href="${m.attachment.url}" target="_blank">
-                              <img src="${m.attachment.url}" alt="Attachment" style="max-width: 100%; border-radius: 8px; max-height: 160px; object-fit: cover;" />
-                            </a>
+                          ${(m.attachment.type === "image" || (m.attachment.url && m.attachment.url.match(/\.(png|jpe?g|gif|webp|bmp|svg)($|\?)/i)) || (m.attachment.url && m.attachment.url.includes("ibb.co"))) ? `
+                            <div style="position: relative; overflow: hidden; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); background: #18181b;">
+                              <a href="${m.attachment.url}" target="_blank" rel="noopener noreferrer" style="display: block;">
+                                <img src="${m.attachment.url}" alt="${m.attachment.name || 'Attachment'}" loading="lazy" style="width: 100%; max-height: 220px; object-fit: cover; display: block; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
+                              </a>
+                              <div style="padding: 4px 8px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">${m.attachment.name || 'ছবি'}</span>
+                                <a href="${m.attachment.url}" target="_blank" rel="noopener noreferrer" style="color: #fda4af; text-decoration: none; font-weight: bold; margin-left: 6px;">সম্পূর্ণ দেখুন ↗</a>
+                              </div>
+                            </div>
                           ` : `
-                            <a href="${m.attachment.url}" target="_blank" style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.06); padding: 6px 10px; border-radius: 6px; color: inherit; font-size: 12px; text-decoration: none;">
+                            <a href="${m.attachment.url}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.06); padding: 6px 10px; border-radius: 6px; color: inherit; font-size: 12px; text-decoration: none;">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                               <span>${m.attachment.name}</span>
                             </a>

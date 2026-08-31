@@ -337,6 +337,48 @@ async function syncQuestionToFirestore(question) {
   }
 }
 
+
+async function fetchChatMessagesFromFirestore() {
+  if (!firestoreDb) return null;
+  try {
+    const colRef = (0, import_firestore.collection)(firestoreDb, "community_messages");
+    const q = (0, import_firestore.query)(colRef, (0, import_firestore.limit)(500));
+    const snapshot = await (0, import_firestore.getDocs)(q);
+    if (!snapshot || snapshot.empty) return [];
+    const list = [];
+    snapshot.forEach(docSnap => {
+      list.push({ id: docSnap.id, ...docSnap.data() });
+    });
+    list.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+    return list;
+  } catch (err) {
+    console.error("[Firestore Chat Fetch Error]:", err.message);
+    return null;
+  }
+}
+
+async function syncChatMessageToFirestore(msg) {
+  if (!firestoreDb || !msg || !msg.id) return;
+  try {
+    const docRef = (0, import_firestore.doc)(firestoreDb, "community_messages", msg.id);
+    await (0, import_firestore.setDoc)(docRef, msg, { merge: true });
+    console.log("[Firestore Chat Sync] Saved message:", msg.id);
+  } catch (err) {
+    console.error("[Firestore Chat Write Error]:", err.message);
+  }
+}
+
+async function deleteChatMessageFromFirestore(id) {
+  if (!firestoreDb || !id) return;
+  try {
+    const docRef = (0, import_firestore.doc)(firestoreDb, "community_messages", id);
+    await (0, import_firestore.deleteDoc)(docRef);
+    console.log("[Firestore Chat Delete] Removed message:", id);
+  } catch (err) {
+    console.error("[Firestore Chat Delete Error]:", err.message);
+  }
+}
+
 async function deleteQuestionFromFirestore(id) {
   if (!firestoreDb) return;
   const opName = "deleteQuestionFromFirestore (deleteDoc)";
@@ -1250,7 +1292,9 @@ async function startServer() {
     const db = loadDatabase();
     const userEmail = req.headers["user-email"] || req.query.userEmail;
     const sanitizedCirculars = (db.circulars || []).map(c => sanitizeCircular(c, userEmail, db));
-    res.json({ ...db, circulars: sanitizedCirculars });
+    const sortedNews = (db.news || []).slice().sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime() || (b.id || "").localeCompare(a.id || ""));
+    const sortedBlogs = (db.blogs || []).slice().sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime() || (b.id || "").localeCompare(a.id || ""));
+    res.json({ ...db, news: sortedNews, blogs: sortedBlogs, circulars: sanitizedCirculars });
   });
 
 
@@ -1317,8 +1361,15 @@ async function startServer() {
     }
   });
 
-  app.get("/api/chat/messages", (req, res) => {
+  app.get("/api/chat/messages", async (req, res) => {
     try {
+      const remoteMsgs = await fetchChatMessagesFromFirestore();
+      if (remoteMsgs !== null && Array.isArray(remoteMsgs) && remoteMsgs.length > 0) {
+        const db = loadDatabase();
+        db.communityMessages = remoteMsgs;
+        saveDatabase(db);
+        return res.json(remoteMsgs);
+      }
       const db = loadDatabase();
       if (!db.communityMessages) db.communityMessages = [];
       res.json(db.communityMessages);
@@ -1328,7 +1379,7 @@ async function startServer() {
     }
   });
 
-  app.post("/api/chat/messages", (req, res) => {
+  app.post("/api/chat/messages", async (req, res) => {
     try {
       const { text, userEmail, userName, userAvatar, replyTo, attachment } = req.body;
       if (!userEmail) {
@@ -1363,6 +1414,10 @@ async function startServer() {
         db.communityMessages = db.communityMessages.slice(-500);
       }
       saveDatabase(db);
+
+      // Persist to Firebase Firestore
+      syncChatMessageToFirestore(newMsg).catch(err => console.error(err));
+
       res.json(newMsg);
     } catch (e) {
       console.error("POST /api/chat/messages error:", e);
@@ -1370,7 +1425,7 @@ async function startServer() {
     }
   });
 
-  app.put("/api/chat/messages/:id", (req, res) => {
+  app.put("/api/chat/messages/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const { action, text, userEmail } = req.body;
@@ -1390,19 +1445,23 @@ async function startServer() {
         if (!text || !text.trim()) return res.status(400).json({ error: "মেসেজ খালি হতে পারে না।" });
         msg.text = text.trim();
         msg.editedAt = new Date().toISOString();
+        syncChatMessageToFirestore(msg).catch(err => console.error(err));
       } else if (action === "delete") {
         if (!isOwner && !isSuper) return res.status(403).json({ error: "ডিলিট করার অনুমতি নেই।" });
         db.communityMessages.splice(msgIndex, 1);
+        deleteChatMessageFromFirestore(id).catch(err => console.error(err));
       } else if (action === "report") {
         if (!msg.reportedBy) msg.reportedBy = [];
         if (!msg.reportedBy.includes(userEmail)) {
           msg.reportedBy.push(userEmail);
           msg.reportsCount = (msg.reportsCount || 0) + 1;
         }
+        syncChatMessageToFirestore(msg).catch(err => console.error(err));
       } else if (action === "moderateHide") {
         if (!isSuper) return res.status(403).json({ error: "মডারেটর অধিকার প্রয়োজন।" });
         msg.isModerated = true;
         msg.text = "[এই মেসেজটি মডারেটর কর্তৃক লুকানো হয়েছে]";
+        syncChatMessageToFirestore(msg).catch(err => console.error(err));
       }
 
       saveDatabase(db);
@@ -1413,17 +1472,52 @@ async function startServer() {
     }
   });
 
-  app.post("/api/chat/upload", uploadProfile.single("file"), (req, res) => {
+  app.post("/api/chat/upload", uploadProfile.single("file"), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "কোনো ফাইল আপলোড করা হয়নি।" });
       }
-      const fileUrl = `/uploads/${req.file.filename}`;
+
+      const isImage = req.file.mimetype && req.file.mimetype.startsWith("image/");
+      if (isImage) {
+        try {
+          const base64Data = req.file.buffer ? req.file.buffer.toString("base64") : (import_fs.default.existsSync(req.file.path) ? import_fs.default.readFileSync(req.file.path).toString("base64") : "");
+          if (base64Data) {
+            const formData = new FormData();
+            formData.append("image", base64Data);
+            const imgbbKey = process.env.IMGBB_API_KEY || "3601399f318b007db7c3a8fdf499d8d0";
+            const imgbbRes = await fetch("https://api.imgbb.com/1/upload?key=" + imgbbKey, {
+              method: "POST",
+              body: formData
+            });
+            if (imgbbRes.ok) {
+              const imgbbJson = await imgbbRes.json();
+              if (imgbbJson && imgbbJson.success && imgbbJson.data && imgbbJson.data.url) {
+                if (req.file.path && import_fs.default.existsSync(req.file.path)) {
+                  try { import_fs.default.unlinkSync(req.file.path); } catch (e) {}
+                }
+                return res.json({
+                  url: imgbbJson.data.url,
+                  thumbUrl: imgbbJson.data.thumb ? imgbbJson.data.thumb.url : imgbbJson.data.url,
+                  name: req.file.originalname,
+                  size: req.file.size,
+                  type: "image",
+                  provider: "imgbb"
+                });
+              }
+            }
+          }
+        } catch (imgErr) {
+          console.warn("[ImgBB Server Upload Warning]:", imgErr.message);
+        }
+      }
+
+      const fileUrl = req.file.filename ? "/uploads/profiles/general/" + req.file.filename : "/uploads/" + req.file.originalname;
       res.json({
         url: fileUrl,
         name: req.file.originalname,
         size: req.file.size,
-        type: req.file.mimetype.startsWith("image/") ? "image" : "file"
+        type: isImage ? "image" : "file"
       });
     } catch (e) {
       console.error("POST /api/chat/upload error:", e);
