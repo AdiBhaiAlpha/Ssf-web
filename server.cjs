@@ -1,3 +1,4 @@
+const fs = require("fs");
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -1005,86 +1006,180 @@ var uploadProfile = (0, import_multer.default)({
   limits: { fileSize: 10 * 1024 * 1024 }
   // 10MB limit for profile picture
 });
-function loadDatabase() {
-  const initialState = getInitialDBState();
+let lastSyncedState = null;
+
+async function syncDatabaseToFirestore(db) {
+  if (!firestoreDb) return;
+  
+  if (!lastSyncedState) {
+    lastSyncedState = {
+      news: [], blogs: [], events: [], books: [], circulars: [],
+      gallery: [], memberships: [], logs: [], visits: [],
+      organizations: [], memberLogins: [], invitations: [],
+      questions: [], community_messages: [], settings: null
+    };
+  }
+
+  const collections = [
+    { name: "news", current: db.news || [], last: lastSyncedState.news },
+    { name: "blogs", current: db.blogs || [], last: lastSyncedState.blogs },
+    { name: "events", current: db.events || [], last: lastSyncedState.events },
+    { name: "books", current: db.books || [], last: lastSyncedState.books },
+    { name: "circulars", current: db.circulars || [], last: lastSyncedState.circulars },
+    { name: "gallery", current: db.gallery || [], last: lastSyncedState.gallery },
+    { name: "memberships", current: db.memberships || [], last: lastSyncedState.memberships },
+    { name: "logs", current: db.logs || [], last: lastSyncedState.logs },
+    { name: "visits", current: db.visits || [], last: lastSyncedState.visits },
+    { name: "organizations", current: db.organizations || [], last: lastSyncedState.organizations },
+    { name: "memberLogins", current: db.memberLogins || [], last: lastSyncedState.memberLogins },
+    { name: "invitations", current: db.invitations || [], last: lastSyncedState.invitations },
+    { name: "questions", current: db.questions || [], last: lastSyncedState.questions },
+    { name: "community_messages", current: db.communityMessages || [], last: lastSyncedState.communityMessages }
+  ];
+
+  if (db.settings && JSON.stringify(db.settings) !== JSON.stringify(lastSyncedState.settings)) {
+    const settingsRef = (0, import_firestore.doc)(firestoreDb, "settings", "webSettings");
+    await (0, import_firestore.setDoc)(settingsRef, db.settings, { merge: true });
+    lastSyncedState.settings = JSON.parse(JSON.stringify(db.settings));
+  }
+
+  for (const col of collections) {
+    const lastMap = new Map((col.last || []).map(item => [item.id, item]));
+    const updatedItems = [];
+
+    for (const item of col.current) {
+      if (!item.id) continue;
+      const lastItem = lastMap.get(item.id);
+      if (!lastItem || JSON.stringify(item) !== JSON.stringify(lastItem)) {
+        updatedItems.push(item);
+      }
+    }
+
+    if (updatedItems.length > 0) {
+      console.log(`[Firestore Sync] Syncing ${updatedItems.length} items to collection '${col.name}'`);
+      for (const item of updatedItems) {
+        const docRef = (0, import_firestore.doc)(firestoreDb, col.name, item.id);
+        await (0, import_firestore.setDoc)(docRef, item, { merge: true });
+      }
+      col.last.length = 0;
+      col.last.push(...col.current.map(i => JSON.parse(JSON.stringify(i))));
+    }
+  }
+}
+
+async function initDatabaseFromFirestore() {
+  console.log("[Firestore init] Loading database from Firestore...");
+  let db = getInitialDBState();
+  
+  let localDb = null;
   try {
-    if (import_fs2.default.existsSync(DB_PATH)) {
-      const data = import_fs2.default.readFileSync(DB_PATH, "utf-8");
-      const db = JSON.parse(data);
-      db.settings = { ...initialState.settings, ...db.settings };
-      if (db.news && !db.news.some((n) => n.id === "news_council25")) {
-        db.news.unshift(initialState.news[0]);
+    if (fs.existsSync(DB_PATH)) {
+      const localData = fs.readFileSync(DB_PATH, "utf-8");
+      localDb = JSON.parse(localData);
+      console.log("[Firestore init] Local db.json found with news count:", localDb.news?.length);
+    }
+  } catch (e) {
+    console.warn("[Firestore init] Local db.json could not be parsed:", e);
+  }
+
+  if (!firestoreDb) {
+    console.error("[Firestore init] firestoreDb is not initialized!");
+    global.cachedDB = localDb || db;
+    return;
+  }
+
+  const collections = [
+    { name: "news", key: "news" },
+    { name: "blogs", key: "blogs" },
+    { name: "events", key: "events" },
+    { name: "books", key: "books" },
+    { name: "circulars", key: "circulars" },
+    { name: "gallery", key: "gallery" },
+    { name: "memberships", key: "memberships" },
+    { name: "logs", key: "logs" },
+    { name: "visits", key: "visits" },
+    { name: "organizations", key: "organizations" },
+    { name: "memberLogins", key: "memberLogins" },
+    { name: "invitations", key: "invitations" },
+    { name: "questions", key: "questions" },
+    { name: "community_messages", key: "communityMessages" }
+  ];
+
+  try {
+    const settingsRef = (0, import_firestore.doc)(firestoreDb, "settings", "webSettings");
+    const settingsSnap = await (0, import_firestore.getDoc)(settingsRef);
+    
+    const newsColRef = (0, import_firestore.collection)(firestoreDb, "news");
+    const newsSnap = await (0, import_firestore.getDocs)(newsColRef);
+
+    const isFirestoreEmpty = !settingsSnap.exists() && newsSnap.empty;
+
+    if (isFirestoreEmpty && localDb) {
+      console.log("[Firestore init] Firestore is empty! Migrating local db.json data to Firestore...");
+      db = localDb;
+      global.cachedDB = db;
+      lastSyncedState = {
+        news: [], blogs: [], events: [], books: [], circulars: [],
+        gallery: [], memberships: [], logs: [], visits: [],
+        organizations: [], memberLogins: [], invitations: [],
+        questions: [], communityMessages: [], settings: null
+      };
+      await syncDatabaseToFirestore(db);
+      console.log("[Firestore init] Migration completed successfully!");
+    } else {
+      if (settingsSnap.exists()) {
+        db.settings = settingsSnap.data();
+      } else if (localDb?.settings) {
+        db.settings = localDb.settings;
       }
-      if (!db.books || db.books.length === 0) {
-        db.books = initialState.books;
-      }
-      if (!db.circulars || db.circulars.length === 0) {
-        db.circulars = initialState.circulars;
-      }
-      if (!db.questions) {
-        db.questions = initialState.questions || [];
-      }
-      if (!db.communityMessages) {
-        db.communityMessages = [];
-      }
-      if (!db.memberLogins) {
-        db.memberLogins = initialState.memberLogins || [];
-      }
-      if (!db.visits || db.visits.length === 0) {
-        db.visits = [];
-        const pages = ["Home", "News", "Publications", "Memberships", "Circulars", "About"];
-        const devices = ["desktop", "mobile", "tablet"];
-        for (let i = 0; i < 15; i++) {
-          const d = /* @__PURE__ */ new Date();
-          d.setDate(d.getDate() - i);
-          const dateString = d.toISOString().split("T")[0];
-          pages.forEach((p) => {
-            devices.forEach((dev) => {
-              const baseViews = dev === "desktop" ? 12 : dev === "mobile" ? 8 : 2;
-              const viewsCount = Math.floor(baseViews + Math.random() * 8);
-              db.visits.push({
-                id: `v_seed_${dateString}_${p}_${dev}`,
-                date: dateString,
-                page: p,
-                views: viewsCount,
-                device: dev
-              });
-            });
-          });
-        }
-        const months = ["01", "02", "03", "04", "05"];
-        months.forEach((month) => {
-          const dateStr = `2026-${month}-15`;
-          pages.forEach((p) => {
-            devices.forEach((dev) => {
-              const baseViews = dev === "desktop" ? 180 : dev === "mobile" ? 120 : 35;
-              const viewsCount = Math.floor(baseViews + Math.random() * 80);
-              db.visits.push({
-                id: `v_seed_m_${dateStr}_${p}_${dev}`,
-                date: dateStr,
-                page: p,
-                views: viewsCount,
-                device: dev
-              });
-            });
-          });
+
+      for (const col of collections) {
+        const colRef = (0, import_firestore.collection)(firestoreDb, col.name);
+        const querySnap = await (0, import_firestore.getDocs)(colRef);
+        const items = [];
+        querySnap.forEach(doc => {
+          items.push(doc.data());
         });
+        if (items.length > 0) {
+          db[col.key] = items;
+        } else if (localDb && localDb[col.key] && localDb[col.key].length > 0) {
+          db[col.key] = localDb[col.key];
+        }
       }
-      return db;
+      console.log("[Firestore init] Loaded successfully from Firestore!");
     }
   } catch (error) {
-    console.error("Error loading db.json, migrating or resetting database...", error);
+    console.error("[Firestore init] Error during Firestore initialization, falling back to localDb:", error);
+    if (localDb) db = localDb;
   }
-  saveDatabase(initialState);
-  return initialState;
+
+  global.cachedDB = db;
+  lastSyncedState = JSON.parse(JSON.stringify(db));
+
+  if (fs.existsSync(DB_PATH)) {
+    try {
+      fs.renameSync(DB_PATH, DB_PATH + ".bak");
+      console.log("[Firestore init] Renamed db.json to db.json.bak as it is no longer needed.");
+    } catch (e) {
+      console.error("Failed to rename db.json:", e);
+    }
+  }
 }
+
+function loadDatabase() {
+  if (!global.cachedDB) {
+    global.cachedDB = getInitialDBState();
+  }
+  return global.cachedDB;
+}
+
 function saveDatabase(db) {
-  try {
-    import_fs2.default.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
-  } catch (error) {
-    console.error("Failed to write to db.json", error);
-  }
+  global.cachedDB = db;
+  syncDatabaseToFirestore(db).catch(err => {
+    console.error("Firestore background sync error:", err);
+  });
 }
+
 function isSuperAdmin(email) {
   if (!email) return false;
   const lowerEmail = email.toLowerCase();
@@ -1117,6 +1212,7 @@ async function esmImport(moduleName) {
 }
 
 async function startServer() {
+  await initDatabaseFromFirestore();
   const app = (0, import_express.default)();
   const PORT = 3e3;
   app.use(import_express.default.json());
