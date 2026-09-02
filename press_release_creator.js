@@ -143,6 +143,16 @@ export function toBengaliNumber(num) {
   return String(num).replace(/[0-9]/g, d => bnDigits[d]);
 }
 
+// Stub for missing function
+export async function exportPressReleaseToPNG(data) {
+  console.warn("exportPressReleaseToPNG not implemented yet");
+}
+
+// Stub for missing function
+export async function printPressRelease(data) {
+  console.warn("printPressRelease not implemented yet");
+}
+
 // Generate formatted current date in Bengali
 export function getBengaliTodayDateString() {
   const months = [
@@ -196,3 +206,5 @@ export function pressReleaseToPlainText(data) {
   text += `=====================================\n`;
   return text;
 }
+
+export const DEFAULT_PRESS_RELEASE = DEFAULT_SSF_PRESS_RELEASE;

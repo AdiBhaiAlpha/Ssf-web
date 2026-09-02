@@ -229,9 +229,14 @@
   let isExpanded = false;
   let messages = [];
   let unreadCount = 0;
-  let userEmail = localStorage.getItem("userEmail") || "";
-  let userName = localStorage.getItem("userName") || userEmail.split("@")[0] || "অতিথি";
-  let userAvatar = localStorage.getItem("userAvatar") || "";
+  let userEmail = "";
+  let userName = "অতিথি";
+  let userAvatar = "";
+  try {
+    userEmail = localStorage.getItem("userEmail") || "";
+    userName = localStorage.getItem("userName") || userEmail.split("@")[0] || "অতিথি";
+    userAvatar = localStorage.getItem("userAvatar") || "";
+  } catch (e) {}
   let textInput = "";
   let replyTo = null;
   let activeAttachment = null;
@@ -280,11 +285,13 @@
       email = window.ssf_current_user_email.trim();
     }
     if (!email) {
-      email = localStorage.getItem('admin-email') || 
-              localStorage.getItem('ssf_user_email') || 
-              localStorage.getItem('userEmail') || 
-              sessionStorage.getItem('admin-email') || '';
-      email = email ? email.trim() : '';
+      try {
+        email = localStorage.getItem('admin-email') || 
+                localStorage.getItem('ssf_user_email') || 
+                localStorage.getItem('userEmail') || 
+                sessionStorage.getItem('admin-email') || '';
+        email = email ? email.trim() : '';
+      } catch (e) {}
     }
     if (!email) {
       try {
@@ -302,7 +309,10 @@
     }
 
     userEmail = email;
-    let name = localStorage.getItem('userName') || localStorage.getItem('authorName') || localStorage.getItem('ssf_user_name') || '';
+    let name = '';
+    try {
+      name = localStorage.getItem('userName') || localStorage.getItem('authorName') || localStorage.getItem('ssf_user_name') || '';
+    } catch (e) {}
     if (!name && userEmail) {
       name = userEmail.split('@')[0];
     }
@@ -323,7 +333,9 @@
       } catch (e) {}
     }
     userName = name || "সদস্য";
-    userAvatar = localStorage.getItem('userAvatar') || localStorage.getItem('ssf_user_avatar') || "";
+    try {
+      userAvatar = localStorage.getItem('userAvatar') || localStorage.getItem('ssf_user_avatar') || "";
+    } catch (e) {}
 
     console.log("[CHAT AUTH] resolved user:", { userEmail, userName });
     return { userEmail, userName, userAvatar };

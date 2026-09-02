@@ -7,6 +7,51 @@
     <title>সমাজতান্ত্রিক ছাত্র ফ্রন্ট, ময়মনসিংহ জেলা শাখা</title>
     <meta name="description" content="সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখা - সর্বজনীন গণতান্ত্রিক ও বৈজ্ঞানিক সমাজতান্ত্রিক সমাজ বিনির্মাণের লক্ষ্যে আপোষহীন প্রগতিশীল ছাত্র আন্দোলন।" />
     <script>
+      // Bulletproof Sandbox LocalStorage / SessionStorage guard
+      (function() {
+        let isStorageSupported = false;
+        try {
+          if (typeof window !== 'undefined' && 'localStorage' in window && window.localStorage !== null) {
+            window.localStorage.setItem('__test_sandbox__', '1');
+            window.localStorage.removeItem('__test_sandbox__');
+            isStorageSupported = true;
+          }
+        } catch (e) {
+          console.warn('[Storage Guard] Native localStorage is blocked or throws security exception:', e);
+        }
+
+        if (!isStorageSupported) {
+          console.log('[Storage Guard] Injecting memory fallback for localStorage and sessionStorage...');
+          const makeMemoryStorage = () => {
+            const store = {};
+            return {
+              getItem: (key) => key in store ? store[key] : null,
+              setItem: (key, value) => { store[key] = String(value); },
+              removeItem: (key) => { delete store[key]; },
+              clear: () => { for (let k in store) delete store[k]; },
+              key: (index) => Object.keys(store)[index] || null,
+              get length() { return Object.keys(store).length; }
+            };
+          };
+
+          const mockLocal = makeMemoryStorage();
+          const mockSession = makeMemoryStorage();
+
+          try {
+            Object.defineProperty(window, 'localStorage', {
+              get: () => mockLocal,
+              configurable: true
+            });
+            Object.defineProperty(window, 'sessionStorage', {
+              get: () => mockSession,
+              configurable: true
+            });
+          } catch (err) {
+            console.error('[Storage Guard] Failed to redefine window.localStorage / window.sessionStorage:', err);
+          }
+        }
+      })();
+
       // Prevent Vite ReferenceError: __DEFINES__ is not defined
       window.__DEFINES__ = window.__DEFINES__ || {};
 
@@ -28,8 +73,8 @@
         };
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-DkKEx6Oj.js?v=13"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BWvdgNyb.css?v=13">
+    <script type="module" crossorigin src="/assets/index-DkKEx6Oj.js?v=15"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BWvdgNyb.css?v=15">
     <link rel="stylesheet" href="/assets/borbila-admin.css">
   
     <!-- Custom Bangla Fonts Preload -->

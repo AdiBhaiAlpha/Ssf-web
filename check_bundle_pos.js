@@ -1,8 +1,14 @@
 const fs = require('fs');
 
-const bundle = fs.readFileSync('assets/index-DkKEx6Oj.js', 'utf8');
+const bundle = fs.readFileSync('bundle_with_28_templates.js', 'utf8');
 
-console.log('zS with space:', bundle.indexOf('const zS ='));
-console.log('zS without space:', bundle.indexOf('const zS='));
-console.log('GQ start:', bundle.indexOf('function GQ({'));
-console.log('WQ start:', bundle.indexOf('function WQ('));
+const gqIndex = bundle.indexOf('function GQ({');
+if (gqIndex === -1) {
+  console.log('GQ not found!');
+} else {
+  console.log('Found function GQ({ at index', gqIndex);
+  console.log('=== Preceding 500 chars ===');
+  console.log(bundle.slice(Math.max(0, gqIndex - 500), gqIndex));
+  console.log('=== Succeeding 500 chars ===');
+  console.log(bundle.slice(gqIndex, gqIndex + 500));
+}

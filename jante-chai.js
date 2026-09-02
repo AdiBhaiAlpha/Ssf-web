@@ -120,11 +120,13 @@
     
     // 2. Check localStorage keys used across the app
     if (!email) {
-      email = localStorage.getItem('admin-email') || 
-              localStorage.getItem('ssf_user_email') || 
-              localStorage.getItem('userEmail') || 
-              sessionStorage.getItem('admin-email') || '';
-      email = email ? email.trim() : '';
+      try {
+        email = localStorage.getItem('admin-email') || 
+                localStorage.getItem('ssf_user_email') || 
+                localStorage.getItem('userEmail') || 
+                sessionStorage.getItem('admin-email') || '';
+        email = email ? email.trim() : '';
+      } catch (e) {}
     }
 
     // 3. Fallback: Check Firebase Auth cached user in localStorage

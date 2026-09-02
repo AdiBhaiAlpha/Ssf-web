@@ -1,4 +1,4 @@
-function GQ({ item: n, onClose: e }) {
+function GQ({ item: n, onClose: e, isNested }) {
   const [selectedTemplate, setSelectedTemplate] = Q.useState(1);
   const [accentColor, setAccentColor] = Q.useState("#B3002D");
   const [bgStyle, setBgStyle] = Q.useState("solid");
@@ -10,12 +10,12 @@ function GQ({ item: n, onClose: e }) {
   const [borderStyle, setBorderStyle] = Q.useState("none");
   const [aspectRatio, setAspectRatio] = Q.useState("1:1");
   const [customRatio, setCustomRatio] = Q.useState(1);
-  const [customTitle, setCustomTitle] = Q.useState(n.title || "");
-  const [customLocation, setCustomLocation] = Q.useState(n.location || "ময়মনসিংহ");
-  const [customAuthor, setCustomAuthor] = Q.useState(n.author || "স্টাফ রিপোর্টার");
+  const [customTitle, setCustomTitle] = Q.useState((n && n.title) || "সমাজতান্ত্রিক ছাত্র ফ্রন্ট");
+  const [customLocation, setCustomLocation] = Q.useState((n && n.location) || "ময়মনসিংহ");
+  const [customAuthor, setCustomAuthor] = Q.useState((n && n.author) || "স্টাফ রিপোর্টার");
   const [customSummary, setCustomSummary] = Q.useState("");
-  const [customDate, setCustomDate] = Q.useState(n.date || "");
-  const [customCategory, setCustomCategory] = Q.useState(n.category || n.type.toUpperCase());
+  const [customDate, setCustomDate] = Q.useState((n && n.date) || "");
+  const [customCategory, setCustomCategory] = Q.useState((n && n.category) || (n && n.type ? n.type.toUpperCase() : "সংবাদ"));
   const [customSlogan, setCustomSlogan] = Q.useState("");
   const [watermarkText, setWatermarkText] = Q.useState("সমাজতান্ত্রিক ছাত্র ফ্রন্ট");
   const [summaryLength, setSummaryLength] = Q.useState("medium");
@@ -48,8 +48,20 @@ function GQ({ item: n, onClose: e }) {
   const previewContainerRef = Q.useRef(null);
   const canvasMetricsRef = Q.useRef({ objectCoordinates: {}, width: 1080, height: 1080 });
   const [metricsVersion, setMetricsVersion] = Q.useState(0);
+  const safeItem = n || {
+    id: "default",
+    title: customTitle,
+    location: customLocation,
+    author: customAuthor,
+    date: customDate,
+    category: customCategory,
+    excerpt: customSummary,
+    content: customSummary,
+    type: "news",
+    image: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=600"
+  };
   Q.useEffect(() => {
-    const raw = (n.excerpt || n.content || "").replace(/[#*`_[\]]/g, "").slice(0, 450);
+    const raw = ((n && (n.excerpt || n.content)) || "সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা সংসদের একটি বিপ্লবী ফটোকার্ড।").replace(/[#*`_[\]]/g, "").slice(0, 450);
     setCustomSummary(raw);
   }, [n]);
   Q.useEffect(() => {
@@ -97,13 +109,15 @@ function GQ({ item: n, onClose: e }) {
     }
   }, [selectedTemplate]);
   Q.useEffect(() => {
-    const url = window.location.origin + "/?tab=" + (n.type === "blog" || n.type === "news" ? "news" : n.type === "publication" ? "books" : n.type === "circular" ? "circulars" : n.type === "event" ? "events" : n.type === "media" ? "media" : "home") + "&" + (n.type === "publication" ? "bookId" : n.type === "circular" ? "circularId" : n.type + "Id") + "=" + n.id;
+    const type = (n && n.type) || "home";
+    const id = (n && n.id) || "default";
+    const url = window.location.origin + "/?tab=" + (type === "blog" || type === "news" ? "news" : type === "publication" ? "books" : type === "circular" ? "circulars" : type === "event" ? "events" : type === "media" ? "media" : "home") + "&" + (type === "publication" ? "bookId" : type === "circular" ? "circularId" : type + "Id") + "=" + id;
     F1.toDataURL(url, {
       margin: 1,
       width: 256,
       color: { dark: bgTheme === "dark" ? "#ffffff" : "#000000", light: bgTheme === "dark" ? "#0b0f19" : "#ffffff" }
     }).then(d => setQrDataUrl(d)).catch(e => console.error(e));
-  }, [n.id, bgTheme, n.type]);
+  }, [n?.id, bgTheme, n?.type]);
   const renderLivePreview = Q.useCallback(async () => {
     const cvs = canvasRef.current;
     if (!cvs) return;
@@ -142,7 +156,7 @@ function GQ({ item: n, onClose: e }) {
         summaryLength,
         offsets
       };
-      const rendered = await op.renderPhotoCard(n, cardOptions, 1, canvasMetricsRef.current);
+      const rendered = await op.renderPhotoCard(safeItem, cardOptions, 1, canvasMetricsRef.current);
       if (rendered && cvs) {
         cvs.width = rendered.width;
         cvs.height = rendered.height;
@@ -252,7 +266,7 @@ function GQ({ item: n, onClose: e }) {
         summaryLength,
         offsets
       };
-      await op.exportAndDownload(n, cardOptions, exportFormat, exportResolution);
+      await op.exportAndDownload(safeItem, cardOptions, exportFormat, exportResolution);
       setExportSuccess(true);
       setRenderedBlob(true);
     } catch (err) {
@@ -318,12 +332,19 @@ function GQ({ item: n, onClose: e }) {
   const activeCoords = canvasMetricsRef.current?.objectCoordinates?.[selectedElement];
   const cvsWidth = canvasMetricsRef.current?.width || internalWidth;
   const cvsHeight = canvasMetricsRef.current?.height || internalHeight;
+  const wrapperClass = isNested 
+    ? "w-full h-full flex items-center justify-center p-0 overflow-hidden relative"
+    : "fixed inset-0 bg-black/85 backdrop-blur-md z-[150] flex items-center justify-center p-2 sm:p-4 overflow-y-auto overflow-x-hidden w-full max-w-full";
+  const cardClass = isNested
+    ? "bg-white dark:bg-zinc-950 rounded-none w-full h-full overflow-hidden flex flex-col max-h-full"
+    : "bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-7xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh] animate-in fade-in zoom-in-95 duration-200";
+
   return i.jsxs("div", {
     id: "photocard-builder-modal",
-    className: "fixed inset-0 bg-black/85 backdrop-blur-md z-[150] flex items-center justify-center p-2 sm:p-4 overflow-y-auto overflow-x-hidden w-full max-w-full",
+    className: wrapperClass,
     children: [
       i.jsxs("div", {
-        className: "bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-7xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh] animate-in fade-in zoom-in-95 duration-200",
+        className: cardClass,
         children: [
           i.jsxs("div", {
             className: "flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/80 shrink-0 w-full",
@@ -339,12 +360,12 @@ function GQ({ item: n, onClose: e }) {
                     className: "truncate",
                     children: [
                       i.jsx("h2", { className: "text-xs sm:text-sm font-black text-zinc-900 dark:text-white leading-tight truncate", children: "পেশাদার ফটোকার্ড ও ব্যানার স্টুডিও" }),
-                      i.jsx("p", { className: "text-[9px] sm:text-[10px] text-zinc-500 truncate max-w-xs sm:max-w-md", children: n.title || "সমাজতান্ত্রিক ছাত্র ফ্রন্ট ফটোকার্ড" })
+                      i.jsx("p", { className: "text-[9px] sm:text-[10px] text-zinc-500 truncate max-w-xs sm:max-w-md", children: (n && n.title) || "সমাজতান্ত্রিক ছাত্র ফ্রন্ট ফটোকার্ড" })
                     ]
                   })
                 ]
               }),
-              i.jsx("button", {
+              !isNested && i.jsx("button", {
                 onClick: e,
                 className: "p-2 bg-zinc-200/70 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg cursor-pointer transition shrink-0 ml-2",
                 title: "বন্ধ করুন",
@@ -356,7 +377,7 @@ function GQ({ item: n, onClose: e }) {
             className: "grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-hidden w-full max-w-full",
             children: [
               i.jsxs("div", {
-                className: "lg:col-span-5 border-r border-zinc-200 dark:border-zinc-800 flex flex-col max-h-[82vh] bg-white dark:bg-zinc-950 w-full max-w-full overflow-x-hidden",
+                className: "lg:col-span-5 border-r border-zinc-200 dark:border-zinc-800 flex flex-col " + (isNested ? "max-h-full" : "max-h-[82vh]") + " bg-white dark:bg-zinc-950 w-full max-w-full overflow-x-hidden",
                 children: [
                   i.jsx("div", {
                     className: "flex border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 text-[11px] font-bold overflow-x-auto no-scrollbar shrink-0 w-full",
