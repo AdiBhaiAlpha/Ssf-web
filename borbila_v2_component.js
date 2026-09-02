@@ -24,7 +24,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
     frontButtonText: 'Download PhotoCard',
     downloadPrefix: 'ssf-photocard',
     titleFontFamily: 'SolaimanLipi',
-    titleFontSize: 64,
+    titleFontSize: 32,
     isAutoFontSize: false
   };
 
@@ -236,32 +236,74 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
     var boxHeight = options.height || 240;
     var bestSize = explicitSize || minFont;
     var lines = [];
+    var minSafeLimit = 16; // Safe minimum limit to avoid tiny unreadable text or overflow
 
     if (explicitSize) {
+      // First, try user's preferred explicit size
       ctx.font = fontGetter(explicitSize);
-      lines = wrapText(ctx, text, maxWidth);
-      bestSize = explicitSize;
+      var testLines = wrapText(ctx, text, maxWidth);
+      var lineHeight = Math.round(explicitSize * lineGap);
+      var blockHeight = testLines.length * lineHeight;
+
+      if (testLines.length <= maxLines && blockHeight <= boxHeight) {
+        // Fits perfectly!
+        lines = testLines;
+        bestSize = explicitSize;
+      } else {
+        // Reduce the font size slightly within a safe minimum limit rather than allowing overflow
+        var found = false;
+        for (var size = explicitSize - 1; size >= minSafeLimit; size--) {
+          ctx.font = fontGetter(size);
+          testLines = wrapText(ctx, text, maxWidth);
+          lineHeight = Math.round(size * lineGap);
+          blockHeight = testLines.length * lineHeight;
+          if (testLines.length <= maxLines && blockHeight <= boxHeight) {
+            lines = testLines;
+            bestSize = size;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          // If none fit, use the minimum safe limit
+          bestSize = minSafeLimit;
+          ctx.font = fontGetter(bestSize);
+          lines = wrapText(ctx, text, maxWidth);
+        }
+      }
     } else {
-      for (var size = maxFont; size >= minFont; size -= 2) {
+      // Auto-fit mode (from maxFont down to minSafeLimit)
+      var found = false;
+      for (var size = maxFont; size >= minSafeLimit; size -= 2) {
         ctx.font = fontGetter(size);
         var testLines = wrapText(ctx, text, maxWidth);
-        if (testLines.length <= maxLines) {
+        var lineHeight = Math.round(size * lineGap);
+        var blockHeight = testLines.length * lineHeight;
+        if (testLines.length <= maxLines && blockHeight <= boxHeight) {
           lines = testLines;
           bestSize = size;
+          found = true;
           break;
         }
-        if (!lines.length) lines = testLines;
+      }
+      if (!found) {
+        bestSize = minSafeLimit;
+        ctx.font = fontGetter(bestSize);
+        lines = wrapText(ctx, text, maxWidth);
       }
     }
 
     ctx.font = fontGetter(bestSize);
-    if (!explicitSize && lines.length > maxLines) {
+    // If the text still exceeds maxLines, clamp and truncate with ellipsis to prevent overflow/overlapping
+    if (lines.length > maxLines) {
       lines = lines.slice(0, maxLines);
       lines[maxLines - 1] = trimTextToWidth(ctx, lines[maxLines - 1], maxWidth - 10);
     }
     if (!lines.length) return;
+
     var lineHeight = Math.round(bestSize * lineGap);
     var blockHeight = lines.length * lineHeight;
+    // Align vertically in the center of the designated text box
     var startY = y + Math.max(0, Math.floor((boxHeight - blockHeight) / 2));
     ctx.textAlign = options.align || 'center';
     ctx.textBaseline = 'top';
@@ -997,7 +1039,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
 
   // Title Typography State
   const [titleFontFamily, setTitleFontFamily] = Q.useState('SolaimanLipi');
-  const [titleFontSize, setTitleFontSize] = Q.useState(64);
+  const [titleFontSize, setTitleFontSize] = Q.useState(32);
   const [isAutoFontSize, setIsAutoFontSize] = Q.useState(false);
 
   // Colors
@@ -1113,7 +1155,7 @@ function BorbilaPhotoCardV2({ item, db, onClose, isStandalone, onSelectItem, set
       instagramUrl: instagramUrl || '',
       downloadPrefix: downloadPrefix || 'ssf-photocard',
       titleFontFamily: titleFontFamily || 'SolaimanLipi',
-      titleFontSize: Number(titleFontSize) || 64,
+      titleFontSize: Number(titleFontSize) || 32,
       isAutoFontSize: Boolean(isAutoFontSize)
     };
 
