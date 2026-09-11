@@ -151,7 +151,11 @@
     function loadImage(src) {
         return new Promise(function (resolve, reject) {
             if (!src) {
-                reject(new Error('Image source is empty'));
+                var defaultImg = new Image();
+                defaultImg.crossOrigin = 'anonymous';
+                defaultImg.onload = function() { resolve(defaultImg); };
+                defaultImg.onerror = function() { reject(new Error('Image source is empty')); };
+                defaultImg.src = '/default-avatar.svg';
                 return;
             }
 
@@ -159,20 +163,37 @@
             img.crossOrigin = 'anonymous';
             img.onload = function () {
                 if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-                    reject(new Error('Image loaded but has zero dimensions: ' + src));
+                    var fallback = new Image();
+                    fallback.crossOrigin = 'anonymous';
+                    fallback.onload = function() { resolve(fallback); };
+                    fallback.onerror = function() { reject(new Error('Image loaded but has zero dimensions: ' + src)); };
+                    fallback.src = '/default-avatar.svg';
                     return;
                 }
                 resolve(img);
             };
             img.onerror = function () {
-                var fallback = new Image();
-                fallback.onload = function () {
-                    resolve(fallback);
-                };
-                fallback.onerror = function () {
-                    reject(new Error('Failed to load image: ' + src));
-                };
-                fallback.src = src;
+                if ((src.startsWith('http://') || src.startsWith('https://')) && !src.includes('/api/proxy-image')) {
+                    var proxyImg = new Image();
+                    proxyImg.crossOrigin = 'anonymous';
+                    proxyImg.onload = function () {
+                        resolve(proxyImg);
+                    };
+                    proxyImg.onerror = function () {
+                        var finalFallback = new Image();
+                        finalFallback.crossOrigin = 'anonymous';
+                        finalFallback.onload = function() { resolve(finalFallback); };
+                        finalFallback.onerror = function() { reject(new Error('Failed to load fallback avatar')); };
+                        finalFallback.src = '/default-avatar.svg';
+                    };
+                    proxyImg.src = '/api/proxy-image?url=' + encodeURIComponent(src);
+                } else {
+                    var finalFallback = new Image();
+                    finalFallback.crossOrigin = 'anonymous';
+                    finalFallback.onload = function() { resolve(finalFallback); };
+                    finalFallback.onerror = function() { reject(new Error('Failed to load fallback avatar')); };
+                    finalFallback.src = '/default-avatar.svg';
+                }
             };
             img.src = src;
         });

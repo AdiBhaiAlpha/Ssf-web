@@ -1267,8 +1267,21 @@ async function startServer() {
   await initDatabaseFromFirestore();
   setupFirestoreRealtimeListeners();
   const app = (0, import_express.default)();
+  app.set("trust proxy", 1);
   const PORT = 3e3;
-    app.use("/api", (req, res, next) => {
+
+  // Global CORS and Cross-Origin Headers for all requests including static assets
+  app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(204);
+    }
+    next();
+  });
+
+  app.use("/api", (req, res, next) => {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Expires", "0");
@@ -1276,25 +1289,27 @@ async function startServer() {
     next();
   });
   app.use(import_express.default.json({ limit: "2mb" }));
+  app.post("/api/client-error", (req, res) => {
+    console.error(">>> [CLIENT-BROWSER-LOG]:", JSON.stringify(req.body));
+    res.json({ ok: true });
+  });
   app.use((req, res, next) => { console.log("GLOBAL REQ:", req.method, req.url); next(); });
 
   // Security Headers Middleware
   app.use((req, res, next) => {
     res.removeHeader("X-Powered-By");
     res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("X-XSS-Protection", "1; mode=block");
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
     res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
-    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
     const csp = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://i.ibb.co https://i.imgur.com https://api.imgbb.com https://*.firebaseio.com",
-      "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com",
-      "frame-ancestors 'none'"
+      "font-src 'self' https://fonts.gstatic.com data:",
+      "img-src 'self' data: blob: http: https:",
+      "connect-src 'self' http: https: wss: https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com",
+      "frame-ancestors 'self' *"
     ].join("; ");
     res.setHeader("Content-Security-Policy", csp);
     next();
@@ -1303,7 +1318,8 @@ async function startServer() {
   // Rate Limiters
   const globalLimiter = (0, import_rateLimit.default)({
     windowMs: 15 * 60 * 1000,
-    max: 200,
+    max: 10000,
+    skip: (req) => req.method === "GET" || req.method === "OPTIONS",
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "Too many requests. Please try again later." }
@@ -1335,12 +1351,49 @@ async function startServer() {
 
 
 
-  app.use("/assets", import_express.default.static(import_path2.default.join(process.cwd(), "assets")));
-  app.use(import_express.default.static(import_path2.default.join(process.cwd(), "public")));
-  app.use(import_express.default.static(process.cwd(), { index: false }));
+  const staticCorsOptions = {
+    setHeaders: (res) => {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    }
+  };
+
+  app.use("/assets", import_express.default.static(import_path2.default.join(process.cwd(), "assets"), staticCorsOptions));
+  app.use(import_express.default.static(import_path2.default.join(process.cwd(), "public"), staticCorsOptions));
+  app.use(import_express.default.static(process.cwd(), { index: false, ...staticCorsOptions }));
 
   const uploadsPath = import_path2.default.join(process.cwd(), "public", "uploads");
-  app.use("/uploads", import_express.default.static(uploadsPath));
+  app.use("/uploads", import_express.default.static(uploadsPath, staticCorsOptions));
+  // Fallback for missing uploaded images (prevents 404 broken image icons)
+  app.use("/uploads", (req, res) => {
+    res.setHeader("Content-Type", "image/svg+xml");
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    const fallbackPath = import_path2.default.join(process.cwd(), "public", "default-avatar.svg");
+    if (import_fs2.default.existsSync(fallbackPath)) {
+      return res.sendFile(fallbackPath);
+    }
+    res.status(404).send("File not found");
+  });
+
+  app.get("/default-avatar.svg", (req, res) => {
+    res.setHeader("Content-Type", "image/svg+xml");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cache-Control", "public, max-age=2592000");
+    res.sendFile(import_path2.default.join(process.cwd(), "public", "default-avatar.svg"));
+  });
+
+  app.get("/default-avatar.png", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cache-Control", "public, max-age=2592000");
+    const pngPath = import_path2.default.join(process.cwd(), "public", "default-avatar.png");
+    if (import_fs2.default.existsSync(pngPath)) {
+      res.setHeader("Content-Type", "image/png");
+      return res.sendFile(pngPath);
+    }
+    res.setHeader("Content-Type", "image/svg+xml");
+    res.sendFile(import_path2.default.join(process.cwd(), "public", "default-avatar.svg"));
+  });
   app.post("/api/upload", writeLimiter, upload.single("file"), (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -1426,31 +1479,141 @@ async function startServer() {
     }
   });
   app.get("/api/proxy-image", async (req, res) => {
-    const imageUrl = req.query.url;
-    if (!imageUrl) {
-      return res.status(400).send("URL is required");
+    let imageUrl = req.query.url;
+    if (!imageUrl || typeof imageUrl !== "string") {
+      return res.status(400).send("URL parameter is required");
     }
+    imageUrl = imageUrl.trim();
+
+    const sendFallback = () => {
+      res.setHeader("Content-Type", "image/svg+xml");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Cache-Control", "public, max-age=86400");
+      res.setHeader("X-Fallback", "true");
+      const fallbackPath = import_path2.default.join(process.cwd(), "public", "default-avatar.svg");
+      if (import_fs2.default.existsSync(fallbackPath)) {
+        return res.sendFile(fallbackPath);
+      }
+      return res.status(200).send('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#e2e8f0"/><circle cx="50" cy="38" r="18" fill="#94a3b8"/><path d="M 20 85 C 20 62 35 60 50 60 C 65 60 80 62 80 85 Z" fill="#94a3b8"/></svg>');
+    };
+
     try {
+      // 1. Handle local/relative paths
+      if (imageUrl.startsWith("/uploads/") || imageUrl.startsWith("uploads/")) {
+        const rel = imageUrl.replace(/^\/?uploads\//, "");
+        const localPath = import_path2.default.join(process.cwd(), "public", "uploads", rel);
+        if (import_fs2.default.existsSync(localPath)) {
+          res.setHeader("Access-Control-Allow-Origin", "*");
+          res.setHeader("Cache-Control", "public, max-age=86400");
+          return res.sendFile(localPath);
+        }
+        return sendFallback();
+      }
+
+      if (imageUrl.includes("default-avatar")) {
+        return sendFallback();
+      }
+
+      if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+        imageUrl = imageUrl.startsWith("/") ? `http://127.0.0.1:3000${imageUrl}` : `http://127.0.0.1:3000/${imageUrl}`;
+      }
+
+      const parsedUrl = new URL(imageUrl);
+      if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+        return sendFallback();
+      }
+
+      // Check if referencing localhost /uploads
+      if ((parsedUrl.hostname === "localhost" || parsedUrl.hostname === "127.0.0.1") && parsedUrl.pathname.startsWith("/uploads/")) {
+        const rel = parsedUrl.pathname.replace(/^\/uploads\//, "");
+        const localPath = import_path2.default.join(process.cwd(), "public", "uploads", rel);
+        if (import_fs2.default.existsSync(localPath)) {
+          res.setHeader("Access-Control-Allow-Origin", "*");
+          res.setHeader("Cache-Control", "public, max-age=86400");
+          return res.sendFile(localPath);
+        }
+        return sendFallback();
+      }
+
+      // SHA-256 disk cache lookup
+      const hash = import_crypto.default.createHash("sha256").update(imageUrl).digest("hex");
+      const cacheDir = import_path2.default.join(process.cwd(), "public", "cache");
+      if (!import_fs2.default.existsSync(cacheDir)) {
+        import_fs2.default.mkdirSync(cacheDir, { recursive: true });
+      }
+      const cachePath = import_path2.default.join(cacheDir, hash);
+      const metaPath = import_path2.default.join(cacheDir, `${hash}.json`);
+
+      if (import_fs2.default.existsSync(cachePath) && import_fs2.default.existsSync(metaPath)) {
+        try {
+          const stats = import_fs2.default.statSync(cachePath);
+          const ageInDays = (Date.now() - stats.mtimeMs) / (1e3 * 60 * 60 * 24);
+          if (ageInDays < 30 && stats.size > 0) {
+            const meta = JSON.parse(import_fs2.default.readFileSync(metaPath, "utf8"));
+            const cachedBuffer = import_fs2.default.readFileSync(cachePath);
+            res.setHeader("Content-Type", meta.contentType || "image/png");
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Cache-Control", "public, max-age=2592000");
+            res.setHeader("X-Cache", "HIT");
+            return res.send(cachedBuffer);
+          }
+        } catch (cacheErr) {
+          console.warn("[Proxy] Cache read error, fetching from network:", cacheErr.message);
+        }
+      }
+
+      // Fetch with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(imageUrl, {
+        signal: controller.signal,
         headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
           "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
           "Accept-Language": "en-US,en;q=0.9"
         }
       });
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        return res.status(400).send("Failed to fetch image");
+        console.warn(`[Proxy] Remote image error ${response.status} for: ${imageUrl}`);
+        return sendFallback();
       }
+
       const contentType = response.headers.get("content-type") || "image/png";
+      if (!contentType.startsWith("image/")) {
+        console.warn(`[Proxy] Non-image MIME (${contentType}) for: ${imageUrl}`);
+        return sendFallback();
+      }
+
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
+
+      if (buffer.length === 0) {
+        return sendFallback();
+      }
+
+      try {
+        import_fs2.default.writeFileSync(cachePath, buffer);
+        import_fs2.default.writeFileSync(metaPath, JSON.stringify({
+          originalUrl: imageUrl,
+          contentType,
+          timestamp: Date.now(),
+          size: buffer.length
+        }, null, 2));
+      } catch (saveErr) {
+        console.warn("[Proxy] Failed to write cache:", saveErr.message);
+      }
+
       res.setHeader("Content-Type", contentType);
-      res.setHeader("Cache-Control", "public, max-age=86400");
       res.setHeader("Access-Control-Allow-Origin", "*");
-      res.send(buffer);
+      res.setHeader("Cache-Control", "public, max-age=2592000");
+      res.setHeader("X-Cache", "MISS");
+      return res.send(buffer);
     } catch (err) {
-      console.error("Image proxy error:", err);
-      res.status(500).send("Error proxying image");
+      console.error("[Proxy] Error proxying image:", err.message);
+      return sendFallback();
     }
   });
   
@@ -3118,87 +3281,6 @@ Sitemap: ${proto}://${host}/sitemap.xml`);
     });
     saveDatabase(db);
     res.json(db.settings);
-  });
-  app.get("/api/proxy-image", async (req, res) => {
-    const imageUrl = req.query.url;
-    if (!imageUrl) {
-      return res.status(400).send("Missing url parameter");
-    }
-    try {
-      const parsedUrl = new URL(imageUrl);
-      if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
-        return res.status(400).send("Invalid protocol: protocol must be http or https");
-      }
-      const hash = import_crypto.default.createHash("sha256").update(imageUrl).digest("hex");
-      const cacheDir = import_path2.default.join(process.cwd(), "public", "cache");
-      if (!import_fs2.default.existsSync(cacheDir)) {
-        import_fs2.default.mkdirSync(cacheDir, { recursive: true });
-      }
-      const cachePath = import_path2.default.join(cacheDir, hash);
-      const metaPath = import_path2.default.join(cacheDir, `${hash}.json`);
-      let useCache = false;
-      if (import_fs2.default.existsSync(cachePath) && import_fs2.default.existsSync(metaPath)) {
-        try {
-          const stats = import_fs2.default.statSync(cachePath);
-          const ageInDays = (Date.now() - stats.mtimeMs) / (1e3 * 60 * 60 * 24);
-          if (ageInDays < 30) {
-            useCache = true;
-          }
-        } catch (err) {
-          console.warn("[Proxy] Error reading cache file stats:", err);
-        }
-      }
-      if (useCache) {
-        console.log(`[Proxy] Cache HIT for: ${imageUrl} (Hash: ${hash})`);
-        try {
-          const meta = JSON.parse(import_fs2.default.readFileSync(metaPath, "utf8"));
-          const buffer2 = import_fs2.default.readFileSync(cachePath);
-          res.setHeader("Content-Type", meta.contentType || "image/png");
-          res.setHeader("Access-Control-Allow-Origin", "*");
-          res.setHeader("Cache-Control", "public, max-age=2592000");
-          res.setHeader("X-Cache", "HIT");
-          return res.send(buffer2);
-        } catch (cacheReadErr) {
-          console.error("[Proxy] Failed to read cached image, falling back to download:", cacheReadErr);
-        }
-      }
-      console.log(`[Proxy] Cache MISS. Fetching external image: ${imageUrl}`);
-      const response = await fetch(imageUrl, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }
-      });
-      if (!response.ok) {
-        console.error(`[Proxy] Failed to fetch remote image. HTTP Status: ${response.status}`);
-        return res.status(response.status).send(`Image could not be loaded: ${imageUrl} (Status: ${response.status})`);
-      }
-      const contentType = response.headers.get("content-type") || "image/png";
-      if (!contentType.startsWith("image/")) {
-        console.error(`[Proxy] Invalid MIME type fetched: ${contentType}`);
-        return res.status(400).send(`Image could not be loaded: ${imageUrl} (Invalid MIME type: ${contentType})`);
-      }
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      try {
-        import_fs2.default.writeFileSync(cachePath, buffer);
-        import_fs2.default.writeFileSync(metaPath, JSON.stringify({
-          originalUrl: imageUrl,
-          contentType,
-          timestamp: Date.now()
-        }, null, 2));
-        console.log(`[Proxy] Successfully saved image to cache: ${hash}`);
-      } catch (saveErr) {
-        console.error("[Proxy] Failed to write image to disk cache:", saveErr);
-      }
-      res.setHeader("Content-Type", contentType);
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Cache-Control", "public, max-age=2592000");
-      res.setHeader("X-Cache", "MISS");
-      res.send(buffer);
-    } catch (err) {
-      console.error("[Proxy] Error proxying image:", err);
-      res.status(500).send("Error proxying image");
-    }
   });
   app.get("/api/organizations", (req, res) => {
     const db = loadDatabase();
