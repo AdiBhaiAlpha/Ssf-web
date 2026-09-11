@@ -1,0 +1,939 @@
+.borbila-photocard-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.borbila-photocard-box p {
+    margin: 0;
+}
+
+.borbila-photocard-warning {
+    background: #fff3cd;
+    color: #7a4f01;
+    border: 1px solid #ffe69c;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.borbila-photocard-download {
+    min-height: 40px !important;
+    font-weight: 600 !important;
+}
+
+.borbila-photocard-fixed-text,
+.borbila-photocard-settings-link {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.borbila-photocard-description {
+    color: #50575e !important;
+    font-size: 12px !important;
+    line-height: 1.55 !important;
+}
+
+.borbila-photocard-admin-page {
+    --bpc-blue: #1f5da8;
+    --bpc-navy: #172033;
+    --bpc-text: #344054;
+    --bpc-muted: #667085;
+    --bpc-border: #d8dee8;
+    --bpc-soft: #f4f7fa;
+    max-width: 1400px;
+    margin: 20px 20px 0 0;
+    color: var(--bpc-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.borbila-admin-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 26px 24px 30px;
+    overflow: hidden;
+    border: 1px solid var(--bpc-border);
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(23, 32, 51, 0.05);
+}
+
+.borbila-admin-header::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--bpc-blue);
+}
+
+.borbila-admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.borbila-admin-brand > .dashicons {
+    width: 50px;
+    height: 50px;
+    padding: 13px;
+    box-sizing: border-box;
+    border: 1px solid #cbdcf0;
+    border-radius: 9px;
+    background: #edf4fb;
+    color: var(--bpc-blue);
+    font-size: 24px;
+}
+
+.borbila-admin-brand h1 {
+    margin: 4px 0 5px;
+    color: var(--bpc-navy);
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.borbila-admin-brand p {
+    margin: 0;
+    color: var(--bpc-muted);
+    font-size: 13px;
+}
+
+.borbila-admin-kicker {
+    display: block;
+    color: var(--bpc-blue);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+}
+
+.borbila-license-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 12px;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.borbila-license-pill .dashicons {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+.borbila-license-pill.is-active { color: #157347; border-color: #a9dec2; background: #effaf4; }
+.borbila-license-pill.is-inactive { color: #915d0a; border-color: #e6ca83; background: #fff9e9; }
+
+.borbila-photocard-dashboard {
+    display: grid;
+    grid-template-columns: 235px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+    margin-top: 16px;
+}
+
+.borbila-dashboard-content {
+    min-width: 0;
+}
+
+.borbila-admin-tabs {
+    position: sticky;
+    top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+    border: 1px solid var(--bpc-border);
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(23, 32, 51, 0.04);
+}
+
+.borbila-tab-caption {
+    padding: 8px 11px 10px;
+    color: #98a2b3;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.borbila-tab-divider {
+    height: 1px;
+    margin: 6px 4px;
+    background: #e7ebf0;
+}
+
+.borbila-admin-tab {
+    position: relative;
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    min-height: 45px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    color: #526078;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.2;
+    padding: 9px 11px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.borbila-admin-tab:hover {
+    color: var(--bpc-blue);
+    border-color: #e3e8ef;
+    background: #f7f9fc;
+}
+
+.borbila-admin-tab.is-active {
+    color: #174d8b;
+    border-color: #c9daef;
+    background: #eef5fc;
+    box-shadow: inset 3px 0 0 var(--bpc-blue);
+}
+
+.borbila-admin-tab:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(31, 93, 168, 0.16);
+}
+
+.borbila-admin-tab .dashicons {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.borbila-admin-tab em {
+    margin-left: auto;
+    padding: 3px 6px;
+    border-radius: 999px;
+    background: #fff2cf;
+    color: #915d0a;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 750;
+}
+
+.borbila-license-tab.is-active em {
+    background: #dcebf9;
+    color: #174d8b;
+}
+
+.borbila-photocard-settings,
+.borbila-license-panel {
+    padding: 24px;
+    border: 1px solid var(--bpc-border);
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(23, 32, 51, 0.04);
+    box-sizing: border-box;
+}
+
+.borbila-photocard-settings[hidden],
+.borbila-admin-panel[hidden] {
+    display: none !important;
+}
+
+.borbila-settings-fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.borbila-photocard-settings.is-license-locked .borbila-settings-fieldset {
+    opacity: 0.58;
+    filter: grayscale(0.18);
+    pointer-events: none;
+}
+
+.borbila-settings-lock-banner {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 20px;
+    padding: 14px;
+    border: 1px solid #e6ca83;
+    border-radius: 8px;
+    background: #fff9e9;
+}
+
+.borbila-settings-lock-banner > .dashicons {
+    width: 42px;
+    height: 42px;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 7px;
+    background: #fff1c4;
+    color: #915d0a;
+    font-size: 21px;
+}
+
+.borbila-settings-lock-banner div {
+    display: grid;
+    gap: 4px;
+}
+
+.borbila-settings-lock-banner strong { color: #694505; font-size: 13px; }
+.borbila-settings-lock-banner small { color: #8a641d; font-size: 11px; }
+.borbila-settings-lock-banner .button { border-radius: 6px; }
+
+.borbila-admin-panel {
+    animation: borbila-panel-in 160ms ease-out;
+}
+
+@keyframes borbila-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.borbila-settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.borbila-text-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+}
+
+.borbila-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.borbila-field span {
+    font-size: 13px;
+}
+
+.borbila-field input[type="text"],
+.borbila-field input[type="url"] {
+    border-radius: 8px;
+    min-height: 40px;
+}
+
+.borbila-field input[type="color"] {
+    width: 100%;
+    height: 46px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.borbila-field-wide {
+    grid-column: span 2;
+}
+
+.borbila-logo-settings {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.borbila-logo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 170px;
+    background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.04) 25%, transparent 25%) 0 0 / 24px 24px,
+        linear-gradient(315deg, rgba(15, 23, 42, 0.04) 25%, transparent 25%) 0 0 / 24px 24px,
+        #f8fafc;
+    border: 1px dashed #94a3b8;
+    border-radius: 14px;
+    color: #64748b;
+    overflow: hidden;
+    padding: 18px;
+    text-align: center;
+}
+
+.borbila-logo-preview img {
+    display: block;
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+}
+
+.borbila-logo-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.borbila-button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.borbila-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.borbila-toggle-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: #f8fafc;
+    border: 1px solid #dbe3ef;
+    border-radius: 14px;
+    cursor: pointer;
+    padding: 16px;
+}
+
+.borbila-toggle-card input {
+    margin-top: 3px;
+}
+
+.borbila-toggle-card span {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.borbila-toggle-card strong {
+    color: #111827;
+    font-size: 14px;
+}
+
+.borbila-toggle-card small {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.borbila-settings-grid {
+    gap: 14px;
+}
+
+.borbila-field input[type="text"],
+.borbila-field input[type="url"] {
+    width: 100%;
+    max-width: none;
+    min-height: 42px;
+    margin: 0;
+    padding: 8px 11px;
+    border: 1px solid #cbd3df;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #20283b;
+    box-shadow: inset 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+.borbila-field input:focus {
+    border-color: #6f9dcd;
+    box-shadow: 0 0 0 3px rgba(31, 93, 168, 0.12);
+    outline: 0;
+}
+
+.borbila-field input[type="color"] {
+    border-radius: 7px;
+    background: #f8fafc;
+}
+
+.borbila-logo-preview,
+.borbila-toggle-card {
+    border-radius: 8px;
+}
+
+.borbila-toggle-card {
+    border-color: #dce2ea;
+    background: #fafbfc;
+}
+
+.borbila-savebar {
+    position: sticky;
+    z-index: 10;
+    bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 22px;
+    padding: 12px 13px 12px 16px;
+    border: 1px solid #ccd5e2;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 8px 24px rgba(23, 32, 51, 0.12);
+    backdrop-filter: blur(12px);
+}
+
+.borbila-savebar > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--bpc-muted);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.borbila-savebar .submit { margin: 0; padding: 0; }
+.borbila-savebar .button-primary { min-height: 40px; padding: 3px 18px; border-radius: 6px; background: var(--bpc-blue); border-color: var(--bpc-blue); font-weight: 700; }
+
+.borbila-license-notice {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border: 1px solid;
+    border-radius: 7px;
+    font-weight: 650;
+}
+
+.borbila-license-notice.is-success { color: #157347; border-color: #a9dec2; background: #effaf4; }
+.borbila-license-notice.is-error { color: #a32636; border-color: #efb8c0; background: #fff4f5; }
+
+.borbila-license-status {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid var(--bpc-border);
+    border-radius: 9px;
+    background: #fbfcfd;
+}
+
+.borbila-license-status-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 8px;
+}
+
+.borbila-license-status-icon .dashicons { width: 30px; height: 30px; font-size: 30px; }
+.borbila-license-status.is-active .borbila-license-status-icon { color: #16965b; background: #e7f9ef; }
+.borbila-license-status.is-inactive .borbila-license-status-icon { color: #b77912; background: #fff2cf; }
+.borbila-license-status h2 { margin: 4px 0; color: var(--bpc-navy); font-size: 21px; }
+.borbila-license-status p { margin: 0; color: var(--bpc-muted); font-size: 12px; }
+.borbila-license-status > strong { padding: 7px 11px; border-radius: 999px; font-size: 9px; letter-spacing: 0.08em; }
+.borbila-license-status.is-active > strong { color: #157347; background: #e7f9ef; }
+.borbila-license-status.is-inactive > strong { color: #915d0a; background: #fff2cf; }
+
+.borbila-license-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.borbila-license-card {
+    padding: 20px;
+    border: 1px solid var(--bpc-border);
+    border-radius: 9px;
+    background: #ffffff;
+}
+
+.borbila-license-card h2 { margin: 0 0 5px; color: var(--bpc-navy); font-size: 18px; }
+.borbila-license-card > p { margin: 0 0 16px; color: var(--bpc-muted); font-size: 12px; }
+.borbila-license-card label { display: block; margin-bottom: 7px; color: #344054; font-size: 12px; font-weight: 700; }
+
+.borbila-license-key-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px;
+}
+
+.borbila-license-key-row input {
+    width: 100%;
+    min-height: 42px;
+    margin: 0;
+    padding: 8px 11px;
+    border: 1px solid #cbd3df;
+    border-radius: 6px;
+    box-shadow: none;
+}
+
+.borbila-license-key-row input:focus { border-color: #6f9dcd; box-shadow: 0 0 0 3px rgba(31, 93, 168, 0.12); }
+.borbila-license-key-row .button-primary { min-height: 42px; border-radius: 6px; background: var(--bpc-blue); border-color: var(--bpc-blue); font-weight: 700; }
+
+.borbila-license-actions { display: flex; align-items: center; gap: 8px; margin-top: 13px; flex-wrap: wrap; }
+.borbila-license-actions .button { min-height: 36px; padding: 2px 13px; border-radius: 6px; font-weight: 650; }
+.borbila-license-actions .button:last-child { margin-left: auto; }
+.borbila-license-actions .borbila-danger { color: #b42332; border-color: #efb8c0; background: #fff8f9; }
+
+.borbila-license-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.borbila-license-meta > div {
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid var(--bpc-border);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.borbila-license-meta span,
+.borbila-license-meta strong { display: block; }
+.borbila-license-meta span { margin-bottom: 7px; color: #98a2b3; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.borbila-license-meta strong { overflow: hidden; color: #344054; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+
+.borbila-photocard-frontend {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0 !important;
+    width: 100%;
+    clear: both;
+    line-height: 0 !important;
+    margin: 5px auto;
+    text-align: center;
+}
+
+.borbila-photocard-front-button {
+    appearance: none;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 40px;
+    min-height: 40px !important;
+    background: linear-gradient(135deg, var(--borbila-primary, #d60000), var(--borbila-secondary, #7a0000));
+    border: 0;
+    border-radius: 999px;
+    box-sizing: border-box;
+    box-shadow: 0 12px 24px rgba(214, 0, 0, 0.22);
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 22px !important;
+    text-decoration: none;
+    transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.borbila-photocard-front-button-icon {
+    display: block;
+    flex: 0 0 auto;
+    width: 18px;
+    height: 15px;
+    fill: currentColor;
+    margin: 0;
+    padding: 0;
+}
+
+.borbila-photocard-front-button-text {
+    display: inline-block;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    line-height: 0 !important;
+    transform: translateY(0);
+}
+
+.borbila-photocard-front-button:hover,
+.borbila-photocard-front-button:focus {
+    box-shadow: 0 16px 30px rgba(214, 0, 0, 0.28);
+    color: #ffffff;
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.borbila-photocard-front-button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+    transform: none;
+}
+
+.borbila-format-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+}
+
+.borbila-format-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 250px;
+    background: #ffffff;
+    border: 1px solid #dce2ea;
+    border-radius: 9px;
+    cursor: pointer;
+    padding: 14px;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.borbila-format-card:hover {
+    border-color: #9ab6d5;
+    box-shadow: 0 5px 16px rgba(23, 32, 51, 0.08);
+}
+
+.borbila-format-card.is-selected {
+    border-color: var(--bpc-blue);
+    box-shadow: 0 0 0 2px rgba(31, 93, 168, 0.12), 0 5px 16px rgba(23, 32, 51, 0.08);
+}
+
+.borbila-format-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.borbila-format-card strong {
+    color: #111827;
+    font-size: 14px;
+}
+
+.borbila-format-card small {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.borbila-format-preview {
+    position: relative;
+    display: block;
+    height: 112px;
+    background: var(--top-bg);
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.borbila-format-preview::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 48%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.borbila-format-preview span:nth-child(1) {
+    position: absolute;
+    left: 13px;
+    top: 14px;
+    width: 70px;
+    height: 16px;
+    background: var(--secondary);
+    border-radius: 999px;
+}
+
+.borbila-format-preview span:nth-child(2) {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 38px;
+    height: 42px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+}
+
+.borbila-format-preview span:nth-child(3) {
+    position: absolute;
+    left: 34px;
+    right: 34px;
+    bottom: 12px;
+    height: 13px;
+    background: var(--accent);
+    border-radius: 999px;
+}
+
+.borbila-swatch-row {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
+}
+
+.borbila-swatch-row i {
+    display: block;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    border-radius: 999px;
+}
+
+@media (max-width: 1050px) {
+    .borbila-photocard-dashboard {
+        grid-template-columns: 205px minmax(0, 1fr);
+    }
+
+    .borbila-license-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 782px) {
+    .borbila-photocard-admin-page {
+        margin-right: 10px;
+    }
+
+    .borbila-admin-header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 20px 18px 20px 22px;
+    }
+
+    .borbila-admin-brand {
+        align-items: flex-start;
+    }
+
+    .borbila-admin-brand > .dashicons {
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        padding: 11px;
+        font-size: 22px;
+    }
+
+    .borbila-admin-brand h1 {
+        font-size: 23px;
+    }
+
+    .borbila-photocard-dashboard {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .borbila-admin-tabs {
+        position: static;
+        flex-direction: row;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 7px;
+        scrollbar-width: thin;
+    }
+
+    .borbila-tab-caption,
+    .borbila-tab-divider {
+        display: none;
+    }
+
+    .borbila-admin-tab {
+        flex: 0 0 auto;
+        justify-content: center;
+        width: auto;
+        min-width: 118px;
+        min-height: 42px;
+        padding: 8px 10px;
+    }
+
+    .borbila-admin-tab.is-active {
+        box-shadow: inset 0 -3px 0 var(--bpc-blue);
+    }
+
+    .borbila-license-tab em {
+        display: none;
+    }
+
+    .borbila-photocard-settings {
+        padding: 18px;
+    }
+
+    .borbila-license-panel {
+        padding: 18px;
+    }
+
+    .borbila-settings-lock-banner {
+        grid-template-columns: 38px minmax(0, 1fr);
+    }
+
+    .borbila-settings-lock-banner > .dashicons {
+        width: 38px;
+        height: 38px;
+        padding: 9px;
+        font-size: 20px;
+    }
+
+    .borbila-settings-lock-banner .button {
+        grid-column: 1 / -1;
+        width: 100%;
+        text-align: center;
+    }
+
+    .borbila-text-grid,
+    .borbila-logo-settings {
+        grid-template-columns: 1fr;
+    }
+
+    .borbila-field-wide {
+        grid-column: auto;
+    }
+
+    .borbila-savebar {
+        align-items: stretch;
+        flex-direction: column;
+        bottom: 8px;
+    }
+
+    .borbila-savebar .button-primary {
+        width: 100%;
+    }
+
+    .borbila-license-status {
+        grid-template-columns: 48px minmax(0, 1fr);
+        padding: 16px;
+    }
+
+    .borbila-license-status-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .borbila-license-status > strong {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+
+    .borbila-license-card {
+        padding: 16px;
+    }
+
+    .borbila-license-key-row,
+    .borbila-license-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .borbila-license-key-row .button-primary {
+        width: 100%;
+    }
+
+    .borbila-license-actions .button:last-child {
+        margin-left: 0;
+    }
+}

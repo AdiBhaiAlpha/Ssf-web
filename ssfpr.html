@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>সংবাদ বিজ্ঞপ্তি | সমাজতান্ত্রিক ছাত্র ফ্রন্ট</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Slab:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --brand-red: #c90d15;
+            --brand-dark: #a70910;
+            --deep-black: #171717;
+            --soft-black: #333333;
+            --paper: #ffffff;
+            --background: #eeeeee;
+            --line: #c9c9c9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Tiro Bangla", serif;
+            background: var(--background);
+            color: var(--deep-black);
+            padding: 45px 20px;
+        }
+
+        /* =========================================
+           DOCUMENT PAPER
+        ========================================= */
+
+        .document {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--paper);
+            padding: 1in;
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        /* Thin premium top accent */
+
+        .document::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                var(--brand-red) 12%,
+                var(--brand-red) 88%,
+                transparent 100%
+            );
+        }
+
+        /* =========================================
+           ORGANIZATION HEADER
+        ========================================= */
+
+        .organization-header {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            padding-bottom: 18px;
+            position: relative;
+        }
+
+        /* -----------------------------------------
+           LOGO AREA WITH FOUR CORNER BRACKETS
+        ----------------------------------------- */
+
+        .logo-frame {
+            width: 138px;
+            min-width: 138px;
+            height: 150px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px;
+            margin-top: 15px;
+        }
+
+        .organization-logo {
+            width: 120%;
+            height: 120%;
+            object-fit: contain;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Top Left */
+
+        .logo-frame::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 36px;
+            height: 36px;
+            border-top: 2px solid #222;
+            border-left: 2px solid #222;
+        }
+
+        /* Top Right */
+
+        .logo-frame::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            border-top: 2px solid #222;
+            border-right: 2px solid #222;
+        }
+
+        .logo-corner-bottom-left,
+        .logo-corner-bottom-right {
+            position: absolute;
+            bottom: 0;
+            width: 36px;
+            height: 36px;
+        }
+
+        .logo-corner-bottom-left {
+            left: 0;
+            border-bottom: 2px solid #222;
+            border-left: 2px solid #222;
+        }
+
+        .logo-corner-bottom-right {
+            right: 0;
+            border-bottom: 2px solid #222;
+            border-right: 2px solid #222;
+        }
+
+        /* -----------------------------------------
+           ORGANIZATION INFORMATION
+        ----------------------------------------- */
+
+        .organization-details {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .organization-title-image {
+            width: 100%;
+            max-width: 465px;
+            max-height: 78px;
+            height: auto;
+            object-fit: contain;
+            object-position: left center;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .english-name {
+            font-family: "Roboto Slab", Georgia, serif;
+            color: var(--brand-dark);
+            font-size: 15.5pt;
+            line-height: 1.2;
+            font-weight: 600;
+            letter-spacing: 0.1px;
+        }
+
+        .district-name {
+            color: var(--brand-dark);
+            font-size: 13.5pt;
+            line-height: 1.35;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        /* =========================================
+           DOUBLE LETTERHEAD DIVIDER
+        ========================================= */
+
+        .header-divider {
+            width: 100%;
+            height: 4px;
+            margin-top: 2px;
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        .header-divider::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            border-top: 1.5px solid var(--brand-dark);
+        }
+
+        .header-divider::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            border-bottom: 1px solid #555;
+            opacity: 0.65;
+        }
+
+        /* =========================================
+           PRESS RELEASE META
+        ========================================= */
+
+        .release-meta {
+            position: relative;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0 10px;
+        }
+
+        .release-title {
+            display: inline-block;
+            font-size: 16pt;
+            line-height: 1.15;
+            font-weight: 700;
+            padding: 0 10px 4px;
+            border-bottom: 2px solid var(--deep-black);
+            letter-spacing: 0.2px;
+        }
+
+        .release-date {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11pt;
+            line-height: 1.4;
+            color: var(--soft-black);
+            white-space: nowrap;
+        }
+
+        /* =========================================
+           HEADLINE BANNER
+        ========================================= */
+
+        .headline-banner {
+            background: var(--brand-red);
+            color: #ffffff;
+            text-align: center;
+            padding: 15px 32px 16px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* subtle inner lines */
+
+        .headline-banner::before,
+        .headline-banner::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.24);
+        }
+
+        .headline-banner::before {
+            top: 7px;
+        }
+
+        .headline-banner::after {
+            bottom: 7px;
+        }
+
+        .headline-banner p {
+            font-size: 14pt;
+            line-height: 1.52;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* =========================================
+           ARTICLE BODY
+        ========================================= */
+
+        .article-content {
+            font-size: 12pt;
+            line-height: 1.65;
+            font-weight: 400;
+            text-align: justify;
+            color: var(--deep-black);
+        }
+
+        .article-content p {
+            margin: 0;
+        }
+
+        /* =========================================
+           COMMITTEE SECTION
+        ========================================= */
+
+        .committee-section {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #d5d5d5;
+        }
+
+        .committee-grid {
+            display: grid;
+            grid-template-columns: 1.18fr 0.82fr;
+            align-items: start;
+        }
+
+        .committee-column {
+            font-size: 12pt;
+            line-height: 1.65;
+        }
+
+        .committee-column p {
+            margin: 0;
+        }
+
+        .committee-column strong {
+            font-weight: 700;
+        }
+
+        /* Members column separation */
+
+        .members-column {
+            padding-left: 35px;
+            border-left: 1px solid #d0d0d0;
+        }
+
+        .members-title {
+            display: inline-block;
+            font-weight: 700;
+            border-bottom: 1px solid var(--brand-red);
+            margin-bottom: 4px !important;
+            padding-bottom: 1px;
+        }
+
+        /* =========================================
+           SIGNATURE / PRESS CONTACT
+        ========================================= */
+
+        .signature-wrap {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .signature {
+            width: 255px;
+            padding-top: 12px;
+            border-top: 2px solid var(--brand-red);
+            text-align: left;
+            font-size: 11pt;
+            line-height: 1.55;
+            color: var(--soft-black);
+        }
+
+        .signature p {
+            margin: 0;
+        }
+
+        .signature-label {
+            font-weight: 700;
+            color: var(--deep-black);
+            margin-bottom: 3px !important;
+        }
+
+        .signature-name {
+            font-weight: 700;
+            color: var(--deep-black);
+        }
+
+        /* =========================================
+           TABLET
+        ========================================= */
+
+        @media (max-width: 850px) {
+
+            body {
+                padding: 25px 15px;
+            }
+
+            .document {
+                padding: 50px 45px;
+            }
+
+            .logo-frame {
+                width: 120px;
+                min-width: 120px;
+                height: 130px;
+            }
+
+            .organization-title-image {
+                max-width: 420px;
+                max-height: 70px;
+            }
+
+            .committee-grid {
+                gap: 25px;
+            }
+
+            .members-column {
+                padding-left: 25px;
+            }
+        }
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 650px) {
+
+            body {
+                padding: 0;
+                background: #ffffff;
+            }
+
+            .document {
+                width: 100%;
+                max-width: 100%;
+                padding: 25px 18px 40px;
+                box-shadow: none;
+            }
+
+            .document::before {
+                height: 3px;
+            }
+
+            .organization-header {
+                gap: 10px;
+                padding-bottom: 14px;
+            }
+
+            .logo-frame {
+                width: 0px;
+                min-width: 70px;
+                height: 70px;
+                padding: 0px;
+            }
+
+            .logo-frame::before,
+            .logo-frame::after,
+            .logo-corner-bottom-left,
+            .logo-corner-bottom-right {
+                width: 15px;
+                height: 15px;
+            }
+
+            .organization-title-image {
+                max-height: 70px;
+                max-width: 100%;
+            }
+
+            .english-name {
+                font-size: 14pt;
+                line-height: 1.25;
+                margin-top: -25px;
+                margin-left: 2px;
+            }
+
+            .district-name {
+                font-size: 10.5pt;
+                margin-left: 2px;
+            }
+
+            .header-divider {
+                margin-bottom: 10px;
+            }
+
+            .release-meta {
+                display: block;
+                min-height: auto;
+                text-align: center;
+                padding: 12px 0 10px;
+            }
+
+            .release-title {
+                font-size: 16pt;
+            }
+
+            .release-date {
+                position: static;
+                transform: none;
+                text-align: right;
+                margin-top: 10px;
+                font-size: 10pt;
+            }
+
+            .headline-banner {
+                padding: 14px 12px;
+                margin-bottom: 18px;
+            }
+
+            .headline-banner p {
+                font-size: 12.5pt;
+                line-height: 1.55;
+            }
+
+            .article-content {
+                font-size: 12pt;
+                line-height: 1.65;
+                text-align: left;
+            }
+
+            .committee-section {
+                margin-top: 18px;
+            }
+
+            .committee-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .committee-column {
+                font-size: 12pt;
+                line-height: 1.65;
+            }
+
+            .members-column {
+                padding-left: 0;
+                border-left: none;
+                padding-top: 12px;
+                border-top: 1px solid #d0d0d0;
+            }
+
+            .signature-wrap {
+                margin-top: 28px;
+            }
+
+            .signature {
+                width: 100%;
+                max-width: 250px;
+                font-size: 11pt;
+            }
+        }
+
+        /* =========================================
+           PRINT / A4 / PDF
+        ========================================= */
+
+        @media print {
+
+            @page {
+                size: A4;
+                margin: 1in;
+            }
+
+            html,
+            body {
+                background: #ffffff;
+                padding: 0;
+                margin: 0;
+            }
+
+            .document {
+                width: 100%;
+                max-width: none;
+                padding: 0;
+                margin: 0;
+                box-shadow: none;
+            }
+
+            .document::before {
+                display: none;
+            }
+
+            .headline-banner,
+            .committee-section,
+            .signature-wrap {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <main class="document">
+
+        <!-- ==============================
+             ORGANIZATION HEADER
+        =============================== -->
+
+        <header class="organization-header">
+
+            <div class="logo-frame">
+
+                <img
+                    class="organization-logo"
+                    src="https://i.ibb.co.com/F4MKM3R2/20260527-055637.png"
+                    alt="সমাজতান্ত্রিক ছাত্র ফ্রন্টের লোগো"
+                >
+
+                <span class="logo-corner-bottom-left"></span>
+                <span class="logo-corner-bottom-right"></span>
+
+            </div>
+
+            <div class="organization-details">
+
+                <img
+                    class="organization-title-image"
+                    src="https://i.ibb.co/R4BCPZ0B/20250130-143124.png"
+                    alt="সমাজতান্ত্রিক ছাত্র ফ্রন্ট"
+                >
+
+                <div class="english-name">
+                    Socialist Students' Front
+                </div>
+
+                <div class="district-name">
+                    ময়মনসিংহ জেলা শাখা
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- Premium Letterhead Divider -->
+
+        <div class="header-divider"></div>
+
+
+        <!-- ==============================
+             PRESS RELEASE TITLE
+        =============================== -->
+
+        <section class="release-meta">
+
+            <h1 class="release-title">
+                সংবাদ বিজ্ঞপ্তি
+            </h1>
+
+            <div class="release-date">
+                তারিখঃ ০৬ ডিসেম্বর, ২০২৫ খ্রিঃ
+            </div>
+
+        </section>
+
+
+        <!-- ==============================
+             MAIN HEADLINE
+        =============================== -->
+
+        <section class="headline-banner">
+            <p>
+                সমাজতান্ত্রিক ছাত্র ফ্রন্ট ময়মনসিংহ জেলা শাখার ১০ম কাউন্সিল অনুষ্ঠিত ;
+                তানজিল হোসেন মুনিম কে সভাপতি ও চিত্রণ ভট্টাচার্য কে সাধারণ সম্পাদক করে
+                ১৭ সদস্য বিশিষ্ট কমিটি গঠন
+            </p>
+        </section>
+
+
+        <!-- ==============================
+             PRESS RELEASE BODY
+        =============================== -->
+
+        <article class="article-content">
+
+            <p>
+                আজ ৬ ডিসেম্বর, ২০২৫ সমাজতান্ত্রিক ছাত্র ফ্রন্ট, ময়মনসিংহ জেলা শাখার
+                ১০ম কাউন্সিল অনুষ্ঠিত হয়। জেলা শাখার সভাপতি আব্দুল্লাহ আল নাকিবের
+                সভাপতিত্বে কাউন্সিল সভায় আরও উপস্থিত ছিলেন সমাজতান্ত্রিক ছাত্র ফ্রন্ট
+                কেন্দ্রীয় কমিটির সাংগঠনিক সম্পাদক কমরেড সুহাইল আহমেদ শুভ; বাসদ ৫ নং
+                জোনের সমন্বয়ক কমরেড ইমাম হুসাইন খোকন এবং বাসদ ময়মনসিংহ জেলা শাখার
+                নেতৃবৃন্দ। কাউন্সিলের শুরুতেই সাধারণ সম্পাদকের রিপোর্ট পর্যালোচনা করা হয়।
+                জাতীয় রাজনৈতিক পরিস্থিতির মূল্যায়ন, শিক্ষার সংকট সহ বিবিধ বিষয়ে
+                আলোচনা হয়। কাউন্সিল থেকে আগামী দিনে শিক্ষা বাণিজ্যিকীকরণ-শিক্ষা
+                সংকোচন সহ শিক্ষার উপর সর্বগ্রাসী আক্রমণের বিরুদ্ধে জোরদার আন্দোলন গড়ে
+                তোলার সিদ্ধান্ত গ্রহণ করা হয়। সবশেষে দশম কাউন্সিলের মধ্য দিয়ে
+                সর্বসম্মতিক্রমে ১৭ সদস্য বিশিষ্ট দশম জেলা কমিটি গঠন করা হয়। জেলা
+                কমিটির সদস্যদের পরিচয় করিয়ে দেন সদ্যবিদায়ী কমিটির সভাপতি আব্দুল্লাহ
+                আল নাকিব। দশম জেলা কমিটি নিম্নরূপ:
+            </p>
+
+        </article>
+
+
+        <!-- ==============================
+             COMMITTEE LIST
+        =============================== -->
+
+        <section class="committee-section">
+
+            <div class="committee-grid">
+
+                <div class="committee-column">
+
+                    <p><strong>সভাপতি:</strong> তানজিল হোসেন মুনিম</p>
+                    <p><strong>সহ-সভাপতি:</strong> আবির মোহাম্মদ আকাশ</p>
+                    <p><strong>সাধারণ সম্পাদক:</strong> চিত্রণ ভট্টাচার্য</p>
+                    <p><strong>সাংগঠনিক সম্পাদক:</strong> সাদমান এহসান অরিন্দম</p>
+                    <p><strong>দপ্তর সম্পাদক:</strong> আরিফুল ইসলাম বিজয়</p>
+                    <p><strong>অর্থ সম্পাদক:</strong> জ্যোতি রায়</p>
+                    <p><strong>প্রচার ও প্রকাশনা সম্পাদক:</strong> প্রশান্ত বাসফোর</p>
+                    <p><strong>পাঠাগার বিষয়ক সম্পাদক:</strong> পূজা সরকার বর্ষা</p>
+                    <p><strong>স্কুল বিষয়ক সম্পাদক:</strong> শ্রাবণ</p>
+
+                </div>
+
+
+                <div class="committee-column members-column">
+
+                    <p class="members-title">সদস্য:</p>
+
+                    <p>ওয়ালিউল্লাহ</p>
+                    <p>সুজন দাস</p>
+                    <p>প্রশান্ত দাস</p>
+                    <p>পান্না</p>
+                    <p>রিতু আক্তার</p>
+                    <p>ফাহমিদ বিন অনয়</p>
+                    <p>জীবন সরকার</p>
+                    <p>জহিরুল ইসলাম রুকন</p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==============================
+             SIGNATURE
+        =============================== -->
+
+        <div class="signature-wrap">
+
+            <footer class="signature">
+
+                <p class="signature-label">বার্তাপ্রেরকঃ</p>
+                <p class="signature-name">আরিফুল ইসলাম বিজয়</p>
+                <p>দপ্তর সম্পাদক</p>
+                <p>সমাজতান্ত্রিক ছাত্র ফ্রন্ট</p>
+                <p>ময়মনসিংহ জেলা শাখা</p>
+
+            </footer>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    // Default deny all unknown collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Community Chat Messages
+    match /community_messages/{messageId} {
+      allow read, write: if true;
+    }
+
+    // Public News Articles
+    match /news/{newsId} {
+      allow read, write: if true;
+    }
+
+    // Progressive Column & Blog Posts
+    match /blogs/{blogId} {
+      allow read, write: if true;
+    }
+
+    // Community Inquiries and Q&A
+    match /questions/{questionId} {
+      allow read, write: if true;
+    }
+
+    // Organizational Circulars & Notices
+    match /circulars/{circularId} {
+      allow read, write: if true;
+    }
+
+    // Events & Programs
+    match /events/{eventId} {
+      allow read, write: if true;
+    }
+
+    // Publication Library
+    match /books/{bookId} {
+      allow read, write: if true;
+    }
+
+    // Media & Photo Gallery
+    match /gallery/{galleryId} {
+      allow read, write: if true;
+    }
+
+    // Member Profiles & Applications
+    match /memberships/{memberId} {
+      allow read, write: if true;
+    }
+
+    // Administrative System Logs
+    match /logs/{logId} {
+      allow read, write: if true;
+    }
+
+    // Organization Metadata Settings
+    match /settings/{settingId} {
+      allow read, write: if true;
+    }
+
+    // Admin Access Collection
+    match /admins/{adminId} {
+      allow read, write: if true;
+    }
+
+    // Member Login Logs
+    match /memberLogins/{logId} {
+      allow read, write: if true;
+    }
+
+    // Organization Metadata & Branches
+    match /organizations/{orgId} {
+      allow read, write: if true;
+    }
+
+    // Site Visits & Analytics
+    match /visits/{visitId} {
+      allow read, write: if true;
+    }
+
+    // Admin Invitations
+    match /invitations/{invitationId} {
+      allow read, write: if true;
+    }
+  }
+}
+
